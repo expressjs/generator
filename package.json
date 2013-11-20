@@ -1,0 +1,47 @@
+{
+  "name": "express-generator",
+  "description": "Express' application generator",
+  "version": "1.0.0",
+  "author": "TJ Holowaychuk <tj@vision-media.ca>",
+  "contributors": [
+    {
+      "name": "TJ Holowaychuk",
+      "email": "tj@vision-media.ca"
+    },
+    {
+      "name": "Aaron Heckmann",
+      "email": "aaron.heckmann+github@gmail.com"
+    },
+    {
+      "name": "Ciaran Jessup",
+      "email": "ciaranj@gmail.com"
+    },
+    {
+      "name": "Guillermo Rauch",
+      "email": "rauchg@gmail.com"
+    }
+  ],
+  "dependencies": {
+    "commander": "1.3.2",
+    "mkdirp": "0.3.5"
+  },
+  "keywords": [
+    "express",
+    "framework",
+    "sinatra",
+    "web",
+    "rest",
+    "restful",
+    "router",
+    "app",
+    "api"
+  ],
+  "repository": "git://github.com/expressjs/generator",
+  "main": "bin/express",
+  "bin": {
+    "express": "./bin/express"
+  },
+  "engines": {
+    "node": ">= 0.8.0"
+  }
+}
