@@ -370,7 +370,7 @@ function createApplicationAt(path) {
       , private: true
       , scripts: { start: 'node app.js' }
       , dependencies: {
-        express: version
+        express: '*'
       }
     }
 
