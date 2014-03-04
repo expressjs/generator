@@ -1,22 +1,20 @@
 #!/usr/bin/env node
 
-/**
- * Module dependencies.
- */
+var program = require('commander');
+var mkdirp = require('mkdirp');
+var os = require('os');
+var fs = require('fs');
+var path = require('path');
 
-var program = require('commander')
-  , mkdirp = require('mkdirp')
-  , pkg = require('../package.json')
-  , version = pkg.version
-  , os = require('os')
-  , fs = require('fs');
+var pkg = require('../package.json');
+
+var version = pkg.version;
 
 // CLI
 
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-s, --sessions', 'add session support')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('-J, --jshtml', 'add jshtml engine support (defaults to jade)')
   .option('-H, --hogan', 'add hogan.js engine support')
@@ -26,7 +24,7 @@ program
 
 // Path
 
-var path = program.args.shift() || '.';
+var destination_path = program.args.shift() || '.';
 
 // end-of-line code
 
@@ -39,224 +37,31 @@ if (program.ejs) program.template = 'ejs';
 if (program.jshtml) program.template = 'jshtml';
 if (program.hogan) program.template = 'hjs';
 
-/**
- * Routes index template.
- */
+function load_template(name) {
+  return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
+}
 
-var index = [
-    ''
-  , '/*'
-  , ' * GET home page.'
-  , ' */'
-  , ''
-  , 'exports.index = function(req, res){'
-  , '  res.render(\'index\', { title: \'Express\' });'
-  , '};'
-].join(eol);
+var index = load_template('js/routes/index.js');
+var users = load_template('js/routes/user.js');
 
-/**
- * Routes users template.
- */
+/// view engines
 
-var users = [
-    ''
-  , '/*'
-  , ' * GET users listing.'
-  , ' */'
-  , ''
-  , 'exports.list = function(req, res){'
-  , '  res.send("respond with a resource");'
-  , '};'
-].join(eol);
+var ejsIndex = load_template('ejs/index.ejs');
 
-/**
- * Jade layout template.
- */
+var jshtmlLayout = load_template('jshtml/layout.jshtml');
+var jshtmlIndex = load_template('jshtml/index.jshtml');
 
-var jadeLayout = [
-    'doctype html'
-  , 'html'
-  , '  head'
-  , '    title= title'
-  , '    link(rel=\'stylesheet\', href=\'/stylesheets/style.css\')'
-  , '  body'
-  , '    block content'
-].join(eol);
+var hoganIndex = load_template('hogan/index.hjs');
 
-/**
- * Jade index template.
- */
+/// css
 
-var jadeIndex = [
-    'extends layout'
-  , ''
-  , 'block content'
-  , '  h1= title'
-  , '  p Welcome to #{title}'
-].join(eol);
+var css = fs.readFileSync(__dirname + '/../templates/css/style.css', 'utf-8');
+var less = fs.readFileSync(__dirname + '/../templates/css/style.less', 'utf-8');
+var stylus = fs.readFileSync(__dirname + '/../templates/css/style.styl', 'utf-8');
+var compass = fs.readFileSync(__dirname + '/../templates/css/style.scss', 'utf-8');
 
-/**
- * EJS index template.
- */
-
-var ejsIndex = [
-    '<!DOCTYPE html>'
-  , '<html>'
-  , '  <head>'
-  , '    <title><%= title %></title>'
-  , '    <link rel=\'stylesheet\' href=\'/stylesheets/style.css\' />'
-  , '  </head>'
-  , '  <body>'
-  , '    <h1><%= title %></h1>'
-  , '    <p>Welcome to <%= title %></p>'
-  , '  </body>'
-  , '</html>'
-].join(eol);
-
-/**
- * JSHTML layout template.
- */
-
-var jshtmlLayout = [
-    '<!DOCTYPE html>'
-  , '<html>'
-  , '  <head>'
-  , '    <title> @write(title) </title>'
-  , '    <link rel=\'stylesheet\' href=\'/stylesheets/style.css\' />'
-  , '  </head>'
-  , '  <body>'
-  , '    @write(body)'
-  , '  </body>'
-  , '</html>'
-].join(eol);
-
-/**
- * JSHTML index template.
- */
-
-var jshtmlIndex = [
-    '<h1>@write(title)</h1>'
-  , '<p>Welcome to @write(title)</p>'
-].join(eol);
-
-/**
- * Hogan.js index template.
- */
-var hoganIndex = [
-    '<!DOCTYPE html>'
-  , '<html>'
-  , '  <head>'
-  , '    <title>{{ title }}</title>'
-  , '    <link rel=\'stylesheet\' href=\'/stylesheets/style.css\' />'
-  , '  </head>'
-  , '  <body>'
-  , '    <h1>{{ title }}</h1>'
-  , '    <p>Welcome to {{ title }}</p>'
-  , '  </body>'
-  , '</html>'
-].join(eol);
-
-/**
- * Default css template.
- */
-
-var css = [
-    'body {'
-  , '  padding: 50px;'
-  , '  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;'
-  , '}'
-  , ''
-  , 'a {'
-  , '  color: #00B7FF;'
-  , '}'
-].join(eol);
-
-/**
- * Default less template.
- */
-
-var less = [
-    'body {'
-  , '  padding: 50px;'
-  , '  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;'
-  , '}'
-  , ''
-  , 'a {'
-  , '  color: #00B7FF;'
-  , '}'
-].join(eol);
-
-/**
- * Default stylus template.
- */
-
-var stylus = [
-    'body'
-  , '  padding: 50px'
-  , '  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif'
-  , 'a'
-  , '  color: #00B7FF'
-].join(eol);
-
-/**
- * Default compass template.
- */
-var compass = [
-    '@import "compass/css3";'
-  , ''
-  , 'body {'
-  , '  padding: 50px;'
-  , '  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;'
-  , '}'
-  , ''
-  , 'a {'
-  , '  color: #00B7FF;'
-  , '}'
-].join(eol);
-
-/**
- * App template.
- */
-
-var app = [
-    ''
-  , '/**'
-  , ' * Module dependencies.'
-  , ' */'
-  , ''
-  , 'var express = require(\'express\');'
-  , 'var routes = require(\'./routes\');'
-  , 'var user = require(\'./routes/user\');'
-  , 'var http = require(\'http\');'
-  , 'var path = require(\'path\');'
-  , ''
-  , 'var app = express();'
-  , ''
-  , '// all environments'
-  , 'app.set(\'port\', process.env.PORT || 3000);'
-  , 'app.set(\'views\', path.join(__dirname, \'views\'));'
-  , 'app.set(\'view engine\', \':TEMPLATE\');'
-  , 'app.use(express.favicon());'
-  , 'app.use(express.logger(\'dev\'));'
-  , 'app.use(express.json());'
-  , 'app.use(express.urlencoded());'
-  , 'app.use(express.methodOverride());{sess}'
-  , 'app.use(app.router);{css}'
-  , 'app.use(express.static(path.join(__dirname, \'public\')));'
-  , ''
-  , '// development only'
-  , 'if (\'development\' == app.get(\'env\')) {'
-  , '  app.use(express.errorHandler());'
-  , '}'
-  , ''
-  , 'app.get(\'/\', routes.index);'
-  , 'app.get(\'/users\', user.list);'
-  , ''
-  , 'http.createServer(app).listen(app.get(\'port\'), function(){'
-  , '  console.log(\'Express server listening on port \' + app.get(\'port\'));'
-  , '});'
-  , ''
-].join(eol);
+var app = fs.readFileSync(__dirname + '/../templates/js/app.js', 'utf-8');
+var www = fs.readFileSync(__dirname + '/../templates/js/www', 'utf-8');
 
 // Generate application
 
@@ -275,7 +80,7 @@ var app = [
       });
     }
   });
-})(path);
+})(destination_path);
 
 /**
  * Create application at the given directory `path`.
@@ -291,7 +96,7 @@ function createApplicationAt(path) {
     console.log('     $ cd %s && npm install', path);
     console.log();
     console.log('   run the app:');
-    console.log('     $ node app');
+    console.log('     $ DEBUG=my-application ./bin/www');
     console.log();
   });
 
@@ -323,18 +128,22 @@ function createApplicationAt(path) {
     mkdir(path + '/views', function(){
       switch (program.template) {
         case 'ejs':
-          write(path + '/views/index.ejs', ejsIndex);
+          copy_template('ejs/index.ejs', path + '/views/index.ejs');
+          copy_template('ejs/error.ejs', path + '/views/error.ejs');
           break;
         case 'jade':
-          write(path + '/views/layout.jade', jadeLayout);
-          write(path + '/views/index.jade', jadeIndex);
+          copy_template('jade/index.jade', path + '/views/index.jade');
+          copy_template('jade/layout.jade', path + '/views/layout.jade');
+          copy_template('jade/error.jade', path + '/views/error.jade');
           break;
         case 'jshtml':
-          write(path + '/views/layout.jshtml', jshtmlLayout);
-          write(path + '/views/index.jshtml', jshtmlIndex);
+          copy_template('jshtml/index.jshtml', path + '/views/index.jshtml');
+          copy_template('jshtml/layout.jshtml', path + '/views/layout.jshtml');
+          copy_template('jshtml/error.jshtml', path + '/views/error.jshtml');
           break;
         case 'hjs':
-          write(path + '/views/index.hjs', hoganIndex);
+          copy_template('jshtml/index.hjs', path + '/views/index.hjs');
+          copy_template('jshtml/error.hjs', path + '/views/error.hjs');
           break;
 
       }
@@ -355,22 +164,21 @@ function createApplicationAt(path) {
         app = app.replace('{css}', '');
     }
 
-    // Session support
-    app = app.replace('{sess}', program.sessions
-      ? eol + 'app.use(express.cookieParser(\'your secret here\'));' + eol + 'app.use(express.session());'
-      : '');
-
     // Template support
-    app = app.replace(':TEMPLATE', program.template);
+    app = app.replace('{views}', program.template);
 
     // package.json
     var pkg = {
         name: 'application-name'
       , version: '0.0.1'
       , private: true
-      , scripts: { start: 'node app.js' }
+      , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-        express: '*'
+          'express': '4.0.0-rc1',
+          'static-favicon': '1.0.0',
+          'morgan': '1.0.0',
+          'cookie-parser': '1.0.1',
+          'debug': '0.7.4'
       }
     }
 
@@ -379,20 +187,28 @@ function createApplicationAt(path) {
     // CSS Engine support
     switch (program.css) {
       case 'less':
-        pkg.dependencies['less-middleware'] = '*';
+        pkg.dependencies['less-middleware'] = '0.1.15';
         break;
       case 'compass':
-        pkg.dependencies['node-compass'] = '*';
+        pkg.dependencies['node-compass'] = '0.2.3';
+        break;
+      case 'stylus':
+        pkg.dependencies['stylus'] = '0.42.3';
         break;
       default:
-        if (program.css) {
-          pkg.dependencies[program.css] = '*';
-        }
     }
 
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
+    mkdir(path + '/bin', function(){
+      write(path + '/bin/www', www, 0755);
+    });
   });
+}
+
+function copy_template(from, to) {
+  from = path.join(__dirname, '..', 'templates', from);
+  write(to, fs.readFileSync(from, 'utf-8'));
 }
 
 /**
@@ -416,8 +232,8 @@ function emptyDirectory(path, fn) {
  * @param {String} str
  */
 
-function write(path, str) {
-  fs.writeFile(path, str);
+function write(path, str, mode) {
+  fs.writeFile(path, str, { mode: mode || 0666 });
   console.log('   \x1b[36mcreate\x1b[0m : ' + path);
 }
 
