@@ -19,6 +19,8 @@
 
  Rock and Roll
 
+    $ npm start
+
 ## License
 
 (The MIT License)
