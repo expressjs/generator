@@ -16,7 +16,6 @@ program
   .version(version)
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
-  .option('-J, --jshtml', 'add jshtml engine support (defaults to jade)')
   .option('-H, --hogan', 'add hogan.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
@@ -34,7 +33,6 @@ var eol = os.EOL
 
 program.template = 'jade';
 if (program.ejs) program.template = 'ejs';
-if (program.jshtml) program.template = 'jshtml';
 if (program.hogan) program.template = 'hjs';
 
 function load_template(name) {
@@ -43,15 +41,6 @@ function load_template(name) {
 
 var index = load_template('js/routes/index.js');
 var users = load_template('js/routes/user.js');
-
-/// view engines
-
-var ejsIndex = load_template('ejs/index.ejs');
-
-var jshtmlLayout = load_template('jshtml/layout.jshtml');
-var jshtmlIndex = load_template('jshtml/index.jshtml');
-
-var hoganIndex = load_template('hogan/index.hjs');
 
 /// css
 
@@ -136,14 +125,9 @@ function createApplicationAt(path) {
           copy_template('jade/layout.jade', path + '/views/layout.jade');
           copy_template('jade/error.jade', path + '/views/error.jade');
           break;
-        case 'jshtml':
-          copy_template('jshtml/index.jshtml', path + '/views/index.jshtml');
-          copy_template('jshtml/layout.jshtml', path + '/views/layout.jshtml');
-          copy_template('jshtml/error.jshtml', path + '/views/error.jshtml');
-          break;
         case 'hjs':
-          copy_template('jshtml/index.hjs', path + '/views/index.hjs');
-          copy_template('jshtml/error.hjs', path + '/views/error.hjs');
+          copy_template('hogan/index.hjs', path + '/views/index.hjs');
+          copy_template('hogan/error.hjs', path + '/views/error.hjs');
           break;
 
       }
@@ -174,15 +158,27 @@ function createApplicationAt(path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '4.0.0-rc1',
-          'static-favicon': '1.0.0',
-          'morgan': '1.0.0',
-          'cookie-parser': '1.0.1',
-          'debug': '0.7.4'
+          'express': '~3.4.8',
+          'static-favicon': '~1.0.0',
+          'morgan': '~1.0.0',
+          'cookie-parser': '~1.0.1',
+          'body-parser': '~1.0.0',
+          'debug': '~0.7.4'
       }
     }
 
-    if (program.template) pkg.dependencies[program.template] = '*';
+    switch (program.template) {
+      case 'jade':
+        pkg.dependencies['jade'] = '~1.3.0';
+        break;
+      case 'ejs':
+        pkg.dependencies['ejs'] = '~0.8.5';
+        break;
+      case 'hjs':
+        pkg.dependencies['hjs'] = '~0.0.6';
+        break;
+      default:
+    }
 
     // CSS Engine support
     switch (program.css) {
