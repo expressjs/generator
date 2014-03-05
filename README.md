@@ -4,22 +4,20 @@
 
   [![Gittip](http://img.shields.io/gittip/visionmedia.png)](https://www.gittip.com/visionmedia/)
 
-## Installation
-
-    $ npm install -g express
-
 ## Quick Start
 
  The quickest way to get started with express is to utilize the executable `express(1)` to generate an application as shown below:
 
  Create the app:
 
-    $ npm install -g express
+    $ npm install -g express-generator
     $ express /tmp/foo && cd /tmp/foo
 
  Install dependencies:
 
     $ npm install
+
+ Rock and Roll
 
 ## License
 
