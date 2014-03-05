@@ -156,7 +156,6 @@ function createApplicationAt(path) {
         name: 'application-name'
       , version: '0.0.1'
       , private: true
-      , main: './bin/www'
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
           'express': '~3.4.8',
