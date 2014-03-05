@@ -40,7 +40,7 @@ function load_template(name) {
 }
 
 var index = load_template('js/routes/index.js');
-var users = load_template('js/routes/user.js');
+var users = load_template('js/routes/users.js');
 
 /// css
 
@@ -111,7 +111,7 @@ function createApplicationAt(path) {
 
     mkdir(path + '/routes', function(){
       write(path + '/routes/index.js', index);
-      write(path + '/routes/user.js', users);
+      write(path + '/routes/users.js', users);
     });
 
     mkdir(path + '/views', function(){
@@ -158,7 +158,7 @@ function createApplicationAt(path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '~3.4.8',
+          'express': '~4.0.0-rc2',
           'static-favicon': '~1.0.0',
           'morgan': '~1.0.0',
           'cookie-parser': '~1.0.1',
