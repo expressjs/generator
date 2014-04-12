@@ -25,6 +25,10 @@ program
 
 var destination_path = program.args.shift() || '.';
 
+// App name
+
+var app_name = path.basename(path.resolve(destination_path));
+
 // end-of-line code
 
 var eol = os.EOL
@@ -85,7 +89,7 @@ function createApplicationAt(path) {
     console.log('     $ cd %s && npm install', path);
     console.log();
     console.log('   run the app:');
-    console.log('     $ DEBUG=my-application ./bin/www');
+    console.log('     $ DEBUG=' + app_name + ' ./bin/www');
     console.log();
   });
 
@@ -153,7 +157,7 @@ function createApplicationAt(path) {
 
     // package.json
     var pkg = {
-        name: 'application-name'
+        name: app_name
       , version: '0.0.1'
       , private: true
       , scripts: { start: 'node ./bin/www' }
@@ -197,6 +201,7 @@ function createApplicationAt(path) {
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
     mkdir(path + '/bin', function(){
+      www = www.replace('{name}', app_name);
       write(path + '/bin/www', www, 0755);
     });
   });
