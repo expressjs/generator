@@ -162,24 +162,24 @@ function createApplicationAt(path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '~4.0.0',
-          'static-favicon': '~1.0.0',
-          'morgan': '~1.0.0',
-          'cookie-parser': '~1.0.1',
-          'body-parser': '~1.0.0',
-          'debug': '~0.7.4'
+          'express': '^4.0.0',
+          'static-favicon': '^1.0.0',
+          'morgan': '^1.0.0',
+          'cookie-parser': '^1.0.1',
+          'body-parser': '^1.0.0',
+          'debug': '^0.7.4'
       }
     }
 
     switch (program.template) {
       case 'jade':
-        pkg.dependencies['jade'] = '~1.3.0';
+        pkg.dependencies['jade'] = '^1.3.0';
         break;
       case 'ejs':
-        pkg.dependencies['ejs'] = '~0.8.5';
+        pkg.dependencies['ejs'] = '^0.8.5';
         break;
       case 'hjs':
-        pkg.dependencies['hjs'] = '~0.0.6';
+        pkg.dependencies['hjs'] = '^0.0.6';
         break;
       default:
     }
@@ -187,13 +187,13 @@ function createApplicationAt(path) {
     // CSS Engine support
     switch (program.css) {
       case 'less':
-        pkg.dependencies['less-middleware'] = '0.1.15';
+        pkg.dependencies['less-middleware'] = '^0.1.15';
         break;
       case 'compass':
-        pkg.dependencies['node-compass'] = '0.2.3';
+        pkg.dependencies['node-compass'] = '^0.2.3';
         break;
       case 'stylus':
-        pkg.dependencies['stylus'] = '0.42.3';
+        pkg.dependencies['stylus'] = '^0.42.3';
         break;
       default:
     }
