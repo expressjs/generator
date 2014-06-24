@@ -17,6 +17,7 @@ program
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-v, --vash', 'add vash.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv);
@@ -38,6 +39,7 @@ var eol = os.EOL
 program.template = 'jade';
 if (program.ejs) program.template = 'ejs';
 if (program.hogan) program.template = 'hjs';
+if (program.vash) program.template = 'vash';
 
 function load_template(name) {
   return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
@@ -133,7 +135,11 @@ function createApplicationAt(path) {
           copy_template('hogan/index.hjs', path + '/views/index.hjs');
           copy_template('hogan/error.hjs', path + '/views/error.hjs');
           break;
-
+        case 'vash':
+          copy_template('vash/index.vash', path + '/views/index.vash');
+          copy_template('vash/layout.vash', path + '/views/layout.vash');
+          copy_template('vash/error.vash', path + '/views/error.vash');
+          break;
       }
     });
 
@@ -180,6 +186,9 @@ function createApplicationAt(path) {
         break;
       case 'hjs':
         pkg.dependencies['hjs'] = '~0.0.6';
+        break;
+      case 'vash':
+        pkg.dependencies['vash'] = '^0.7.12-1';
         break;
       default:
     }
