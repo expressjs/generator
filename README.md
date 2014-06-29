@@ -1,4 +1,4 @@
-[![express logo](http://f.cl.ly/items/0V2S1n0K1i3y1c122g04/Screen%20Shot%202012-04-11%20at%209.59.42%20AM.png)](http://expressjs.com/)
+[![express logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
 
   Fast, unopinionated, minimalist web framework for [node](http://nodejs.org).
 
