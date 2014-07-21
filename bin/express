@@ -16,6 +16,7 @@ program
   .version(version)
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
+  .option('-h, --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
@@ -38,6 +39,7 @@ var eol = os.EOL
 program.template = 'jade';
 if (program.ejs) program.template = 'ejs';
 if (program.hogan) program.template = 'hjs';
+if (program.hbs) program.template = 'hbs';
 
 function load_template(name) {
   return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
@@ -133,7 +135,11 @@ function createApplicationAt(path) {
           copy_template('hogan/index.hjs', path + '/views/index.hjs');
           copy_template('hogan/error.hjs', path + '/views/error.hjs');
           break;
-
+        case 'hbs':
+          copy_template('hbs/index.hbs', path + '/views/index.hbs');
+          copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
+          copy_template('hbs/error.hbs', path + '/views/error.hbs');
+          break;
       }
     });
 
@@ -180,6 +186,9 @@ function createApplicationAt(path) {
         break;
       case 'hjs':
         pkg.dependencies['hjs'] = '~0.0.6';
+        break;
+      case 'hbs':
+        pkg.dependencies['hbs'] = '~2.7.0';
         break;
       default:
     }
