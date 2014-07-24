@@ -6,10 +6,7 @@ var assert = require('assert');
 var supertest = require('supertest');
 
 var tempDir = __dirname + '/app';
-var appBinPath = tempDir + '/bin/www';
-var appPath = 'http://localhost:' + ((process.env.PORT === undefined) ? 3000 : process.env.PORT);
-var request = supertest(appPath);
-var generator, install, start, app;
+var generator, install;
 
 describe('express generator', function () {
 
@@ -61,22 +58,6 @@ describe('express generator', function () {
 
   })
 
-  beforeEach(function (done) {
-
-    app = fork(appBinPath);
-    app.on('error', function (error) {
-      process.stdout.write(error);
-    });
-
-    // an event-based mechanism would be better
-    setTimeout(done, 250);
-  })
-
-  afterEach(function (done) {
-    process.kill(app.pid);
-    done();
-  })
-
   after(function (done) {
     //return done();
     rimraf(tempDir, function () {
@@ -86,8 +67,12 @@ describe('express generator', function () {
 
   it('should send the default home page', function (done) {
 
+    var app = require(__dirname + '/app/app.js');
+    var server = app.listen();
+    var request = supertest(server);
+
     request.get('/').expect(200).end(function (error, response) {
-      assert.ifError(error, null);
+      assert.ifError(error);
       assert.equal(response.text, '<!DOCTYPE html><html><head><title>Express</title><link rel="stylesheet" href="/stylesheets/style.css"></head><body><h1>Express</h1><p>Welcome to Express</p></body></html>');
       done();
     })
@@ -96,8 +81,12 @@ describe('express generator', function () {
 
   it('should handle the request to /users', function (done) {
 
+    var app = require(__dirname + '/app/app.js');
+    var server = app.listen();
+    var request = supertest(server);
+
     request.get('/users').expect(200).end(function (error, response) {
-      assert.ifError(error, null);
+      assert.ifError(error);
       assert.equal(response.text, 'respond with a resource');
       done();
     })
@@ -106,8 +95,12 @@ describe('express generator', function () {
 
   it('should return 404 for an undefined route', function (done) {
 
+    var app = require(__dirname + '/app/app.js');
+    var server = app.listen();
+    var request = supertest(server);
+
     request.get('/lulwut').expect(404).end(function (error, response) {
-      assert.ifError(error, null);
+      assert.ifError(error);
       done();
     })
 
