@@ -97,10 +97,7 @@ describe('express generator', function () {
     var server = app.listen();
     var request = supertest(server);
 
-    request.get('/lulwut').expect(404).end(function (error, response) {
-      assert.ifError(error);
-      done();
-    })
+    request.get('/lulwut').expect(404, done);
 
   })
 
