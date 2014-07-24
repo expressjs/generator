@@ -44,5 +44,12 @@
   "engines": {
     "node": ">= 0.8.0"
   },
-  "preferGlobal": true
+  "scripts": {
+    "test": "mocha --reporter spec --check-leaks --bail test/"
+  },
+  "preferGlobal": true,
+  "devDependencies": {
+    "rimraf": "^2.2.8",
+    "supertest": "^0.13.0"
+  }
 }
