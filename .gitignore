@@ -12,8 +12,6 @@ lib-cov
 benchmarks/graphs
 testing
 node_modules/
-testing
 .coverage_data
 cover_html
-test.js
 .idea
