@@ -12,7 +12,6 @@ describe('express generator', function () {
 
   before(function (done) {
 
-    //return done();
     this.timeout(60000); // installing the modules could take some time
 
     if (fs.existsSync(tempDir)) rimraf(tempDir, setup);
@@ -59,7 +58,6 @@ describe('express generator', function () {
   })
 
   after(function (done) {
-    //return done();
     rimraf(tempDir, function () {
       done();
     })
