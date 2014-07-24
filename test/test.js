@@ -7,7 +7,7 @@ var supertest = require('supertest');
 
 var tempDir = __dirname + '/app';
 var appBinPath = tempDir + '/bin/www';
-var appPath = 'http://localhost:3000';
+var appPath = 'http://localhost:' + ((process.env.PORT === undefined) ? 3000 : process.env.PORT);
 var request = supertest(appPath);
 var generator, install, start, app;
 
@@ -26,7 +26,7 @@ describe('express generator', function () {
       fs.mkdirSync(tempDir);
       process.chdir(tempDir);
 
-      generator = spawn('node', ['../../', '.']);
+      generator = spawn(process.argv[0], ['../../', '.']);
 
       generator.stdout.on('data', function (data) {
         process.stdout.write(data.toString());
@@ -78,6 +78,7 @@ describe('express generator', function () {
   })
 
   after(function (done) {
+    //return done();
     rimraf(tempDir, function () {
       done();
     })
@@ -86,7 +87,7 @@ describe('express generator', function () {
   it('should send the default home page', function (done) {
 
     request.get('/').expect(200).end(function (error, response) {
-      assert.equal(error, null);
+      assert.ifError(error, null);
       assert.equal(response.text, '<!DOCTYPE html><html><head><title>Express</title><link rel="stylesheet" href="/stylesheets/style.css"></head><body><h1>Express</h1><p>Welcome to Express</p></body></html>');
       done();
     })
@@ -96,7 +97,7 @@ describe('express generator', function () {
   it('should handle the request to /users', function (done) {
 
     request.get('/users').expect(200).end(function (error, response) {
-      assert.equal(error, null);
+      assert.ifError(error, null);
       assert.equal(response.text, 'respond with a resource');
       done();
     })
@@ -106,7 +107,7 @@ describe('express generator', function () {
   it('should return 404 for an undefined route', function (done) {
 
     request.get('/lulwut').expect(404).end(function (error, response) {
-      assert.equal(error, null);
+      assert.ifError(error, null);
       done();
     })
 
