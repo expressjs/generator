@@ -66,36 +66,25 @@ describe('express generator', function () {
   it('should send the default home page', function (done) {
 
     var app = require(__dirname + '/app/app.js');
-    var server = app.listen();
-    var request = supertest(server);
+    var request = supertest(app);
 
-    request.get('/').expect(200).end(function (error, response) {
-      assert.ifError(error);
-      assert.equal(response.text, '<!DOCTYPE html><html><head><title>Express</title><link rel="stylesheet" href="/stylesheets/style.css"></head><body><h1>Express</h1><p>Welcome to Express</p></body></html>');
-      done();
-    })
+    request.get('/').expect(200, '<!DOCTYPE html><html><head><title>Express</title><link rel="stylesheet" href="/stylesheets/style.css"></head><body><h1>Express</h1><p>Welcome to Express</p></body></html>', done);
 
   })
 
   it('should handle the request to /users', function (done) {
 
     var app = require(__dirname + '/app/app.js');
-    var server = app.listen();
-    var request = supertest(server);
+    var request = supertest(app);
 
-    request.get('/users').expect(200).end(function (error, response) {
-      assert.ifError(error);
-      assert.equal(response.text, 'respond with a resource');
-      done();
-    })
+    request.get('/users').expect(200, 'respond with a resource', done);
 
   })
 
   it('should return 404 for an undefined route', function (done) {
 
     var app = require(__dirname + '/app/app.js');
-    var server = app.listen();
-    var request = supertest(server);
+    var request = supertest(app);
 
     request.get('/lulwut').expect(404, done);
 
