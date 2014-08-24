@@ -48,7 +48,7 @@ function load_template(name) {
 var index = load_template('js/routes/index.js');
 var users = load_template('js/routes/users.js');
 
-/// css
+// CSS
 
 var css = fs.readFileSync(__dirname + '/../templates/css/style.css', 'utf-8');
 var less = fs.readFileSync(__dirname + '/../templates/css/style.less', 'utf-8');
@@ -168,7 +168,7 @@ function createApplicationAt(path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '~4.2.0',
+          'express': '~4.8.5',
           'serve-favicon': '~2.0.0',
           'morgan': '~1.0.0',
           'cookie-parser': '~1.0.1',
