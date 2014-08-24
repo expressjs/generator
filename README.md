@@ -1,9 +1,9 @@
 [![Express Logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
 
-  [Express'](https://github.com/visionmedia/express) application generator.
+  [Express'](https://github.com/strongloop/express) application generator.
 
-  [![NPM Version](https://badge.fury.io/js/express-generator.svg)](https://badge.fury.io/js/express-generator)
-  [![Gittip](https://img.shields.io/gittip/visionmedia.svg)](https://www.gittip.com/visionmedia/)
+  [![NPM Version](https://img.shields.io/npm/v/express-generator.svg?style=flat)](https://www.npmjs.org/package/express-generator)
+  [![Gittip](https://img.shields.io/gittip/dougwilson.svg?style=flat)](https://www.gittip.com/dougwilson/)
 
 ## Quick Start
 
