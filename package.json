@@ -34,5 +34,14 @@
   },
   "engines": {
     "node": ">= 0.8.0"
+  },
+  "files": [
+    "LICENSE",
+    "bin/",
+    "templates/"
+  ],
+  "scripts": {
+    "test": "true",
+    "test-travis": "true"
   }
 }
