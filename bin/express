@@ -15,9 +15,7 @@ var version = pkg.version;
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
-  .option('-h, --hbs', 'add handlebars engine support')
-  .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-v, --view <engine>', 'add template engine support (hbs|hjs|ejs) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv);
@@ -32,14 +30,12 @@ var app_name = path.basename(path.resolve(destination_path));
 
 // end-of-line code
 
-var eol = os.EOL
+var eol = os.EOL;
 
 // Template engine
 
 program.template = 'jade';
-if (program.ejs) program.template = 'ejs';
-if (program.hogan) program.template = 'hjs';
-if (program.hbs) program.template = 'hbs';
+if (program.view && ['hbs', 'hjs', 'ejs'].indexOf(program.view)>-1) program.template = program.view;
 
 function load_template(name) {
   return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
