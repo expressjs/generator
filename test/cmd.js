@@ -110,7 +110,7 @@ describe('express(1)', function () {
     });
   });
 
-  describe('--hbs', function () {
+  describe('-v hbs', function () {
     var dir;
     var files;
 
@@ -128,7 +128,7 @@ describe('express(1)', function () {
     });
 
     it('should create basic app with hbs templates', function (done) {
-      run(dir, ['--hbs'], function (err, stdout) {
+      run(dir, ['-v', 'hbs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         assert.equal(files.length, 17);
