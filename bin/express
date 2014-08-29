@@ -10,17 +10,69 @@ var pkg = require('../package.json');
 
 var version = pkg.version;
 
+// Config - CSS engines
+var styles = {
+  css: {
+    ext: 'css',
+  },
+  less: {
+    ext: 'less',
+    mw: "app.use(require('less-middleware')(path.join(__dirname, 'public')));",
+    dep: { 'less-middleware': '1.0.x' },
+  },
+  stylus: {
+    ext: 'styl',
+    mw: "app.use(require('stylus').middleware(path.join(__dirname, 'public')));",
+    dep: { stylus: '0.42.3' },
+  },
+  compass: {
+    ext: 'scss',
+    mw: "app.use(require('node-compass')({mode: 'expanded'}));",
+    dep: { 'node-compass': '0.2.3' },
+  },
+}
+
+var views = {
+  jade: {
+    dep: { jade: '~1.5.0' },
+    files: [ 'index.jade', 'layout.jade', 'error.jade' ]
+  },
+  ejs: {
+    dep: { ejs: '~0.8.5' },
+    files: [ 'index.ejs', 'error.ejs' ],
+  },
+  hogan: {
+    npm: 'hjs',
+    dep: { hjs: '~0.0.6' },
+    files: [ 'index.hjs', 'error.hjs' ]
+  },
+  hbs: {
+    dep: { hbs: '~2.7.0' },
+    files: [ 'index.hbs', 'layout.hbs', 'error.hbs' ],
+  },
+}
+
 // CLI
 
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
-  .option('    --hbs', 'add handlebars engine support')
-  .option('-H, --hogan', 'add hogan.js engine support')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
+  .option('-v, --view <engine>', 'use view engine <engine> (see list below)')
+  .option('-c, --css <engine>', 'use stylesheet <engine> (see list below)')
   .option('-f, --force', 'force on non-empty directory')
-  .parse(process.argv);
+  .on('--help', function(){
+    console.log('  Supported view engines:')
+    console.log(Object.keys(views).map(function(engine, i) {
+      return '   - ' + engine + (i === 0 ? ' (default)' : '')
+    }).join('\n'))
+    console.log()
+    console.log('  Supported css engines:')
+    console.log(Object.keys(styles).map(function(engine, i) {
+      return '   - ' + engine + (i === 0 ? ' (default)' : '')
+    }).join('\n'))
+    console.log()
+  })
+  .parse(process.argv)
 
 // Path
 
@@ -34,12 +86,31 @@ var app_name = path.basename(path.resolve(destination_path));
 
 var eol = os.EOL
 
-// Template engine
+// css and view params parsing
 
-program.template = 'jade';
-if (program.ejs) program.template = 'ejs';
-if (program.hogan) program.template = 'hjs';
-if (program.hbs) program.template = 'hbs';
+if (!program.view) {
+  program.view = Object.keys(views)[0]
+} else if (views[program.view] == null) {
+  abort([
+    '',
+    '  View engine "' + program.view + '" not supported,',
+    '  run "express -h" to get list of supported engines.',
+    '',
+  ].join('\n'))
+}
+
+if (!program.css) {
+  program.css = Object.keys(styles)[0]
+} else if (styles[program.css] == null) {
+  abort([
+    '',
+    '  CSS engine "' + program.css + '" not supported,',
+    '  run "express -h" to get list of supported engines.',
+    '',
+  ].join('\n'))
+}
+
+// Template engine
 
 function load_template(name) {
   return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
@@ -49,11 +120,6 @@ var index = load_template('js/routes/index.js');
 var users = load_template('js/routes/users.js');
 
 // CSS
-
-var css = fs.readFileSync(__dirname + '/../templates/css/style.css', 'utf-8');
-var less = fs.readFileSync(__dirname + '/../templates/css/style.less', 'utf-8');
-var stylus = fs.readFileSync(__dirname + '/../templates/css/style.styl', 'utf-8');
-var compass = fs.readFileSync(__dirname + '/../templates/css/style.scss', 'utf-8');
 
 var app = fs.readFileSync(__dirname + '/../templates/js/app.js', 'utf-8');
 var www = fs.readFileSync(__dirname + '/../templates/js/www', 'utf-8');
@@ -100,19 +166,8 @@ function createApplicationAt(path) {
     mkdir(path + '/public/javascripts');
     mkdir(path + '/public/images');
     mkdir(path + '/public/stylesheets', function(){
-      switch (program.css) {
-        case 'less':
-          write(path + '/public/stylesheets/style.less', less);
-          break;
-        case 'stylus':
-          write(path + '/public/stylesheets/style.styl', stylus);
-          break;
-        case 'compass':
-          write(path + '/public/stylesheets/style.scss', compass);
-          break;
-        default:
-          write(path + '/public/stylesheets/style.css', css);
-      }
+      write(path + '/public/stylesheets/style.' + styles[program.css].ext,
+        fs.readFileSync(__dirname + '/../templates/css/style.' + styles[program.css].ext, 'utf8'))
     });
 
     mkdir(path + '/routes', function(){
@@ -121,45 +176,17 @@ function createApplicationAt(path) {
     });
 
     mkdir(path + '/views', function(){
-      switch (program.template) {
-        case 'ejs':
-          copy_template('ejs/index.ejs', path + '/views/index.ejs');
-          copy_template('ejs/error.ejs', path + '/views/error.ejs');
-          break;
-        case 'jade':
-          copy_template('jade/index.jade', path + '/views/index.jade');
-          copy_template('jade/layout.jade', path + '/views/layout.jade');
-          copy_template('jade/error.jade', path + '/views/error.jade');
-          break;
-        case 'hjs':
-          copy_template('hogan/index.hjs', path + '/views/index.hjs');
-          copy_template('hogan/error.hjs', path + '/views/error.hjs');
-          break;
-        case 'hbs':
-          copy_template('hbs/index.hbs', path + '/views/index.hbs');
-          copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
-          copy_template('hbs/error.hbs', path + '/views/error.hbs');
-          break;
-      }
+      ;(views[program.view].files || []).forEach(function(file) {
+        copy_template(program.view + '/' + file, path + '/views/' + file)
+      })
     });
 
     // CSS Engine support
-    switch (program.css) {
-      case 'less':
-        app = app.replace('{css}', eol + 'app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));');
-        break;
-      case 'stylus':
-        app = app.replace('{css}', eol + 'app.use(require(\'stylus\').middleware(path.join(__dirname, \'public\')));');
-        break;
-      case 'compass':
-        app = app.replace('{css}', eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));');
-        break;
-      default:
-        app = app.replace('{css}', '');
-    }
+    app = app.replace('{css}',
+     styles[program.css].mw ? eol + styles[program.css].mw : '')
 
     // Template support
-    app = app.replace('{views}', program.template);
+    app = app.replace('{views}', views[program.view].npm || program.view)
 
     // package.json
     var pkg = {
@@ -177,35 +204,8 @@ function createApplicationAt(path) {
       }
     }
 
-    switch (program.template) {
-      case 'jade':
-        pkg.dependencies['jade'] = '~1.5.0';
-        break;
-      case 'ejs':
-        pkg.dependencies['ejs'] = '~0.8.5';
-        break;
-      case 'hjs':
-        pkg.dependencies['hjs'] = '~0.0.6';
-        break;
-      case 'hbs':
-        pkg.dependencies['hbs'] = '~2.7.0';
-        break;
-      default:
-    }
-
-    // CSS Engine support
-    switch (program.css) {
-      case 'less':
-        pkg.dependencies['less-middleware'] = '1.0.x';
-        break;
-      case 'compass':
-        pkg.dependencies['node-compass'] = '0.2.3';
-        break;
-      case 'stylus':
-        pkg.dependencies['stylus'] = '0.42.3';
-        break;
-      default:
-    }
+    mixin(pkg.dependencies, views[program.view].dep)
+    mixin(pkg.dependencies, styles[program.css].dep)
 
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
@@ -271,4 +271,15 @@ function mkdir(path, fn) {
 function abort(str) {
   console.error(str);
   process.exit(1);
+}
+
+/**
+ *  Merges second object to first one.
+ */
+
+function mixin(obj, stuff) {
+  if (!stuff) return
+  for (var i in stuff) {
+    obj[i] = stuff[i]
+  }
 }
