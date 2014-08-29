@@ -81,6 +81,35 @@ describe('express(1)', function () {
     });
   });
 
+  describe('-h', function () {
+    var dir;
+
+    before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should print usage', function (done) {
+      run(dir, ['-h'], function (err, stdout) {
+        if (err) return done(err);
+        var files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 0);
+        assert.ok(/Usage: express/.test(stdout));
+        assert.ok(/--help/.test(stdout));
+        assert.ok(/--version/.test(stdout));
+        done();
+      });
+    });
+  });
+
   describe('--hbs', function () {
     var dir;
     var files;
@@ -138,6 +167,35 @@ describe('express(1)', function () {
       request(app)
       .get('/')
       .expect(200, /<title>Express<\/title>/, done);
+    });
+  });
+
+  describe('--help', function () {
+    var dir;
+
+    before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should print usage', function (done) {
+      run(dir, ['--help'], function (err, stdout) {
+        if (err) return done(err);
+        var files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 0);
+        assert.ok(/Usage: express/.test(stdout));
+        assert.ok(/--help/.test(stdout));
+        assert.ok(/--version/.test(stdout));
+        done();
+      });
     });
   });
 });
