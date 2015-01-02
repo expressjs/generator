@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 var program = require('commander');
+var prompt = require('co-prompt');
 var mkdirp = require('mkdirp');
 var os = require('os');
 var fs = require('fs');
@@ -65,7 +66,7 @@ var www = fs.readFileSync(__dirname + '/../templates/js/www', 'utf-8');
     if (empty || program.force) {
       createApplicationAt(path);
     } else {
-      program.confirm('destination is not empty, continue? ', function(ok){
+      prompt.confirm('destination is not empty, continue? ')(function(err,ok){
         if (ok) {
           process.stdin.destroy();
           createApplicationAt(path);
