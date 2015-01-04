@@ -33,7 +33,7 @@
     "express": "./bin/express"
   },
   "devDependencies": {
-    "mocha": "~1.21.4",
+    "mocha": "~2.1.0",
     "rimraf": "~2.2.8",
     "should": "~4.0.4",
     "supertest": "~0.13.0"
