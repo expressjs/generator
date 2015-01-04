@@ -205,7 +205,7 @@ function createApplicationAt(path) {
         pkg.dependencies['hjs'] = '~0.0.6';
         break;
       case 'hbs':
-        pkg.dependencies['hbs'] = '~2.7.0';
+        pkg.dependencies['hbs'] = '~2.8.0';
         break;
       default:
     }
