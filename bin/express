@@ -190,7 +190,7 @@ function createApplicationAt(path) {
           'cookie-parser': '~1.3.3',
           'morgan': '~1.5.1',
           'serve-favicon': '~2.2.0',
-          'debug': '~2.0.0'
+          'debug': '~2.1.1'
       }
     }
 
