@@ -1,7 +1,9 @@
 
+var after = require('after');
 var assert = require('assert');
 var exec = require('child_process').exec;
 var mkdirp = require('mkdirp');
+var mocha = require('mocha');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
@@ -11,12 +13,12 @@ var binPath = path.resolve(__dirname, '../bin/express');
 var tempDir = path.resolve(__dirname, '../temp');
 
 describe('express(1)', function () {
-  before(function (done) {
+  mocha.before(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
 
-  after(function (done) {
+  mocha.after(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
@@ -25,7 +27,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    before(function (done) {
+    mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -33,7 +35,7 @@ describe('express(1)', function () {
       });
     });
 
-    after(function (done) {
+    mocha.after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -84,7 +86,7 @@ describe('express(1)', function () {
   describe('-h', function () {
     var dir;
 
-    before(function (done) {
+    mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -92,7 +94,7 @@ describe('express(1)', function () {
       });
     });
 
-    after(function (done) {
+    mocha.after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -114,7 +116,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    before(function (done) {
+    mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -122,7 +124,7 @@ describe('express(1)', function () {
       });
     });
 
-    after(function (done) {
+    mocha.after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -173,7 +175,7 @@ describe('express(1)', function () {
   describe('--help', function () {
     var dir;
 
-    before(function (done) {
+    mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -181,7 +183,7 @@ describe('express(1)', function () {
       });
     });
 
-    after(function (done) {
+    mocha.after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -258,6 +260,7 @@ function parseCreatedFiles(output, dir) {
 function run(dir, args, callback) {
   var argv = [binPath].concat(args);
   var chunks = [];
+  var done = after(2, ondone);
   var exec = process.argv[0];
   var stderr = [];
 
@@ -272,8 +275,13 @@ function run(dir, args, callback) {
     stderr.push(chunk);
   });
 
+  child.on('close', function onclose() {
+    done();
+  });
   child.on('error', callback);
-  child.on('exit', function onexit() {
+  child.on('exit', done);
+
+  function ondone(err) {
     var err = null;
     var stdout = Buffer.concat(chunks)
       .toString('utf8')
@@ -286,5 +294,5 @@ function run(dir, args, callback) {
     }
 
     callback(err, stdout);
-  });
+  }
 }
