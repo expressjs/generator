@@ -260,7 +260,7 @@ function emptyDirectory(path, fn) {
  */
 
 function write(path, str, mode) {
-  fs.writeFile(path, str, { mode: mode || 0666 });
+  fs.writeFileSync(path, str, { mode: mode || 0666 });
   console.log('   \x1b[36mcreate\x1b[0m : ' + path);
 }
 
