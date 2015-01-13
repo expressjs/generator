@@ -2,6 +2,7 @@
 var after = require('after');
 var assert = require('assert');
 var exec = require('child_process').exec;
+var fs = require('fs');
 var mkdirp = require('mkdirp');
 var mocha = require('mocha');
 var path = require('path');
@@ -59,6 +60,28 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('views/error.jade'), -1);
       assert.notEqual(files.indexOf('views/index.jade'), -1);
       assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    });
+
+    it('should have a package.json file', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      assert.equal(contents, '{\n'
+        + '  "name": ' + JSON.stringify(path.basename(dir)) + ',\n'
+        + '  "version": "0.0.0",\n'
+        + '  "private": true,\n'
+        + '  "scripts": {\n'
+        + '    "start": "node ./bin/www"\n'
+        + '  },\n'
+        + '  "dependencies": {\n'
+        + '    "body-parser": "~1.10.1",\n'
+        + '    "cookie-parser": "~1.3.3",\n'
+        + '    "debug": "~2.1.1",\n'
+        + '    "express": "~4.10.6",\n'
+        + '    "jade": "~1.8.2",\n'
+        + '    "morgan": "~1.5.1",\n'
+        + '    "serve-favicon": "~2.2.0"\n'
+        + '  }\n'
+        + '}');
     });
 
     it('should have installable dependencies', function (done) {
