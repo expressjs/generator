@@ -2,6 +2,7 @@
 
 var program = require('commander');
 var mkdirp = require('mkdirp');
+var sortedObject = require('sorted-object');
 var os = require('os');
 var fs = require('fs');
 var path = require('path');
@@ -223,6 +224,8 @@ function createApplicationAt(path) {
         break;
       default:
     }
+
+    pkg.dependencies = sortedObject(pkg.dependencies);
 
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
