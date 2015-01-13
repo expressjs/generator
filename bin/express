@@ -6,6 +6,7 @@ var os = require('os');
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
+var sortedObject = require('sorted-object');
 
 var pkg = require('../package.json');
 
@@ -224,6 +225,10 @@ function createApplicationAt(path) {
       default:
     }
 
+    // sort dependencies like npm(1)
+    pkg.dependencies = sortedObject(pkg.dependencies);
+
+    // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
     mkdir(path + '/bin', function(){
