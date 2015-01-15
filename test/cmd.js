@@ -165,6 +165,49 @@ describe('express(1)', function () {
     });
   });
 
+  describe('--git', function () {
+    var dir;
+    var files;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should create basic app with git files', function (done) {
+      run(dir, ['--git'], function (err, stdout) {
+        if (err) return done(err);
+        files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 18, 'should have 18 files');
+        done();
+      });
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(files.indexOf('bin/www'), -1, 'should have bin/www file');
+      assert.notEqual(files.indexOf('app.js'), -1, 'should have app.js file');
+      assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
+    });
+
+    it('should have .gitignore', function () {
+      assert.notEqual(files.indexOf('.gitignore'), -1, 'should have .gitignore file');
+    });
+
+    it('should have jade templates', function () {
+      assert.notEqual(files.indexOf('views/error.jade'), -1);
+      assert.notEqual(files.indexOf('views/index.jade'), -1);
+      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    });
+  });
+
   describe('-h', function () {
     var dir;
 
