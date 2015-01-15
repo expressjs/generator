@@ -21,6 +21,7 @@ program
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
+  .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv);
 
@@ -235,6 +236,10 @@ function createApplicationAt(path) {
       www = www.replace('{name}', app_name);
       write(path + '/bin/www', www, 0755);
     });
+
+    if (program.git) {
+      write(path + '/.gitignore', fs.readFileSync(__dirname + '/../templates/js/.gitignore', 'utf-8'));
+    }
   });
 }
 
