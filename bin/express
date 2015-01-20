@@ -110,7 +110,7 @@ function createApplicationAt(path) {
     console.log('     $ cd %s && npm install', path);
     console.log();
     console.log('   run the app:');
-    console.log('     $ DEBUG=' + app_name + ' ./bin/www');
+    console.log('     $ DEBUG=' + app_name + ':* ./bin/www');
     console.log();
   });
 
