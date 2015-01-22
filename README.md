@@ -1,30 +1,35 @@
 [![Express Logo](https://i.cloudup.com/zfY6lL7eFa-3000x3000.png)](http://expressjs.com/)
 
-  [Express'](https://github.com/strongloop/express) application generator.
+[Express'](https://www.npmjs.com/package/express) application generator.
 
-  [![NPM Version](https://img.shields.io/npm/v/express-generator.svg?style=flat)](https://www.npmjs.org/package/express-generator)
-  [![NPM Downloads](https://img.shields.io/npm/dm/express-generator.svg?style=flat)](https://www.npmjs.org/package/express-generator)
-  [![Build Status](https://img.shields.io/travis/expressjs/generator.svg?style=flat)](https://travis-ci.org/expressjs/generator)
-  [![Gittip](https://img.shields.io/gittip/dougwilson.svg?style=flat)](https://www.gittip.com/dougwilson/)
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Build Status][travis-image]][travis-url]
+[![Gratipay][gratipay-image]][gratipay-url]
+
+## Installation
+
+```sh
+$ npm install -g express-generator
+```
 
 ## Quick Start
 
-  The quickest way to get started with express is to utilize the executable `express(1)` to generate an application as shown below:
+The quickest way to get started with express is to utilize the executable `express(1)` to generate an application as shown below:
 
-  Create the app:
+Create the app:
 
 ```bash
-$ npm install -g express-generator
 $ express /tmp/foo && cd /tmp/foo
 ```
 
-  Install dependencies:
+Install dependencies:
 
 ```bash
 $ npm install
 ```
 
-  Rock and Roll
+Rock and Roll
 
 ```bash
 $ npm start
@@ -43,4 +48,15 @@ This generator can also be further configured with the following command line fl
         --git           add .gitignore
     -f, --force         force on non-empty directory
 
-### [License (MIT)](LICENSE)
+## License
+
+[MIT](LICENSE)
+
+[npm-image]: https://img.shields.io/npm/v/express-generator.svg?style=flat
+[npm-url]: https://npmjs.org/package/express-generator
+[travis-image]: https://img.shields.io/travis/expressjs/generator/master.svg?style=flat
+[travis-url]: https://travis-ci.org/expressjs/generator
+[downloads-image]: https://img.shields.io/npm/dm/express-generator.svg?style=flat
+[downloads-url]: https://npmjs.org/package/express-generator
+[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg?style=flat
+[gratipay-url]: https://gratipay.com/dougwilson/
