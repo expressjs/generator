@@ -8,11 +8,21 @@ var path = require('path');
 var readline = require('readline');
 var sortedObject = require('sorted-object');
 
+var _exit = process.exit;
+var eol = os.EOL;
 var pkg = require('../package.json');
 
 var version = pkg.version;
 
+// Re-assign process.exit because of commander
+// TODO: Switch to a different command framework
+process.exit = exit
+
 // CLI
+
+before(program, 'outputHelp', function () {
+  this.allowUnknownOption();
+});
 
 program
   .version(version)
@@ -25,60 +35,22 @@ program
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv);
 
-// Path
-
-var destination_path = program.args.shift() || '.';
-
-// App name
-
-var app_name = path.basename(path.resolve(destination_path));
-
-// end-of-line code
-
-var eol = os.EOL
-
-// Template engine
-
-program.template = 'jade';
-if (program.ejs) program.template = 'ejs';
-if (program.hogan) program.template = 'hjs';
-if (program.hbs) program.template = 'hbs';
-
-function load_template(name) {
-  return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
+if (!exit.exited) {
+  main();
 }
 
-var index = load_template('js/routes/index.js');
-var users = load_template('js/routes/users.js');
+/**
+ * Install a before function; AOP.
+ */
 
-// CSS
+function before(obj, method, fn) {
+  var old = obj[method];
 
-var css = fs.readFileSync(__dirname + '/../templates/css/style.css', 'utf-8');
-var less = fs.readFileSync(__dirname + '/../templates/css/style.less', 'utf-8');
-var stylus = fs.readFileSync(__dirname + '/../templates/css/style.styl', 'utf-8');
-var compass = fs.readFileSync(__dirname + '/../templates/css/style.scss', 'utf-8');
-
-var app = fs.readFileSync(__dirname + '/../templates/js/app.js', 'utf-8');
-var www = fs.readFileSync(__dirname + '/../templates/js/www', 'utf-8');
-
-// Generate application
-
-(function createApplication(path) {
-  emptyDirectory(path, function(empty){
-    if (empty || program.force) {
-      createApplicationAt(path);
-    } else {
-      confirm('destination is not empty, continue? [y/N] ', function (ok) {
-        if (ok) {
-          process.stdin.destroy();
-          createApplicationAt(path);
-        } else {
-          abort('aborting');
-        }
-      });
-    }
-  });
-})(destination_path);
+  obj[method] = function () {
+    fn.call(this);
+    old.apply(this, arguments);
+  };
+}
 
 /**
  * Prompt for confirmation on STDOUT/STDIN
@@ -102,9 +74,12 @@ function confirm(msg, callback) {
  * @param {String} path
  */
 
-function createApplicationAt(path) {
+function createApplication(app_name, path) {
+  var wait = 5;
+
   console.log();
-  process.on('exit', function(){
+  function complete() {
+    if (--wait) return;
     console.log();
     console.log('   install dependencies:');
     console.log('     $ cd %s && npm install', path);
@@ -112,7 +87,19 @@ function createApplicationAt(path) {
     console.log('   run the app:');
     console.log('     $ DEBUG=' + app_name + ':* ./bin/www');
     console.log();
-  });
+  }
+
+  // JavaScript
+  var app = loadTemplate('js/app.js');
+  var www = loadTemplate('js/www');
+  var index = loadTemplate('js/routes/index.js');
+  var users = loadTemplate('js/routes/users.js');
+
+  // CSS
+  var css = loadTemplate('css/style.css');
+  var less = loadTemplate('css/style.less');
+  var stylus = loadTemplate('css/style.styl');
+  var compass = loadTemplate('css/style.scss');
 
   mkdir(path, function(){
     mkdir(path + '/public');
@@ -132,11 +119,13 @@ function createApplicationAt(path) {
         default:
           write(path + '/public/stylesheets/style.css', css);
       }
+      complete();
     });
 
     mkdir(path + '/routes', function(){
       write(path + '/routes/index.js', index);
       write(path + '/routes/users.js', users);
+      complete();
     });
 
     mkdir(path + '/views', function(){
@@ -160,6 +149,7 @@ function createApplicationAt(path) {
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
       }
+      complete();
     });
 
     // CSS Engine support
@@ -235,11 +225,14 @@ function createApplicationAt(path) {
     mkdir(path + '/bin', function(){
       www = www.replace('{name}', app_name);
       write(path + '/bin/www', www, 0755);
+      complete();
     });
 
     if (program.git) {
       write(path + '/.gitignore', fs.readFileSync(__dirname + '/../templates/js/.gitignore', 'utf-8'));
     }
+
+    complete();
   });
 }
 
@@ -259,6 +252,75 @@ function emptyDirectory(path, fn) {
   fs.readdir(path, function(err, files){
     if (err && 'ENOENT' != err.code) throw err;
     fn(!files || !files.length);
+  });
+}
+
+/**
+ * Graceful exit for async STDIO
+ */
+
+function exit(code) {
+  // flush output for Node.js Windows pipe bug
+  // https://github.com/joyent/node/issues/6247 is just one bug example
+  // https://github.com/visionmedia/mocha/issues/333 has a good discussion
+  function done() {
+    if (!(draining--)) _exit(code);
+  }
+
+  var draining = 0;
+  var streams = [process.stdout, process.stderr];
+
+  exit.exited = true;
+
+  streams.forEach(function(stream){
+    // submit empty write request and wait for completion
+    draining += 1;
+    stream.write('', done);
+  });
+
+  done();
+}
+
+/**
+ * Load template file.
+ */
+
+function loadTemplate(name) {
+  return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
+}
+
+/**
+ * Main program.
+ */
+
+function main() {
+  // Path
+  var destinationPath = program.args.shift() || '.';
+
+  // App name
+  var appName = path.basename(path.resolve(destinationPath));
+
+  // Template engine
+  program.template = 'jade';
+  if (program.ejs) program.template = 'ejs';
+  if (program.hogan) program.template = 'hjs';
+  if (program.hbs) program.template = 'hbs';
+
+  // Generate application
+  emptyDirectory(destinationPath, function (empty) {
+    if (empty || program.force) {
+      createApplication(appName, destinationPath);
+    } else {
+      confirm('destination is not empty, continue? [y/N] ', function (ok) {
+        if (ok) {
+          process.stdin.destroy();
+          createApplication(appName, destinationPath);
+        } else {
+          console.error('aborting');
+          exit(1);
+        }
+      });
+    }
   });
 }
 
@@ -287,15 +349,4 @@ function mkdir(path, fn) {
     console.log('   \033[36mcreate\033[0m : ' + path);
     fn && fn();
   });
-}
-
-/**
- * Exit with the given `str`.
- *
- * @param {String} str
- */
-
-function abort(str) {
-  console.error(str);
-  process.exit(1);
 }
