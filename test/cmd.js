@@ -1,5 +1,4 @@
 
-var after = require('after');
 var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -384,40 +383,37 @@ function parseCreatedFiles(output, dir) {
 
 function run(dir, args, callback) {
   var argv = [binPath].concat(args);
-  var chunks = [];
-  var done = after(2, ondone);
   var exec = process.argv[0];
-  var stderr = [];
+  var stderr = '';
+  var stdout = '';
 
   var child = spawn(exec, argv, {
     cwd: dir
   });
 
-  child.stdout.on('data', function ondata(chunk) {
-    chunks.push(chunk);
+  child.stdout.setEncoding('utf8');
+  child.stdout.on('data', function ondata(str) {
+    stdout += str;
   });
-  child.stderr.on('data', function ondata(chunk) {
-    stderr.push(chunk);
+  child.stderr.setEncoding('utf8');
+  child.stderr.on('data', function ondata(str) {
+    process.stderr.write(str);
+    stderr += str;
   });
 
-  child.on('close', function onclose() {
-    done();
-  });
+  child.on('close', onclose);
   child.on('error', callback);
-  child.on('exit', done);
 
-  function ondone(err) {
+  function onclose(code) {
     var err = null;
-    var stdout = Buffer.concat(chunks)
-      .toString('utf8')
-      .replace(/\x1b\[(\d+)m/g, '_color_$1_');
 
     try {
-      assert.equal(Buffer.concat(stderr).toString('utf8'), '');
+      assert.equal(stderr, '');
+      assert.strictEqual(code, 0);
     } catch (e) {
       err = e;
     }
 
-    callback(err, stdout);
+    callback(err, stdout.replace(/\x1b\[(\d+)m/g, '_color_$1_'));
   }
 }
