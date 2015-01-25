@@ -4,7 +4,8 @@
 
 [![NPM Version][npm-image]][npm-url]
 [![NPM Downloads][downloads-image]][downloads-url]
-[![Build Status][travis-image]][travis-url]
+[![Linux Build][travis-image]][travis-url]
+[![Windows Build][appveyor-image]][appveyor-url]
 [![Gratipay][gratipay-image]][gratipay-url]
 
 ## Installation
@@ -54,8 +55,10 @@ This generator can also be further configured with the following command line fl
 
 [npm-image]: https://img.shields.io/npm/v/express-generator.svg?style=flat
 [npm-url]: https://npmjs.org/package/express-generator
-[travis-image]: https://img.shields.io/travis/expressjs/generator/master.svg?style=flat
+[travis-image]: https://img.shields.io/travis/expressjs/generator/master.svg?label=linux&style=flat
 [travis-url]: https://travis-ci.org/expressjs/generator
+[appveyor-image]: https://img.shields.io/appveyor/ci/dougwilson/generator/master.svg?label=windows&style=flat
+[appveyor-url]: https://ci.appveyor.com/project/dougwilson/generator
 [downloads-image]: https://img.shields.io/npm/dm/express-generator.svg?style=flat
 [downloads-url]: https://npmjs.org/package/express-generator
 [gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg?style=flat

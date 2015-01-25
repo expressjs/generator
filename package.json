@@ -49,6 +49,6 @@
   ],
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/",
-    "test-travis": "mocha --reporter spec --bail --check-leaks test/"
+    "test-ci": "mocha --reporter spec --check-leaks test/"
   }
 }
