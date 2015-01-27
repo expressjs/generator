@@ -229,7 +229,7 @@ function createApplication(app_name, path) {
     });
 
     if (program.git) {
-      write(path + '/.gitignore', fs.readFileSync(__dirname + '/../templates/js/.gitignore', 'utf-8'));
+      write(path + '/.gitignore', fs.readFileSync(__dirname + '/../templates/js/gitignore', 'utf-8'));
     }
 
     complete();
