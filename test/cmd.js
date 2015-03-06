@@ -268,6 +268,13 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('package.json'), -1);
     });
 
+    it('should have hbs in package dependencies', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      var dependencies = JSON.parse(contents).dependencies;
+      assert.ok(typeof dependencies.hbs === 'string');
+    });
+
     it('should have hbs templates', function () {
       assert.notEqual(files.indexOf('views/error.hbs'), -1);
       assert.notEqual(files.indexOf('views/index.hbs'), -1);
