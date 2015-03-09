@@ -103,6 +103,15 @@ describe('express(1)', function () {
       .get('/')
       .expect(200, /<title>Express<\/title>/, done);
     });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
   });
 
   describe('--ejs', function () {
@@ -161,6 +170,15 @@ describe('express(1)', function () {
       request(app)
       .get('/')
       .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
 
@@ -300,6 +318,15 @@ describe('express(1)', function () {
       request(app)
       .get('/')
       .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
 
