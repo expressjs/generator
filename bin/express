@@ -7,6 +7,7 @@ var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
 var sortedObject = require('sorted-object');
+var ejs = require('ejs');
 
 var _exit = process.exit;
 var eol = os.EOL;
@@ -27,7 +28,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('    --static', 'add static support')
+  .option('    --static', 'add static file')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
@@ -104,8 +105,10 @@ function createApplication(app_name, path) {
 
   mkdir(path, function(){
     mkdir(path + '/public', function () {
+      var renderedTemplate;
       if (program.static) {
-        copy_template('static/index.html', path + '/public/index.html');
+        renderedTemplate = ejs.render(loadTemplate('ejs/index.ejs'), { title: "Express" });
+        write(path + '/public/index.html', renderedTemplate);
       }    
     });
     mkdir(path + '/public/javascripts');
