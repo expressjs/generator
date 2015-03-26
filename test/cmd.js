@@ -104,13 +104,36 @@ describe('express(1)', function () {
       .expect(200, /<title>Express<\/title>/, done);
     });
 
-    it('should generate a 404', function (done) {
+    it('should generate a HTML 404', function (done) {
       var file = path.resolve(dir, 'app.js');
       var app = require(file);
 
       request(app)
       .get('/does_not_exist')
+      .set('Accept', 'text/html')
+      .expect('Content-Type', /html/)
       .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+
+    it('should generate a JSON 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', /json/)
+      .expect(404, /"message":"Not Found"/, done);
+    });
+
+    it('should generate a default text 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect('Content-Type', /text/)
+      .expect(404, "Not Found", done);
     });
   });
 
@@ -178,6 +201,7 @@ describe('express(1)', function () {
 
       request(app)
       .get('/does_not_exist')
+      .set('Accept', 'text/html')
       .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
@@ -326,6 +350,7 @@ describe('express(1)', function () {
 
       request(app)
       .get('/does_not_exist')
+      .set('Accept', 'text/html')
       .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
