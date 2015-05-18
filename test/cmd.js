@@ -52,7 +52,7 @@ describe('express(1)', function () {
     });
 
     it('should provide debug instructions', function () {
-      assert.ok(/\$ DEBUG=app-(?:[0-9\.]+):\* npm start/.test(output));
+      assert.ok(/DEBUG=app-(?:[0-9\.]+):\* (?:\& )?npm start/.test(output));
     });
 
     it('should have basic files', function () {

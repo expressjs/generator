@@ -80,12 +80,20 @@ function createApplication(app_name, path) {
   console.log();
   function complete() {
     if (--wait) return;
+    var prompt = launchedFromCmd() ? '>' : '$';
+
     console.log();
     console.log('   install dependencies:');
-    console.log('     $ cd %s && npm install', path);
+    console.log('     %s cd %s && npm install', prompt, path);
     console.log();
     console.log('   run the app:');
-    console.log('     $ DEBUG=%s:* npm start', app_name);
+
+    if (launchedFromCmd()) {
+      console.log('     %s DEBUG=%s:* & npm start', prompt, app_name);
+    } else {
+      console.log('     %s DEBUG=%s:* npm start', prompt, app_name);
+    }
+
     console.log();
   }
 
@@ -279,6 +287,15 @@ function exit(code) {
   });
 
   done();
+}
+
+/**
+ * Determine if launched from cmd.exe
+ */
+
+function launchedFromCmd() {
+  return process.platform === 'win32'
+    && process.env._ === undefined;
 }
 
 /**
