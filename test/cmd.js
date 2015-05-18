@@ -80,7 +80,7 @@ describe('express(1)', function () {
         + '  "dependencies": {\n'
         + '    "body-parser": "~1.12.4",\n'
         + '    "cookie-parser": "~1.3.4",\n'
-        + '    "debug": "~2.1.1",\n'
+        + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.12.2",\n'
         + '    "jade": "~1.9.2",\n'
         + '    "morgan": "~1.5.1",\n'
