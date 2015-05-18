@@ -26,6 +26,7 @@ describe('express(1)', function () {
   describe('(no args)', function () {
     var dir;
     var files;
+    var output;
 
     mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
@@ -44,9 +45,14 @@ describe('express(1)', function () {
       run(dir, [], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
+        output = stdout;
         assert.equal(files.length, 17);
         done();
       });
+    });
+
+    it('should provide debug instructions', function () {
+      assert.ok(/\$ DEBUG=app-(?:[0-9\.]+):\* npm start/.test(output));
     });
 
     it('should have basic files', function () {
