@@ -83,7 +83,7 @@ describe('express(1)', function () {
         + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.12.2",\n'
         + '    "jade": "~1.9.2",\n'
-        + '    "morgan": "~1.5.1",\n'
+        + '    "morgan": "~1.5.3",\n'
         + '    "serve-favicon": "~2.2.0"\n'
         + '  }\n'
         + '}');
