@@ -53,13 +53,13 @@ This generator can also be further configured with the following command line fl
 
 [MIT](LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/express-generator.svg?style=flat
+[npm-image]: https://img.shields.io/npm/v/express-generator.svg
 [npm-url]: https://npmjs.org/package/express-generator
-[travis-image]: https://img.shields.io/travis/expressjs/generator/master.svg?label=linux&style=flat
+[travis-image]: https://img.shields.io/travis/expressjs/generator/master.svg?label=linux
 [travis-url]: https://travis-ci.org/expressjs/generator
-[appveyor-image]: https://img.shields.io/appveyor/ci/dougwilson/generator/master.svg?label=windows&style=flat
+[appveyor-image]: https://img.shields.io/appveyor/ci/dougwilson/generator/master.svg?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/dougwilson/generator
-[downloads-image]: https://img.shields.io/npm/dm/express-generator.svg?style=flat
+[downloads-image]: https://img.shields.io/npm/dm/express-generator.svg
 [downloads-url]: https://npmjs.org/package/express-generator
-[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg?style=flat
+[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg
 [gratipay-url]: https://gratipay.com/dougwilson/
