@@ -89,7 +89,7 @@ function createApplication(app_name, path) {
     console.log('   run the app:');
 
     if (launchedFromCmd()) {
-      console.log('     %s DEBUG=%s:* & npm start', prompt, app_name);
+      console.log('     %s SET DEBUG=%s:* && npm start', prompt, app_name);
     } else {
       console.log('     %s DEBUG=%s:* npm start', prompt, app_name);
     }
