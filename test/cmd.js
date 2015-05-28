@@ -26,6 +26,7 @@ describe('express(1)', function () {
   describe('(no args)', function () {
     var dir;
     var files;
+    var output;
 
     mocha.before(function (done) {
       createEnvironment(function (err, newDir) {
@@ -44,9 +45,14 @@ describe('express(1)', function () {
       run(dir, [], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
+        output = stdout;
         assert.equal(files.length, 17);
         done();
       });
+    });
+
+    it('should provide debug instructions', function () {
+      assert.ok(/DEBUG=app-(?:[0-9\.]+):\* (?:\& )?npm start/.test(output));
     });
 
     it('should have basic files', function () {
@@ -72,13 +78,13 @@ describe('express(1)', function () {
         + '    "start": "node ./bin/www"\n'
         + '  },\n'
         + '  "dependencies": {\n'
-        + '    "body-parser": "~1.12.0",\n'
-        + '    "cookie-parser": "~1.3.4",\n'
-        + '    "debug": "~2.1.1",\n'
-        + '    "express": "~4.12.2",\n'
+        + '    "body-parser": "~1.12.4",\n'
+        + '    "cookie-parser": "~1.3.5",\n'
+        + '    "debug": "~2.2.0",\n'
+        + '    "express": "~4.12.4",\n'
         + '    "jade": "~1.9.2",\n'
-        + '    "morgan": "~1.5.1",\n'
-        + '    "serve-favicon": "~2.2.0"\n'
+        + '    "morgan": "~1.5.3",\n'
+        + '    "serve-favicon": "~2.2.1"\n'
         + '  }\n'
         + '}');
     });
