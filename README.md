@@ -45,7 +45,7 @@ This generator can also be further configured with the following command line fl
     -e, --ejs           add ejs engine support (defaults to jade)
         --hbs           add handlebars engine support
     -H, --hogan         add hogan.js engine support
-    -c, --css <engine>  add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)
+    -c, --css <engine>  add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git           add .gitignore
     -f, --force         force on non-empty directory
 
