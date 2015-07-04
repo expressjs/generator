@@ -84,7 +84,7 @@ describe('express(1)', function () {
         + '    "express": "~4.13.0",\n'
         + '    "jade": "~1.9.2",\n'
         + '    "morgan": "~1.6.1",\n'
-        + '    "serve-favicon": "~2.2.1"\n'
+        + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
         + '}');
     });
