@@ -30,7 +30,7 @@ program
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass) (defaults to plain css)')
+  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv);
@@ -108,6 +108,7 @@ function createApplication(app_name, path) {
   var less = loadTemplate('css/style.less');
   var stylus = loadTemplate('css/style.styl');
   var compass = loadTemplate('css/style.scss');
+  var sass = loadTemplate('css/style.sass');
 
   mkdir(path, function(){
     mkdir(path + '/public');
@@ -123,6 +124,9 @@ function createApplication(app_name, path) {
           break;
         case 'compass':
           write(path + '/public/stylesheets/style.scss', compass);
+          break;
+        case 'sass':
+          write(path + '/public/stylesheets/style.sass', sass);
           break;
         default:
           write(path + '/public/stylesheets/style.css', css);
@@ -170,6 +174,9 @@ function createApplication(app_name, path) {
         break;
       case 'compass':
         app = app.replace('{css}', eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));');
+        break;
+      case 'sass':
+        app = app.replace('{css}', eol + 'app.use(require(\'node-sass-middleware\')({\n\tsrc: path.join(__dirname, \'public\'),\n\tdest: path.join(__dirname, \'public\'),\n\tindentedSyntax: true,\n\tsourceMap: true\n}));');
         break;
       default:
         app = app.replace('{css}', '');
@@ -220,6 +227,9 @@ function createApplication(app_name, path) {
         break;
       case 'stylus':
         pkg.dependencies['stylus'] = '0.42.3';
+        break;
+      case 'sass':
+        pkg.dependencies['node-sass-middleware'] = '0.8.0';
         break;
       default:
     }
