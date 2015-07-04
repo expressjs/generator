@@ -196,7 +196,7 @@ function createApplication(app_name, path) {
 
     switch (program.template) {
       case 'jade':
-        pkg.dependencies['jade'] = '~1.9.2';
+        pkg.dependencies['jade'] = '~1.11.0';
         break;
       case 'ejs':
         pkg.dependencies['ejs'] = '~2.3.1';
