@@ -100,9 +100,9 @@ function createApplication(app_name, path) {
   }
 
   // JavaScript
-  var app = program.static ? loadTemplate('js/app-static.js') : loadTemplate('js/app.js');
+  var app = loadTemplate('js/app.js');
   var www = loadTemplate('js/www');
-  var index = program.static ? loadTemplate('js/routes/index-static.js') : loadTemplate('js/routes/index.js');
+  var index = loadTemplate('js/routes/index.js');
   var users = loadTemplate('js/routes/users.js');
 
   // CSS
@@ -142,37 +142,50 @@ function createApplication(app_name, path) {
       complete();
     });
 
+    // Index route
+    if (!program.static) {
+      // set index route body
+      index = index.replace(
+        '{indexRouteBody}',
+        "res.render('index', { title: 'Express' });\n"
+      );
+    } else {
+      // set index route body
+      index = index.replace(
+        '{indexRouteBody}',
+        "res.sendfile('public/index.html');\n"
+      );
+    }
+
     mkdir(path + '/routes', function(){
       write(path + '/routes/index.js', index);
       write(path + '/routes/users.js', users);
       complete();
     });
 
-    if (!program.static) {
-      mkdir(path + '/views', function(){
-        switch (program.template) {
-          case 'ejs':
-            copy_template('ejs/index.ejs', path + '/views/index.ejs');
-            copy_template('ejs/error.ejs', path + '/views/error.ejs');
-            break;
-          case 'jade':
-            copy_template('jade/index.jade', path + '/views/index.jade');
-            copy_template('jade/layout.jade', path + '/views/layout.jade');
-            copy_template('jade/error.jade', path + '/views/error.jade');
-            break;
-          case 'hjs':
-            copy_template('hogan/index.hjs', path + '/views/index.hjs');
-            copy_template('hogan/error.hjs', path + '/views/error.hjs');
-            break;
-          case 'hbs':
-            copy_template('hbs/index.hbs', path + '/views/index.hbs');
-            copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
-            copy_template('hbs/error.hbs', path + '/views/error.hbs');
-            break;
-        }
-        complete();
-      });
-    }
+    mkdir(path + '/views', function(){
+      switch (program.template) {
+        case 'ejs':
+          copy_template('ejs/index.ejs', path + '/views/index.ejs');
+          copy_template('ejs/error.ejs', path + '/views/error.ejs');
+          break;
+        case 'jade':
+          copy_template('jade/index.jade', path + '/views/index.jade');
+          copy_template('jade/layout.jade', path + '/views/layout.jade');
+          copy_template('jade/error.jade', path + '/views/error.jade');
+          break;
+        case 'hjs':
+          copy_template('hogan/index.hjs', path + '/views/index.hjs');
+          copy_template('hogan/error.hjs', path + '/views/error.hjs');
+          break;
+        case 'hbs':
+          copy_template('hbs/index.hbs', path + '/views/index.hbs');
+          copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
+          copy_template('hbs/error.hbs', path + '/views/error.hbs');
+          break;
+      }
+      complete();
+    });
 
     // CSS Engine support
     switch (program.css) {
@@ -340,8 +353,10 @@ function main() {
   // Template engine
   program.template = 'jade';
   if (program.ejs) program.template = 'ejs';
+  if (program.static) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
