@@ -143,17 +143,17 @@ function createApplication(app_name, path) {
     });
 
     // Index route
-    if (!program.static) {
+    if (program.static) {
       // set index route body
       index = index.replace(
         '{indexRouteBody}',
-        "res.render('index', { title: 'Express' });\n"
+        "res.sendfile('public/index.html');\n"
       );
     } else {
       // set index route body
       index = index.replace(
         '{indexRouteBody}',
-        "res.sendfile('public/index.html');\n"
+        "res.render('index', { title: 'Express' });\n"
       );
     }
 
