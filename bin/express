@@ -27,6 +27,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
+  .option('--es6', 'add es6 support (defaults to es5)')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
@@ -98,10 +99,10 @@ function createApplication(app_name, path) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js');
-  var www = loadTemplate('js/www');
-  var index = loadTemplate('js/routes/index.js');
-  var users = loadTemplate('js/routes/users.js');
+  var app = program.es6 ? loadTemplate('es6/app.js') : loadTemplate('js/app.js');
+  var www = program.es6 ? loadTemplate('es6/www') : loadTemplate('js/www');
+  var index = program.es6 ? loadTemplate('es6/routes/index.js') : loadTemplate('js/routes/index.js');
+  var users = program.es6 ? loadTemplate('es6/routes/users.js') : loadTemplate('js/routes/users.js');
 
   // CSS
   var css = loadTemplate('css/style.css');
@@ -199,6 +200,16 @@ function createApplication(app_name, path) {
           'morgan': '~1.6.1',
           'serve-favicon': '~2.3.0'
       }
+    }
+
+    if (program.es6) {
+      pkg.babel = { "presets": ["es2015"] };
+      
+      // sort dependencies like npm(1)
+      pkg.devDependencies = sortedObject({
+          "babel-core": "^6.1.2",
+          "babel-preset-es2015": "^6.1.2"
+        });
     }
 
     switch (program.template) {
