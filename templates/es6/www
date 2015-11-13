@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Entrypoint to application for es6 support
+ * Entrypoint to application for ES6 support.
+ * Note: require("babel-core/register") will only transpile subsequent files from where it's called.
  */
- 
+
 require("babel-core/register");
 
 /**

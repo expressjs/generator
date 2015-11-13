@@ -50,7 +50,7 @@
     "templates/"
   ],
   "scripts": {
-    "test": "mocha --reporter spec --bail --check-leaks test/",
-    "test-ci": "mocha --reporter spec --check-leaks test/"
+    "test": "mocha --globals __core-js_shared__ --reporter spec --bail --check-leaks test/",
+    "test-ci": "mocha --globals __core-js_shared__ --reporter spec --check-leaks test/"
   }
 }

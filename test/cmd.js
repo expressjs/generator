@@ -1,5 +1,4 @@
 
-require("babel-core/register");
 var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -130,12 +129,13 @@ describe('express(1)', function () {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
+        var onlyTranspileEs6 = require("babel-core/register");
         done();
       });
     });
 
     mocha.after(function (done) {
-      this.timeout(30000);
+      this.timeout(60000);
       cleanup(dir, done);
     });
 
@@ -197,21 +197,21 @@ describe('express(1)', function () {
     });
 
     it('should have installable dependencies', function (done) {
-      this.timeout(120000);
+      this.timeout(240000);
       npmInstall(dir, done);
     });
 
     it('should export an express app from app.js', function () {
-      this.timeout(30000);
+      this.timeout(60000);
       var file = path.resolve(dir, 'app.js');
-      var app = require(file).default;
+      var app = require(file);
       assert.equal(typeof app, 'function');
       assert.equal(typeof app.handle, 'function');
     });
 
     it('should respond to HTTP request', function (done) {
       var file = path.resolve(dir, 'app.js');
-      var app = require(file).default;
+      var app = require(file);
       request(app)
       .get('/')
       .expect(200, /<title>Express<\/title>/, done);
@@ -219,7 +219,7 @@ describe('express(1)', function () {
 
     it('should generate a 404', function (done) {
       var file = path.resolve(dir, 'app.js');
-      var app = require(file).default;
+      var app = require(file);
       request(app)
       .get('/does_not_exist')
       .expect(404, /<h1>Not Found<\/h1>/, done);
