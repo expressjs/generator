@@ -27,7 +27,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-t, --template <engine>', 'add stylesheet <engine> support (jade|ejs|hbs|hogan) (defaults to jade)')
+  .option('-t, --template <engine>', 'add templating <engine> support (jade|ejs|hbs|hogan) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
