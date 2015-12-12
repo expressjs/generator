@@ -27,9 +27,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
-  .option('    --hbs', 'add handlebars engine support')
-  .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-t, --template <engine>', 'add stylesheet <engine> support (jade|ejs|hbs|hogan) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -327,11 +325,7 @@ function main() {
   // App name
   var appName = path.basename(path.resolve(destinationPath));
 
-  // Template engine
-  program.template = 'jade';
-  if (program.ejs) program.template = 'ejs';
-  if (program.hogan) program.template = 'hjs';
-  if (program.hbs) program.template = 'hbs';
+  program.template = program.template || 'jade';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {

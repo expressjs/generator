@@ -120,7 +120,7 @@ describe('express(1)', function () {
     });
   });
 
-  describe('--ejs', function () {
+  describe('--template ejs', function () {
     var dir;
     var files;
 
@@ -138,7 +138,7 @@ describe('express(1)', function () {
     });
 
     it('should create basic app with ejs templates', function (done) {
-      run(dir, ['--ejs'], function (err, stdout) {
+      run(dir, ['--template', 'ejs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         assert.equal(files.length, 16, 'should have 16 files');
@@ -260,7 +260,7 @@ describe('express(1)', function () {
     });
   });
 
-  describe('--hbs', function () {
+  describe('--template hbs', function () {
     var dir;
     var files;
 
@@ -278,7 +278,7 @@ describe('express(1)', function () {
     });
 
     it('should create basic app with hbs templates', function (done) {
-      run(dir, ['--hbs'], function (err, stdout) {
+      run(dir, ['--template', 'hbs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         assert.equal(files.length, 17);
