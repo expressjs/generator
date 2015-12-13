@@ -120,6 +120,75 @@ describe('express(1)', function () {
     });
   });
 
+  describe('--css <engine>', function () {
+    describe('less', function () {
+      var dir;
+      var files;
+
+      mocha.before(function (done) {
+        createEnvironment(function (err, newDir) {
+          if (err) return done(err);
+          dir = newDir;
+          done();
+        });
+      });
+
+      mocha.after(function (done) {
+        this.timeout(30000);
+        cleanup(dir, done);
+      });
+
+      it('should create basic app with less files', function (done) {
+        run(dir, ['--css', 'less'], function (err, stdout) {
+          if (err) return done(err);
+          files = parseCreatedFiles(stdout, dir);
+          assert.equal(files.length, 17, 'should have 17 files');
+          done();
+        });
+      });
+
+      it('should have basic files', function () {
+        assert.notEqual(files.indexOf('bin/www'), -1, 'should have bin/www file');
+        assert.notEqual(files.indexOf('app.js'), -1, 'should have app.js file');
+        assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
+      });
+
+      it('should have less files', function () {
+        assert.notEqual(files.indexOf('public/stylesheets/style.less'), -1, 'should have style.less file');
+      });
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000);
+        npmInstall(dir, done);
+      });
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+        assert.equal(typeof app, 'function');
+        assert.equal(typeof app.handle, 'function');
+      });
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done);
+      });
+
+      it('should respond with stylesheet', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/stylesheets/style.css')
+        .expect(200, /sans-serif/, done);
+      });
+    });
+  });
+
   describe('--ejs', function () {
     var dir;
     var files;
