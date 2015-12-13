@@ -6,6 +6,7 @@ var mocha = require('mocha');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
+var async = require('async');
 var spawn = require('child_process').spawn;
 
 var binPath = path.resolve(__dirname, '../bin/express');
@@ -294,13 +295,20 @@ describe('express(1)', function () {
     });
 
     it('should print usage', function (done) {
-      run(dir, ['--help'], function (err, stdout) {
-        if (err) return done(err);
-        var files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 0);
-        assert.ok(/Usage: express/.test(stdout));
-        assert.ok(/--help/.test(stdout));
-        assert.ok(/--version/.test(stdout));
+      async.eachSeries(['-h', '--help'], function(helpCommand, taskDone) {
+        run(dir, [helpCommand], function (err, stdout) {
+          if (err) return done(err);
+
+          var files = parseCreatedFiles(stdout, dir);
+          assert.equal(files.length, 0);
+          assert.ok(/Usage: express/.test(stdout));
+          assert.ok(/--help/.test(stdout));
+          assert.ok(/--version/.test(stdout));
+
+          taskDone();
+        });
+      }, function(err) {
+        if (err) throw err;
         done();
       });
     });
