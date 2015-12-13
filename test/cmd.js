@@ -378,8 +378,8 @@ describe('express(1)', function () {
       var app = require(file);
 
       request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done);
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
 
