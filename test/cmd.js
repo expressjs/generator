@@ -6,7 +6,6 @@ var mocha = require('mocha');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
-var async = require('async');
 var spawn = require('child_process').spawn;
 
 var binPath = path.resolve(__dirname, '../bin/express');
