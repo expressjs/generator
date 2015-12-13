@@ -1,3 +1,4 @@
+
 var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -165,7 +166,7 @@ describe('express(1)', function () {
       assert.ok(typeof dependencies['less-middleware'] === 'string');
     });
   });
-
+  
   describe('--ejs', function () {
     var dir;
     var files;
@@ -296,44 +297,11 @@ describe('express(1)', function () {
     it('should print usage', function (done) {
       run(dir, ['-h'], function (err, stdout) {
         if (err) return done(err);
-
         var files = parseCreatedFiles(stdout, dir);
         assert.equal(files.length, 0);
         assert.ok(/Usage: express/.test(stdout));
         assert.ok(/--help/.test(stdout));
         assert.ok(/--version/.test(stdout));
-
-        done();
-      });
-    });
-  });
-
-  describe('--help', function () {
-    var dir;
-
-    mocha.before(function (done) {
-      createEnvironment(function (err, newDir) {
-        if (err) return done(err);
-        dir = newDir;
-        done();
-      });
-    });
-
-    mocha.after(function (done) {
-      this.timeout(30000);
-      cleanup(dir, done);
-    });
-
-    it('should print usage', function (done) {
-      run(dir, ['--help'], function (err, stdout) {
-        if (err) return done(err);
-
-        var files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 0);
-        assert.ok(/Usage: express/.test(stdout));
-        assert.ok(/--help/.test(stdout));
-        assert.ok(/--version/.test(stdout));
-
         done();
       });
     });
@@ -410,8 +378,37 @@ describe('express(1)', function () {
       var app = require(file);
 
       request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done);
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
+
+  describe('--help', function () {
+    var dir;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should print usage', function (done) {
+      run(dir, ['--help'], function (err, stdout) {
+        if (err) return done(err);
+        var files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 0);
+        assert.ok(/Usage: express/.test(stdout));
+        assert.ok(/--help/.test(stdout));
+        assert.ok(/--version/.test(stdout));
+        done();
+      });
     });
   });
 });
