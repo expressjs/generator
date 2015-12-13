@@ -1,4 +1,3 @@
-
 var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
@@ -120,6 +119,53 @@ describe('express(1)', function () {
     });
   });
 
+  describe('--css less', function () {
+    var dir;
+    var files;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should create basic app with less files', function (done) {
+      run(dir, ['--css', 'less'], function (err, stdout) {
+        if (err) return done(err);
+        files = parseCreatedFiles(stdout, dir);
+        assert.notEqual(files.indexOf('public/stylesheets/style.less'), -1, 'should have style file');
+        done();
+      });
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(files.indexOf('bin/www'), -1, 'should have bin/www file');
+      assert.notEqual(files.indexOf('app.js'), -1, 'should have app.js file');
+      assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
+    });
+
+    it('should replace css tag with right engine', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = fs.readFileSync(file, 'utf8');
+      assert.notEqual(app.indexOf('app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));'), -1);
+      done();
+    });
+
+    it('should have less in package dependencies', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      var dependencies = JSON.parse(contents).dependencies;
+      assert.ok(typeof dependencies['less-middleware'] === 'string');
+    });
+  });
+
   describe('--ejs', function () {
     var dir;
     var files;
@@ -231,7 +277,7 @@ describe('express(1)', function () {
     });
   });
 
-  describe('-h', function () {
+  describe('--help', function () {
     var dir;
 
     mocha.before(function (done) {
@@ -248,7 +294,7 @@ describe('express(1)', function () {
     });
 
     it('should print usage', function (done) {
-      run(dir, ['-h'], function (err, stdout) {
+      run(dir, ['--help'], function (err, stdout) {
         if (err) return done(err);
         var files = parseCreatedFiles(stdout, dir);
         assert.equal(files.length, 0);
@@ -259,7 +305,7 @@ describe('express(1)', function () {
       });
     });
   });
-
+  
   describe('--hbs', function () {
     var dir;
     var files;
@@ -333,35 +379,6 @@ describe('express(1)', function () {
       request(app)
       .get('/does_not_exist')
       .expect(404, /<h1>Not Found<\/h1>/, done);
-    });
-  });
-
-  describe('--help', function () {
-    var dir;
-
-    mocha.before(function (done) {
-      createEnvironment(function (err, newDir) {
-        if (err) return done(err);
-        dir = newDir;
-        done();
-      });
-    });
-
-    mocha.after(function (done) {
-      this.timeout(30000);
-      cleanup(dir, done);
-    });
-
-    it('should print usage', function (done) {
-      run(dir, ['--help'], function (err, stdout) {
-        if (err) return done(err);
-        var files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 0);
-        assert.ok(/Usage: express/.test(stdout));
-        assert.ok(/--help/.test(stdout));
-        assert.ok(/--version/.test(stdout));
-        done();
-      });
     });
   });
 });
