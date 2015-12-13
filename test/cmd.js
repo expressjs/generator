@@ -151,7 +151,7 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
     });
 
-    it('should replace css tag with right engine', function (done) {
+    it('should replace css tag with less engine', function (done) {
       var file = path.resolve(dir, 'app.js');
       var app = fs.readFileSync(file, 'utf8');
       assert.notEqual(app.indexOf('app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));'), -1);
@@ -305,7 +305,7 @@ describe('express(1)', function () {
       });
     });
   });
-  
+
   describe('--hbs', function () {
     var dir;
     var files;
