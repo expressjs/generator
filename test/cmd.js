@@ -277,37 +277,6 @@ describe('express(1)', function () {
     });
   });
 
-  describe('--help', function () {
-    var dir;
-
-    mocha.before(function (done) {
-      createEnvironment(function (err, newDir) {
-        if (err) return done(err);
-        dir = newDir;
-        done();
-      });
-    });
-
-    mocha.after(function (done) {
-      this.timeout(30000);
-      cleanup(dir, done);
-    });
-
-    it('should print usage', function (done) {
-      run(dir, ['--help'], function (err, stdout) {
-        if (err) return done(err);
-
-        var files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 0);
-        assert.ok(/Usage: express/.test(stdout));
-        assert.ok(/--help/.test(stdout));
-        assert.ok(/--version/.test(stdout));
-
-        done();
-      });
-    });
-  });
-
   describe('-h', function () {
     var dir;
 
@@ -326,6 +295,37 @@ describe('express(1)', function () {
 
     it('should print usage', function (done) {
       run(dir, ['-h'], function (err, stdout) {
+        if (err) return done(err);
+
+        var files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 0);
+        assert.ok(/Usage: express/.test(stdout));
+        assert.ok(/--help/.test(stdout));
+        assert.ok(/--version/.test(stdout));
+
+        done();
+      });
+    });
+  });
+
+  describe('--help', function () {
+    var dir;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should print usage', function (done) {
+      run(dir, ['--help'], function (err, stdout) {
         if (err) return done(err);
 
         var files = parseCreatedFiles(stdout, dir);
