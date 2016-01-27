@@ -161,9 +161,9 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
         case 'twig':
-          copy_template('twig/index.html.twig', path + '/views/index.html.twig');
-          copy_template('twig/layout.html.twig', path + '/views/layout.html.twig');
-          copy_template('twig/error.html.twig', path + '/views/error.html.twig');
+          copy_template('twig/index.twig', path + '/views/index.twig');
+          copy_template('twig/layout.twig', path + '/views/layout.twig');
+          copy_template('twig/error.twig', path + '/views/error.twig');
           break;
       }
       complete();
