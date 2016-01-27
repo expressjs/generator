@@ -335,6 +335,82 @@ describe('express(1)', function () {
       .expect(404, /<h1>Not Found<\/h1>/, done);
     });
   });
+  
+  describe('--twig', function () {
+    var dir;
+    var files;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should create basic app with twig templates', function (done) {
+      run(dir, ['--twig'], function (err, stdout) {
+        if (err) return done(err);
+        files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 17);
+        done();
+      });
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(files.indexOf('bin/www'), -1);
+      assert.notEqual(files.indexOf('app.js'), -1);
+      assert.notEqual(files.indexOf('package.json'), -1);
+    });
+
+    it('should have twig in package dependencies', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      var dependencies = JSON.parse(contents).dependencies;
+      assert.ok(typeof dependencies.twig === 'string');
+    });
+
+    it('should have twig templates', function () {
+      assert.notEqual(files.indexOf('views/error.twig'), -1);
+      assert.notEqual(files.indexOf('views/index.twig'), -1);
+      assert.notEqual(files.indexOf('views/layout.twig'), -1);
+    });
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(30000);
+      npmInstall(dir, done);
+    });
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+      assert.equal(typeof app, 'function');
+      assert.equal(typeof app.handle, 'function');
+    });
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
 
   describe('--help', function () {
     var dir;
