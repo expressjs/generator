@@ -281,7 +281,7 @@ describe('express(1)', function () {
       run(dir, ['--hbs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 20, 'should have 20 files');
+        assert.equal(files.length, 17, 'should have 17 files');
         done();
       });
     });
