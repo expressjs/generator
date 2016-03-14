@@ -530,6 +530,60 @@ describe('express(1)', function () {
       })
     })
 
+    describe('dust', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with dust templates', function (done) {
+        run(ctx.dir, ['--view', 'dust'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16, 'should have 16 files')
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+        assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+        assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+      })
+
+      it('should have dust templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.dust'), -1, 'should have views/error.dust file')
+        assert.notEqual(ctx.files.indexOf('views/index.dust'), -1, 'should have views/index.dust file')
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+        assert.equal(typeof app, 'function')
+        assert.equal(typeof app.handle, 'function')
+      })
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
+    })
+
     describe('ejs', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
 
