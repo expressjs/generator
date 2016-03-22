@@ -238,7 +238,7 @@ function createApplication(app_name, path) {
     pkg.dependencies = sortedObject(pkg.dependencies);
 
     // write files
-    write(path + '/package.json', JSON.stringify(pkg, null, 2));
+    write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n');
     write(path + '/app.js', app);
     mkdir(path + '/bin', function(){
       www = www.replace('{name}', app_name);
