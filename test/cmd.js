@@ -86,7 +86,7 @@ describe('express(1)', function () {
         + '    "morgan": "~1.7.0",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
-        + '}');
+        + '}\n');
     });
 
     it('should have installable dependencies', function (done) {
