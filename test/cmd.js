@@ -61,10 +61,10 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('package.json'), -1);
     });
 
-    it('should have jade templates', function () {
-      assert.notEqual(files.indexOf('views/error.jade'), -1);
-      assert.notEqual(files.indexOf('views/index.jade'), -1);
-      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    it('should have pug templates', function () {
+      assert.notEqual(files.indexOf('views/error.pug'), -1);
+      assert.notEqual(files.indexOf('views/index.pug'), -1);
+      assert.notEqual(files.indexOf('views/layout.pug'), -1);
     });
 
     it('should have a package.json file', function () {
@@ -82,8 +82,8 @@ describe('express(1)', function () {
         + '    "cookie-parser": "~1.3.5",\n'
         + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.13.1",\n'
-        + '    "jade": "~1.11.0",\n'
         + '    "morgan": "~1.6.1",\n'
+        + '    "pug": "~2.0.0-alpha1",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
         + '}');
@@ -224,10 +224,10 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('.gitignore'), -1, 'should have .gitignore file');
     });
 
-    it('should have jade templates', function () {
-      assert.notEqual(files.indexOf('views/error.jade'), -1);
-      assert.notEqual(files.indexOf('views/index.jade'), -1);
-      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    it('should have pug templates', function () {
+      assert.notEqual(files.indexOf('views/error.pug'), -1);
+      assert.notEqual(files.indexOf('views/index.pug'), -1);
+      assert.notEqual(files.indexOf('views/layout.pug'), -1);
     });
   });
 

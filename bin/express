@@ -27,7 +27,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
+  .option('-e, --ejs', 'add ejs engine support (defaults to pug)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
@@ -146,10 +146,10 @@ function createApplication(app_name, path) {
           copy_template('ejs/index.ejs', path + '/views/index.ejs');
           copy_template('ejs/error.ejs', path + '/views/error.ejs');
           break;
-        case 'jade':
-          copy_template('jade/index.jade', path + '/views/index.jade');
-          copy_template('jade/layout.jade', path + '/views/layout.jade');
-          copy_template('jade/error.jade', path + '/views/error.jade');
+        case 'pug':
+          copy_template('pug/index.pug', path + '/views/index.pug');
+          copy_template('pug/layout.pug', path + '/views/layout.pug');
+          copy_template('pug/error.pug', path + '/views/error.pug');
           break;
         case 'hjs':
           copy_template('hogan/index.hjs', path + '/views/index.hjs');
@@ -202,8 +202,8 @@ function createApplication(app_name, path) {
     }
 
     switch (program.template) {
-      case 'jade':
-        pkg.dependencies['jade'] = '~1.11.0';
+      case 'pug':
+        pkg.dependencies['pug'] = '~2.0.0-alpha1';
         break;
       case 'ejs':
         pkg.dependencies['ejs'] = '~2.3.3';
@@ -328,7 +328,7 @@ function main() {
   var appName = path.basename(path.resolve(destinationPath));
 
   // Template engine
-  program.template = 'jade';
+  program.template = 'pug';
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
