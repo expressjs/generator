@@ -27,6 +27,7 @@
   "dependencies": {
     "commander": "2.7.1",
     "mkdirp": "0.5.1",
+    "pug": "^2.0.0-alpha3",
     "sorted-object": "1.0.0"
   },
   "main": "bin/express",
