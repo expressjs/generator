@@ -3,6 +3,6 @@ node_js:
   - "0.10"
   - "0.12"
   - "1.8"
-  - "2.3"
+  - "2.5"
 sudo: false
 script: "npm run-script test-ci"
