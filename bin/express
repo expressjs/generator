@@ -196,7 +196,7 @@ function createApplication(app_name, path) {
           'body-parser': '~1.15.0',
           'cookie-parser': '~1.4.1',
           'debug': '~2.2.0',
-          'morgan': '~1.6.1',
+          'morgan': '~1.7.0',
           'serve-favicon': '~2.3.0'
       }
     }
