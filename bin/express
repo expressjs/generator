@@ -101,6 +101,7 @@ function createApplication(app_name, path) {
   // JavaScript
   var baseJsDir = program.es6 ? 'es6/' : 'js/';
   var app = loadTemplate(baseJsDir + 'app.js');
+  var server = loadTemplate(baseJsDir + 'server.js');
   var www = loadTemplate(baseJsDir + 'www');
   var index = loadTemplate(baseJsDir + 'routes/index.js');
   var users = loadTemplate(baseJsDir + 'routes/users.js');
@@ -252,8 +253,9 @@ function createApplication(app_name, path) {
     // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
     write(path + '/app.js', app);
+    server = server.replace('{name}', app_name);
+    write(path + '/server.js', server);
     mkdir(path + '/bin', function(){
-      www = www.replace('{name}', app_name);
       write(path + '/bin/www', www, 0755);
       complete();
     });

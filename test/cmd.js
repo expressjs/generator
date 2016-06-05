@@ -46,7 +46,7 @@ describe('express(1)', function () {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         output = stdout;
-        assert.equal(files.length, 17);
+        assert.equal(files.length, 18);
         done();
       });
     });
@@ -129,7 +129,7 @@ describe('express(1)', function () {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
-        var onlyTranspileEs6 = require("babel-core/register");
+        var onlyTranspileEs6 = require('babel-core/register');
         done();
       });
     });
@@ -144,7 +144,7 @@ describe('express(1)', function () {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         output = stdout;
-        assert.equal(files.length, 17);
+        assert.equal(files.length, 18);
         done();
       });
     });
@@ -247,7 +247,7 @@ describe('express(1)', function () {
       run(dir, ['--ejs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 16, 'should have 16 files');
+        assert.equal(files.length, 17, 'should have 17 files');
         done();
       });
     });
@@ -315,7 +315,7 @@ describe('express(1)', function () {
       run(dir, ['--git'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 18, 'should have 18 files');
+        assert.equal(files.length, 19, 'should have 19 files');
         done();
       });
     });
@@ -387,7 +387,7 @@ describe('express(1)', function () {
       run(dir, ['--hbs'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
-        assert.equal(files.length, 17);
+        assert.equal(files.length, 18);
         done();
       });
     });
