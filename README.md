@@ -42,7 +42,7 @@ This generator can also be further configured with the following command line fl
 
     -h, --help          output usage information
     -V, --version       output the version number
-    --es6               add ES6 support (defaults to ES5)
+    --es2015            add ECMAScript® 2015 (ES6) support (defaults to ES5)
     -e, --ejs           add ejs engine support (defaults to jade)
         --hbs           add handlebars engine support
     -H, --hogan         add hogan.js engine support

@@ -120,7 +120,7 @@ describe('express(1)', function () {
     });
   });
 
-  describe('--es6', function() {
+  describe('--es2015', function() {
     var dir;
     var files;
     var output;
@@ -129,7 +129,7 @@ describe('express(1)', function () {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
-        var onlyTranspileEs6 = require('babel-core/register');
+        var onlyTranspileEs2015 = require('babel-core/register');
         done();
       });
     });
@@ -140,7 +140,7 @@ describe('express(1)', function () {
     });
 
     it('should create basic app', function (done) {
-      run(dir, ['--es6'], function (err, stdout) {
+      run(dir, ['--es2015'], function (err, stdout) {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         output = stdout;

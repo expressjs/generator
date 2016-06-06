@@ -27,7 +27,7 @@ before(program, 'outputHelp', function () {
 program
   .version(version)
   .usage('[options] [dir]')
-  .option('--es6', 'add ES6 support (defaults to ES5)')
+  .option('--es2015', 'add ECMAScript® 2015 (ES6) support (defaults to ES5)')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
@@ -99,15 +99,15 @@ function createApplication(app_name, path) {
   }
 
   // JavaScript
-  var baseJsDir = program.es6 ? 'es6/' : 'js/';
+  var baseJsDir = program.es2015 ? 'es2015/' : 'js/';
   var app = loadTemplate(baseJsDir + 'app.js');
   var server = loadTemplate(baseJsDir + 'server.js');
   var www = loadTemplate(baseJsDir + 'www');
   var index = loadTemplate(baseJsDir + 'routes/index.js');
   var users = loadTemplate(baseJsDir + 'routes/users.js');
 
-  // ES6
-  var babelrc = program.es6 ? loadTemplate(baseJsDir + '.babelrc') : undefined;
+  // ES2015
+  var babelrc = program.es2015 ? loadTemplate(baseJsDir + '.babelrc') : undefined;
 
   // CSS
   var css = loadTemplate('css/style.css');
@@ -207,7 +207,7 @@ function createApplication(app_name, path) {
       }
     }
 
-    if (program.es6) {
+    if (program.es2015) {
       // sort dependencies like npm(1)
       pkg.devDependencies = sortedObject({
           "babel-core": "^6.1.2",
@@ -253,7 +253,7 @@ function createApplication(app_name, path) {
 
     // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
-    if (program.es6) {
+    if (program.es2015) {
       write(path + '/.babelrc', babelrc);
     }
     write(path + '/app.js', app);
