@@ -106,6 +106,9 @@ function createApplication(app_name, path) {
   var index = loadTemplate(baseJsDir + 'routes/index.js');
   var users = loadTemplate(baseJsDir + 'routes/users.js');
 
+  // ES6
+  var babelrc = program.es6 ? loadTemplate(baseJsDir + '.babelrc') : undefined;
+
   // CSS
   var css = loadTemplate('css/style.css');
   var less = loadTemplate('css/style.less');
@@ -205,8 +208,6 @@ function createApplication(app_name, path) {
     }
 
     if (program.es6) {
-      pkg.babel = { "presets": ["es2015"] };
-
       // sort dependencies like npm(1)
       pkg.devDependencies = sortedObject({
           "babel-core": "^6.1.2",
@@ -252,6 +253,9 @@ function createApplication(app_name, path) {
 
     // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2));
+    if (program.es6) {
+      write(path + '/.babelrc', babelrc);
+    }
     write(path + '/app.js', app);
     server = server.replace('{name}', app_name);
     write(path + '/server.js', server);

@@ -144,7 +144,7 @@ describe('express(1)', function () {
         if (err) return done(err);
         files = parseCreatedFiles(stdout, dir);
         output = stdout;
-        assert.equal(files.length, 18);
+        assert.equal(files.length, 19);
         done();
       });
     });
@@ -183,11 +183,6 @@ describe('express(1)', function () {
         + '    "jade": "~1.11.0",\n'
         + '    "morgan": "~1.6.1",\n'
         + '    "serve-favicon": "~2.3.0"\n'
-        + '  },\n'
-        + '  "babel": {\n'
-        + '    "presets": [\n'
-        + '      "es2015"\n'
-        + '    ]\n'
         + '  },\n'
         + '  "devDependencies": {\n'
         + '    "babel-core": "^6.1.2",\n'
