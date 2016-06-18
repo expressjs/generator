@@ -226,7 +226,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['node-compass'] = '0.2.3';
         break;
       case 'stylus':
-        pkg.dependencies['stylus'] = '0.42.3';
+        pkg.dependencies['stylus'] = '0.52.4';
         break;
       case 'sass':
         pkg.dependencies['node-sass-middleware'] = '0.8.0';
