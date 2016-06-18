@@ -388,7 +388,16 @@ function createEnvironment(callback) {
 }
 
 function npmInstall(dir, callback) {
-  exec('npm install', {cwd: dir}, function (err, stderr) {
+  var env = Object.create(null)
+
+  // copy the environment except for "undefined" strings
+  for (var key in process.env) {
+    if (process.env[key] !== 'undefined') {
+      env[key] = process.env[key]
+    }
+  }
+
+  exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
     if (err) {
       err.message += stderr;
       callback(err);
