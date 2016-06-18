@@ -193,7 +193,7 @@ function createApplication(app_name, path) {
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
           'express': '~4.13.4',
-          'body-parser': '~1.15.0',
+          'body-parser': '~1.15.1',
           'cookie-parser': '~1.4.1',
           'debug': '~2.2.0',
           'morgan': '~1.7.0',
