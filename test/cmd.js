@@ -120,6 +120,50 @@ describe('express(1)', function () {
     });
   });
 
+  describe('(unknown args)', function () {
+    var dir;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should exit with code 1', function (done) {
+      runRaw(dir, ['--foo'], function (err, code, stdout, stderr) {
+        if (err) return done(err);
+        assert.strictEqual(code, 1);
+        done();
+      });
+    });
+
+    it('should print usage', function (done) {
+      runRaw(dir, ['--foo'], function (err, code, stdout, stderr) {
+        if (err) return done(err);
+        assert.ok(/Usage: express/.test(stdout));
+        assert.ok(/--help/.test(stdout));
+        assert.ok(/--version/.test(stdout));
+        assert.ok(/error: unknown option/.test(stderr));
+        done();
+      });
+    });
+
+    it('should print unknown option', function (done) {
+      runRaw(dir, ['--foo'], function (err, code, stdout, stderr) {
+        if (err) return done(err);
+        assert.ok(/error: unknown option/.test(stderr));
+        done();
+      });
+    });
+  });
+
   describe('--css <engine>', function () {
     describe('less', function () {
       var dir;
@@ -567,6 +611,25 @@ function parseCreatedFiles(output, dir) {
 }
 
 function run(dir, args, callback) {
+  runRaw(dir, args, function (err, code, stdout, stderr) {
+    if (err) {
+      return callback(err);
+    }
+
+    process.stderr.write(stderr);
+
+    try {
+      assert.equal(stderr, '');
+      assert.strictEqual(code, 0);
+    } catch (e) {
+      return callback(e);
+    }
+
+    callback(null, stdout.replace(/\x1b\[(\d+)m/g, '_color_$1_'));
+  });
+}
+
+function runRaw(dir, args, callback) {
   var argv = [binPath].concat(args);
   var exec = process.argv[0];
   var stderr = '';
@@ -582,7 +645,6 @@ function run(dir, args, callback) {
   });
   child.stderr.setEncoding('utf8');
   child.stderr.on('data', function ondata(str) {
-    process.stderr.write(str);
     stderr += str;
   });
 
@@ -590,15 +652,6 @@ function run(dir, args, callback) {
   child.on('error', callback);
 
   function onclose(code) {
-    var err = null;
-
-    try {
-      assert.equal(stderr, '');
-      assert.strictEqual(code, 0);
-    } catch (e) {
-      err = e;
-    }
-
-    callback(err, stdout.replace(/\x1b\[(\d+)m/g, '_color_$1_'));
+    callback(null, code, stdout, stderr);
   }
 }

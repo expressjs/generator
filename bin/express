@@ -21,8 +21,19 @@ process.exit = exit
 // CLI
 
 before(program, 'outputHelp', function () {
-  this.allowUnknownOption();
+  // track if help was shown for unknown option
+  this._helpShown = true
 });
+
+before(program, 'unknownOption', function () {
+  // allow unknown options if help was shown, to prevent trailing error
+  this._allowUnknownOption = this._helpShown
+
+  // show help if not yet shown
+  if (!this._helpShown) {
+    program.outputHelp()
+  }
+})
 
 program
   .version(version, '    --version')
