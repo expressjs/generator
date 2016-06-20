@@ -41,7 +41,7 @@ $ npm start
 This generator can also be further configured with the following command line flags.
 
     -h, --help          output usage information
-    -V, --version       output the version number
+        --version       output the version number
     -e, --ejs           add ejs engine support (defaults to jade)
         --hbs           add handlebars engine support
     -H, --hogan         add hogan.js engine support

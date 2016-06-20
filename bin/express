@@ -25,7 +25,7 @@ before(program, 'outputHelp', function () {
 });
 
 program
-  .version(version)
+  .version(version, '    --version')
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
