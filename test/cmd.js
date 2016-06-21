@@ -3,7 +3,6 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var mkdirp = require('mkdirp');
-var mocha = require('mocha');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
@@ -13,12 +12,12 @@ var binPath = path.resolve(__dirname, '../bin/express');
 var tempDir = path.resolve(__dirname, '../temp');
 
 describe('express(1)', function () {
-  mocha.before(function (done) {
+  before(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
 
-  mocha.after(function (done) {
+  after(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
@@ -28,7 +27,7 @@ describe('express(1)', function () {
     var files;
     var output;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -36,7 +35,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -123,7 +122,7 @@ describe('express(1)', function () {
   describe('(unknown args)', function () {
     var dir;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -131,7 +130,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -168,7 +167,7 @@ describe('express(1)', function () {
     describe('(no engine)', function () {
       var dir;
 
-      mocha.before(function (done) {
+      before(function (done) {
         createEnvironment(function (err, newDir) {
           if (err) return done(err);
           dir = newDir;
@@ -176,7 +175,7 @@ describe('express(1)', function () {
         });
       });
 
-      mocha.after(function (done) {
+      after(function (done) {
         this.timeout(30000);
         cleanup(dir, done);
       });
@@ -212,7 +211,7 @@ describe('express(1)', function () {
       var dir;
       var files;
 
-      mocha.before(function (done) {
+      before(function (done) {
         createEnvironment(function (err, newDir) {
           if (err) return done(err);
           dir = newDir;
@@ -220,7 +219,7 @@ describe('express(1)', function () {
         });
       });
 
-      mocha.after(function (done) {
+      after(function (done) {
         this.timeout(30000);
         cleanup(dir, done);
       });
@@ -279,7 +278,7 @@ describe('express(1)', function () {
       var dir;
       var files;
 
-      mocha.before(function (done) {
+      before(function (done) {
         createEnvironment(function (err, newDir) {
           if (err) return done(err);
           dir = newDir;
@@ -287,7 +286,7 @@ describe('express(1)', function () {
         });
       });
 
-      mocha.after(function (done) {
+      after(function (done) {
         this.timeout(30000);
         cleanup(dir, done);
       });
@@ -347,7 +346,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -355,7 +354,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -415,7 +414,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -423,7 +422,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -457,7 +456,7 @@ describe('express(1)', function () {
   describe('-h', function () {
     var dir;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -465,7 +464,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -487,7 +486,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -495,7 +494,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -562,7 +561,7 @@ describe('express(1)', function () {
   describe('--help', function () {
     var dir;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -570,7 +569,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
