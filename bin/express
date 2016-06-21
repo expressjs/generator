@@ -20,6 +20,12 @@ process.exit = exit
 
 // CLI
 
+around(program, 'optionMissingArgument', function (fn, args) {
+  program.outputHelp()
+  fn.apply(this, args)
+  return { args: [], unknown: [] }
+})
+
 before(program, 'outputHelp', function () {
   // track if help was shown for unknown option
   this._helpShown = true
@@ -48,6 +54,20 @@ program
 
 if (!exit.exited) {
   main();
+}
+
+/**
+ * Install an around function; AOP.
+ */
+
+function around(obj, method, fn) {
+  var old = obj[method]
+
+  obj[method] = function () {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) args[i] = arguments[i]
+    return fn.call(this, old, args)
+  }
 }
 
 /**
