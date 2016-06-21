@@ -165,6 +165,49 @@ describe('express(1)', function () {
   });
 
   describe('--css <engine>', function () {
+    describe('(no engine)', function () {
+      var dir;
+
+      mocha.before(function (done) {
+        createEnvironment(function (err, newDir) {
+          if (err) return done(err);
+          dir = newDir;
+          done();
+        });
+      });
+
+      mocha.after(function (done) {
+        this.timeout(30000);
+        cleanup(dir, done);
+      });
+
+      it('should exit with code 1', function (done) {
+        runRaw(dir, ['--css'], function (err, code, stdout, stderr) {
+          if (err) return done(err);
+          assert.strictEqual(code, 1);
+          done();
+        });
+      });
+
+      it('should print usage', function (done) {
+        runRaw(dir, ['--css'], function (err, code, stdout) {
+          if (err) return done(err);
+          assert.ok(/Usage: express/.test(stdout));
+          assert.ok(/--help/.test(stdout));
+          assert.ok(/--version/.test(stdout));
+          done();
+        });
+      });
+
+      it('should print argument missing', function (done) {
+        runRaw(dir, ['--css'], function (err, code, stdout, stderr) {
+          if (err) return done(err);
+          assert.ok(/error: option .* argument missing/.test(stderr));
+          done();
+        });
+      });
+    });
+
     describe('less', function () {
       var dir;
       var files;
