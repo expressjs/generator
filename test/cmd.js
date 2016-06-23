@@ -30,7 +30,7 @@ describe('express(1)', function () {
         if (err) return done(err);
         ctx.files = parseCreatedFiles(stdout, ctx.dir)
         ctx.output = stdout
-        assert.equal(ctx.files.length, 17)
+        assert.equal(ctx.files.length, 18);
         done();
       });
     });
@@ -98,6 +98,107 @@ describe('express(1)', function () {
       var file = path.resolve(ctx.dir, 'app.js');
       var app = require(file);
 
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
+
+  describe('--es2015', function() {
+    var dir;
+    var files;
+    var output;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        var onlyTranspileEs2015 = require('babel-core/register');
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(60000);
+      cleanup(dir, done);
+    });
+
+    it('should create basic app', function (done) {
+      run(dir, ['--es2015'], function (err, stdout) {
+        if (err) return done(err);
+        files = parseCreatedFiles(stdout, dir);
+        output = stdout;
+        assert.equal(files.length, 19);
+        done();
+      });
+    });
+
+    it('should provide debug instructions', function () {
+      assert.ok(/DEBUG=app-(?:[0-9\.]+):\* (?:\& )?npm start/.test(output));
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(files.indexOf('bin/www'), -1);
+      assert.notEqual(files.indexOf('app.js'), -1);
+      assert.notEqual(files.indexOf('package.json'), -1);
+    });
+
+    it('should have jade templates', function () {
+      assert.notEqual(files.indexOf('views/error.jade'), -1);
+      assert.notEqual(files.indexOf('views/index.jade'), -1);
+      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    });
+
+    it('should have a package.json file', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      assert.equal(contents, '{\n'
+        + '  "name": ' + JSON.stringify(path.basename(dir)) + ',\n'
+        + '  "version": "0.0.0",\n'
+        + '  "private": true,\n'
+        + '  "scripts": {\n'
+        + '    "start": "node ./bin/www"\n'
+        + '  },\n'
+        + '  "dependencies": {\n'
+        + '    "body-parser": "~1.13.2",\n'
+        + '    "cookie-parser": "~1.3.5",\n'
+        + '    "debug": "~2.2.0",\n'
+        + '    "express": "~4.13.1",\n'
+        + '    "jade": "~1.11.0",\n'
+        + '    "morgan": "~1.6.1",\n'
+        + '    "serve-favicon": "~2.3.0"\n'
+        + '  },\n'
+        + '  "devDependencies": {\n'
+        + '    "babel-core": "^6.1.2",\n'
+        + '    "babel-preset-es2015": "^6.1.2"\n'
+        + '  }\n'
+        + '}');
+    });
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(240000);
+      npmInstall(dir, done);
+    });
+
+    it('should export an express app from app.js', function () {
+      this.timeout(60000);
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+      assert.equal(typeof app, 'function');
+      assert.equal(typeof app.handle, 'function');
+    });
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
       request(app)
       .get('/does_not_exist')
       .expect(404, /<h1>Not Found<\/h1>/, done);
@@ -280,7 +381,7 @@ describe('express(1)', function () {
       run(ctx.dir, ['--ejs'], function (err, stdout) {
         if (err) return done(err);
         ctx.files = parseCreatedFiles(stdout, ctx.dir)
-        assert.equal(ctx.files.length, 16, 'should have 16 files')
+        assert.equal(files.length, 17, 'should have 17 files');
         done();
       });
     });
@@ -334,7 +435,7 @@ describe('express(1)', function () {
       run(ctx.dir, ['--git'], function (err, stdout) {
         if (err) return done(err);
         ctx.files = parseCreatedFiles(stdout, ctx.dir)
-        assert.equal(ctx.files.length, 18, 'should have 18 files')
+        assert.equal(files.length, 19, 'should have 19 files');
         done();
       });
     });
@@ -379,7 +480,7 @@ describe('express(1)', function () {
       run(ctx.dir, ['--hbs'], function (err, stdout) {
         if (err) return done(err);
         ctx.files = parseCreatedFiles(stdout, ctx.dir);
-        assert.equal(ctx.files.length, 17);
+        assert.equal(files.length, 18);
         done();
       });
     });

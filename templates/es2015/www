@@ -1,0 +1,9 @@
+#!/usr/bin/env node
+
+/**
+ * Entrypoint to application for ES2015 support.
+ * Using `require('babel-core/register')` will transpile all subsequent files
+ */
+
+require('babel-core/register');
+require('../server');
