@@ -68,6 +68,7 @@ describe('express(1)', function () {
         + '    "express": "~4.14.0",\n'
         + '    "jade": "~1.11.0",\n'
         + '    "morgan": "~1.7.0",\n'
+        + '    "pug": "~2.0.0-beta3",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
         + '}\n');
@@ -513,6 +514,61 @@ describe('express(1)', function () {
       .expect(404, /<h1>Not Found<\/h1>/, done)
     })
   })
+
+  describe('--pug', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app with pug templates', function (done) {
+      run(ctx.dir, ['--pug'], function (err, stdout) {
+        if (err) return done(err);
+        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 17, 'should have 16 files')
+        done();
+      });
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+      assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+      assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+    });
+
+    it('should have pug templates', function () {
+      assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1, 'should have views/layout.pug file')
+      assert.notEqual(ctx.files.indexOf('views/error.pug'), -1, 'should have views/error.pug file')
+      assert.notEqual(ctx.files.indexOf('views/index.pug'), -1, 'should have views/index.pug file')
+    });
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(30000);
+      npmInstall(ctx.dir, done);
+    });
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(ctx.dir, 'app.js');
+      var app = require(file);
+      assert.equal(typeof app, 'function');
+      assert.equal(typeof app.handle, 'function');
+    });
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
 });
 
 function cleanup(dir, callback) {
