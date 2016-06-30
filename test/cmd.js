@@ -78,15 +78,15 @@ describe('express(1)', function () {
         + '    "start": "node ./bin/www"\n'
         + '  },\n'
         + '  "dependencies": {\n'
-        + '    "body-parser": "~1.13.2",\n'
-        + '    "cookie-parser": "~1.3.5",\n'
+        + '    "body-parser": "~1.15.1",\n'
+        + '    "cookie-parser": "~1.4.3",\n'
         + '    "debug": "~2.2.0",\n'
-        + '    "express": "~4.13.1",\n'
+        + '    "express": "~4.13.4",\n'
         + '    "jade": "~1.11.0",\n'
-        + '    "morgan": "~1.6.1",\n'
+        + '    "morgan": "~1.7.0",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
-        + '}');
+        + '}\n');
     });
 
     it('should have installable dependencies', function (done) {
@@ -117,6 +117,142 @@ describe('express(1)', function () {
       request(app)
       .get('/does_not_exist')
       .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
+
+  describe('--css <engine>', function () {
+    describe('less', function () {
+      var dir;
+      var files;
+
+      mocha.before(function (done) {
+        createEnvironment(function (err, newDir) {
+          if (err) return done(err);
+          dir = newDir;
+          done();
+        });
+      });
+
+      mocha.after(function (done) {
+        this.timeout(30000);
+        cleanup(dir, done);
+      });
+
+      it('should create basic app with less files', function (done) {
+        run(dir, ['--css', 'less'], function (err, stdout) {
+          if (err) return done(err);
+          files = parseCreatedFiles(stdout, dir);
+          assert.equal(files.length, 17, 'should have 17 files');
+          done();
+        });
+      });
+
+      it('should have basic files', function () {
+        assert.notEqual(files.indexOf('bin/www'), -1, 'should have bin/www file');
+        assert.notEqual(files.indexOf('app.js'), -1, 'should have app.js file');
+        assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
+      });
+
+      it('should have less files', function () {
+        assert.notEqual(files.indexOf('public/stylesheets/style.less'), -1, 'should have style.less file');
+      });
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000);
+        npmInstall(dir, done);
+      });
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+        assert.equal(typeof app, 'function');
+        assert.equal(typeof app.handle, 'function');
+      });
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done);
+      });
+
+      it('should respond with stylesheet', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/stylesheets/style.css')
+        .expect(200, /sans-serif/, done);
+      });
+    });
+
+    describe('stylus', function () {
+      var dir;
+      var files;
+
+      mocha.before(function (done) {
+        createEnvironment(function (err, newDir) {
+          if (err) return done(err);
+          dir = newDir;
+          done();
+        });
+      });
+
+      mocha.after(function (done) {
+        this.timeout(30000);
+        cleanup(dir, done);
+      });
+
+      it('should create basic app with stylus files', function (done) {
+        run(dir, ['--css', 'stylus'], function (err, stdout) {
+          if (err) return done(err);
+          files = parseCreatedFiles(stdout, dir);
+          assert.equal(files.length, 17, 'should have 17 files');
+          done();
+        });
+      });
+
+      it('should have basic files', function () {
+        assert.notEqual(files.indexOf('bin/www'), -1, 'should have bin/www file');
+        assert.notEqual(files.indexOf('app.js'), -1, 'should have app.js file');
+        assert.notEqual(files.indexOf('package.json'), -1, 'should have package.json file');
+      });
+
+      it('should have stylus files', function () {
+        assert.notEqual(files.indexOf('public/stylesheets/style.styl'), -1, 'should have style.styl file');
+      });
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000);
+        npmInstall(dir, done);
+      });
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+        assert.equal(typeof app, 'function');
+        assert.equal(typeof app.handle, 'function');
+      });
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done);
+      });
+
+      it('should respond with stylesheet', function (done) {
+        var file = path.resolve(dir, 'app.js');
+        var app = require(file);
+
+        request(app)
+        .get('/stylesheets/style.css')
+        .expect(200, /sans-serif/, done);
+      });
     });
   });
 
@@ -388,7 +524,16 @@ function createEnvironment(callback) {
 }
 
 function npmInstall(dir, callback) {
-  exec('npm install', {cwd: dir}, function (err, stderr) {
+  var env = Object.create(null)
+
+  // copy the environment except for "undefined" strings
+  for (var key in process.env) {
+    if (process.env[key] !== 'undefined') {
+      env[key] = process.env[key]
+    }
+  }
+
+  exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
     if (err) {
       err.message += stderr;
       callback(err);

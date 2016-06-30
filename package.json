@@ -1,7 +1,7 @@
 {
   "name": "express-generator",
   "description": "Express' application generator",
-  "version": "4.13.1",
+  "version": "4.13.4",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Aaron Heckmann <aaron.heckmann+github@gmail.com>",
@@ -27,7 +27,7 @@
   "dependencies": {
     "commander": "2.7.1",
     "mkdirp": "0.5.1",
-    "sorted-object": "1.0.0"
+    "sorted-object": "2.0.0"
   },
   "main": "bin/express",
   "preferGlobal": true,
@@ -35,9 +35,9 @@
     "express": "./bin/express"
   },
   "devDependencies": {
-    "mocha": "2.2.5",
-    "rimraf": "~2.2.8",
-    "supertest": "1.0.1"
+    "mocha": "2.4.5",
+    "rimraf": "2.5.2",
+    "supertest": "1.2.0"
   },
   "engines": {
     "node": ">= 0.10"
