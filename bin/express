@@ -20,14 +20,32 @@ process.exit = exit
 
 // CLI
 
+around(program, 'optionMissingArgument', function (fn, args) {
+  program.outputHelp()
+  fn.apply(this, args)
+  return { args: [], unknown: [] }
+})
+
 before(program, 'outputHelp', function () {
-  this.allowUnknownOption();
+  // track if help was shown for unknown option
+  this._helpShown = true
 });
 
+before(program, 'unknownOption', function () {
+  // allow unknown options if help was shown, to prevent trailing error
+  this._allowUnknownOption = this._helpShown
+
+  // show help if not yet shown
+  if (!this._helpShown) {
+    program.outputHelp()
+  }
+})
+
 program
-  .version(version)
+  .version(version, '    --version')
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
+  .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
@@ -37,6 +55,20 @@ program
 
 if (!exit.exited) {
   main();
+}
+
+/**
+ * Install an around function; AOP.
+ */
+
+function around(obj, method, fn) {
+  var old = obj[method]
+
+  obj[method] = function () {
+    var args = new Array(arguments.length)
+    for (var i = 0; i < args.length; i++) args[i] = arguments[i]
+    return fn.call(this, old, args)
+  }
 }
 
 /**
@@ -160,6 +192,11 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
+        case 'pug':
+          copy_template('pug/index.pug', path + '/views/index.pug');
+          copy_template('pug/layout.pug', path + '/views/layout.pug');
+          copy_template('pug/error.pug', path + '/views/error.pug');
+          break;
       }
       complete();
     });
@@ -192,7 +229,7 @@ function createApplication(app_name, path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '~4.13.4',
+          'express': '~4.14.0',
           'body-parser': '~1.15.1',
           'cookie-parser': '~1.4.3',
           'debug': '~2.2.0',
@@ -214,6 +251,9 @@ function createApplication(app_name, path) {
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.0';
         break;
+      case 'pug':
+        pkg.dependencies['pug'] = '~2.0.0-beta3';
+        break;
       default:
     }
 
@@ -229,7 +269,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['stylus'] = '0.54.5';
         break;
       case 'sass':
-        pkg.dependencies['node-sass-middleware'] = '0.8.0';
+        pkg.dependencies['node-sass-middleware'] = '0.9.8';
         break;
       default:
     }
@@ -332,6 +372,7 @@ function main() {
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+  if (program.pug) program.template = 'pug';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
