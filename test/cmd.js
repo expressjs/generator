@@ -295,36 +295,6 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
       assert.notEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
     });
-
-    it('should have installable dependencies', function (done) {
-      this.timeout(30000);
-      npmInstall(ctx.dir, done);
-    });
-
-    it('should export an express app from app.js', function () {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-      assert.equal(typeof app, 'function');
-      assert.equal(typeof app.handle, 'function');
-    });
-
-    it('should respond to HTTP request', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-
-      request(app)
-      .get('/')
-      .expect(200, /<title>Express<\/title>/, done);
-    });
-
-    it('should generate a 404', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-
-      request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done);
-    });
   });
 
   describe('--git', function () {
@@ -402,36 +372,6 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('views/index.hbs'), -1)
       assert.notEqual(ctx.files.indexOf('views/layout.hbs'), -1)
     });
-
-    it('should have installable dependencies', function (done) {
-      this.timeout(30000);
-      npmInstall(ctx.dir, done);
-    });
-
-    it('should export an express app from app.js', function () {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-      assert.equal(typeof app, 'function');
-      assert.equal(typeof app.handle, 'function');
-    });
-
-    it('should respond to HTTP request', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-
-      request(app)
-      .get('/')
-      .expect(200, /<title>Express<\/title>/, done);
-    });
-
-    it('should generate a 404', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js');
-      var app = require(file);
-
-      request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done);
-    });
   });
 
   describe('--help', function () {
@@ -479,39 +419,6 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('views/error.hjs'), -1)
       assert.notEqual(ctx.files.indexOf('views/index.hjs'), -1)
     })
-
-    it('should have installable dependencies', function (done) {
-      this.timeout(30000)
-      npmInstall(ctx.dir, done)
-    })
-
-    it('should export an express app from app.js', function () {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
-      assert.equal(typeof app, 'function')
-      assert.equal(typeof app.handle, 'function')
-    })
-
-    it('should respond to HTTP request', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
-
-      // the "hjs" module has a global leak
-      this.runnable().globals('renderPartials')
-
-      request(app)
-      .get('/')
-      .expect(200, /<title>Express<\/title>/, done)
-    })
-
-    it('should generate a 404', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
-
-      request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done)
-    })
   })
 
   describe('--pug', function () {
@@ -544,35 +451,279 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('views/index.pug'), -1)
       assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1)
     })
+  })
 
-    it('should have installable dependencies', function (done) {
-      this.timeout(30000)
-      npmInstall(ctx.dir, done)
+  describe('--view <engine>', function () {
+    describe('(no engine)', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should exit with code 1', function (done) {
+        runRaw(ctx.dir, ['--view'], function (err, code, stdout, stderr) {
+          if (err) return done(err)
+          assert.strictEqual(code, 1)
+          done()
+        })
+      })
+
+      it('should print usage', function (done) {
+        runRaw(ctx.dir, ['--view'], function (err, code, stdout) {
+          if (err) return done(err)
+          assert.ok(/Usage: express/.test(stdout))
+          assert.ok(/--help/.test(stdout))
+          assert.ok(/--version/.test(stdout))
+          done()
+        })
+      })
+
+      it('should print argument missing', function (done) {
+        runRaw(ctx.dir, ['--view'], function (err, code, stdout, stderr) {
+          if (err) return done(err)
+          assert.ok(/error: option .* argument missing/.test(stderr))
+          done()
+        })
+      })
     })
 
-    it('should export an express app from app.js', function () {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
-      assert.equal(typeof app, 'function')
-      assert.equal(typeof app.handle, 'function')
+    describe('ejs', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with ejs templates', function (done) {
+        run(ctx.dir, ['--view', 'ejs'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16, 'should have 16 files')
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+        assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+        assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+      })
+
+      it('should have ejs templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
+        assert.notEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+        assert.equal(typeof app, 'function')
+        assert.equal(typeof app.handle, 'function')
+      })
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
     })
 
-    it('should respond to HTTP request', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
+    describe('hbs', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
 
-      request(app)
-      .get('/')
-      .expect(200, /<title>Express<\/title>/, done)
+      it('should create basic app with hbs templates', function (done) {
+        run(ctx.dir, ['--view', 'hbs'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 17)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have hbs in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var dependencies = JSON.parse(contents).dependencies
+        assert.ok(typeof dependencies.hbs === 'string')
+      })
+
+      it('should have hbs templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.hbs'), -1)
+        assert.notEqual(ctx.files.indexOf('views/index.hbs'), -1)
+        assert.notEqual(ctx.files.indexOf('views/layout.hbs'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+        assert.equal(typeof app, 'function')
+        assert.equal(typeof app.handle, 'function')
+      })
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
     })
 
-    it('should generate a 404', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
+    describe('hjs', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
 
-      request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done)
+      it('should create basic app with hogan templates', function (done) {
+        run(ctx.dir, ['--view', 'hjs'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have hjs in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var dependencies = JSON.parse(contents).dependencies
+        assert.ok(typeof dependencies.hjs === 'string')
+      })
+
+      it('should have hjs templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.hjs'), -1)
+        assert.notEqual(ctx.files.indexOf('views/index.hjs'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+        assert.equal(typeof app, 'function')
+        assert.equal(typeof app.handle, 'function')
+      })
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        // the "hjs" module has a global leak
+        this.runnable().globals('renderPartials')
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
+    })
+
+    describe('pug', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with pug templates', function (done) {
+        run(ctx.dir, ['--view', 'pug'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 17)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have pug in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var dependencies = JSON.parse(contents).dependencies
+        assert.ok(typeof dependencies.pug === 'string')
+      })
+
+      it('should have pug templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.pug'), -1)
+        assert.notEqual(ctx.files.indexOf('views/index.pug'), -1)
+        assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.js', function () {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+        assert.equal(typeof app, 'function')
+        assert.equal(typeof app.handle, 'function')
+      })
+
+      it('should respond to HTTP request', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        var file = path.resolve(ctx.dir, 'app.js')
+        var app = require(file)
+
+        request(app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
     })
   })
 });
