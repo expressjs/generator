@@ -30,6 +30,7 @@ program
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-n, --nunjucks', 'add nunjucks engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -160,6 +161,11 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
+        case 'nunjucks':
+          copy_template('nunjucks/index.nunjucks', path + '/views/index.nunjucks');
+          copy_template('nunjucks/layout.nunjucks', path + '/views/layout.nunjucks');
+          copy_template('nunjucks/error.nunjucks', path + '/views/error.nunjucks');
+          break;
       }
       complete();
     });
@@ -184,6 +190,16 @@ function createApplication(app_name, path) {
 
     // Template support
     app = app.replace('{views}', program.template);
+
+    // nunjucks configuration
+    if (program.template === 'nunjucks') {
+      app = app.replace('{nunjucks_require}', 'var nunjucks = require(\'nunjucks\')');
+      app = app.replace('{nunjucks_configure}', 'nunjucks.configure(\'views\', {\n  autoescape: true,\n  express: app\n});');
+    }
+    else {
+      app = app.replace('\n{nunjucks_require}', '');
+      app = app.replace('\n\n{nunjucks_configure}', '');
+    }
 
     // package.json
     var pkg = {
@@ -213,6 +229,9 @@ function createApplication(app_name, path) {
         break;
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.0';
+        break;
+      case 'nunjucks':
+        pkg.dependencies['nunjucks'] = '~2.4.2';
         break;
       default:
     }
@@ -332,6 +351,7 @@ function main() {
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+  if (program.nunjucks) program.template = 'nunjucks';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
