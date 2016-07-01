@@ -44,10 +44,11 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
+  .option('-e, --ejs', 'add ejs engine support')
   .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-v, --view <engine>', 'add view <engine> support (ejs|hbs|hjs|jade) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -173,7 +174,7 @@ function createApplication(app_name, path) {
     });
 
     mkdir(path + '/views', function(){
-      switch (program.template) {
+      switch (program.view) {
         case 'ejs':
           copy_template('ejs/index.ejs', path + '/views/index.ejs');
           copy_template('ejs/error.ejs', path + '/views/error.ejs');
@@ -220,7 +221,7 @@ function createApplication(app_name, path) {
     }
 
     // Template support
-    app = app.replace('{views}', program.template);
+    app = app.replace('{views}', program.view);
 
     // package.json
     var pkg = {
@@ -238,7 +239,7 @@ function createApplication(app_name, path) {
       }
     }
 
-    switch (program.template) {
+    switch (program.view) {
       case 'jade':
         pkg.dependencies['jade'] = '~1.11.0';
         break;
@@ -367,12 +368,14 @@ function main() {
   // App name
   var appName = path.basename(path.resolve(destinationPath));
 
-  // Template engine
-  program.template = 'jade';
-  if (program.ejs) program.template = 'ejs';
-  if (program.hogan) program.template = 'hjs';
-  if (program.hbs) program.template = 'hbs';
-  if (program.pug) program.template = 'pug';
+  // View engine
+  if (program.view === undefined) {
+    program.view = 'jade'
+    if (program.ejs) program.view = 'ejs'
+    if (program.hbs) program.view = 'hbs'
+    if (program.hogan) program.view = 'hjs'
+    if (program.pug) program.view = 'pug'
+  }
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
