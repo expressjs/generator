@@ -231,7 +231,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['hbs'] = '~4.0.0';
         break;
       case 'nunjucks':
-        pkg.dependencies['nunjucks'] = '~2.3.0';
+        pkg.dependencies['nunjucks'] = '~2.4.2';
         break;
       default:
     }
