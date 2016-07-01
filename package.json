@@ -1,11 +1,12 @@
 {
   "name": "express-generator",
   "description": "Express' application generator",
-  "version": "4.2.0",
+  "version": "4.13.4",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Aaron Heckmann <aaron.heckmann+github@gmail.com>",
     "Ciaran Jessup <ciaranj@gmail.com>",
+    "Douglas Christopher Wilson <doug@somethingdoug.com>",
     "Guillermo Rauch <rauchg@gmail.com>",
     "Jonathan Ong <me@jongleberry.com>",
     "Roman Shtylman <shtylman+expressjs@gmail.com>"
@@ -24,8 +25,9 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "commander": "1.3.2",
-    "mkdirp": "0.3.5"
+    "commander": "2.7.1",
+    "mkdirp": "0.5.1",
+    "sorted-object": "2.0.0"
   },
   "main": "bin/express",
   "preferGlobal": true,
@@ -33,14 +35,12 @@
     "express": "./bin/express"
   },
   "devDependencies": {
-    "mkdirp": "~0.3.5",
-    "mocha": "~1.21.4",
-    "rimraf": "~2.2.8",
-    "should": "~4.0.4",
-    "supertest": "~0.13.0"
+    "mocha": "2.4.5",
+    "rimraf": "2.5.2",
+    "supertest": "1.2.0"
   },
   "engines": {
-    "node": ">= 0.8.0"
+    "node": ">= 0.10"
   },
   "files": [
     "LICENSE",
@@ -49,6 +49,6 @@
   ],
   "scripts": {
     "test": "mocha --reporter spec --bail --check-leaks test/",
-    "test-travis": "mocha --reporter spec --bail --check-leaks test/"
+    "test-ci": "mocha --reporter spec --check-leaks test/"
   }
 }
