@@ -9,7 +9,7 @@ var readline = require('readline');
 var sortedObject = require('sorted-object');
 
 var _exit = process.exit;
-var eol = os.EOL;
+var eol = os.EOL; // end-of-line code
 var pkg = require('../package.json');
 
 var version = pkg.version;
@@ -41,23 +41,6 @@ var destination_path = program.args.shift() || '.';
 
 var app_name = path.basename(path.resolve(destination_path));
 
-// end-of-line code
-
-var eol = os.EOL;
-
-// Template engine
-
-program.template = 'jade'; // Default template engine
-var templateEngineList = ['jade', 'hbs', 'hjs', 'ejs']; // List of supported engines
-if (program.view) {
-  if (templateEngineList.indexOf(program.view)>-1)  // Check if the input matching an entry in the list
-    program.template = program.view;
-  else {  // No matches, notify and exit
-    console.error('Only these template engines supported as a value to -v: ' + templateEngineList.join(', '));
-    exit(1);
-  }
-
-}
 
 if (!exit.exited) {
   main();
@@ -352,10 +335,17 @@ function main() {
   var appName = path.basename(path.resolve(destinationPath));
 
   // Template engine
-  program.template = 'jade';
-  if (program.ejs) program.template = 'ejs';
-  if (program.hogan) program.template = 'hjs';
-  if (program.hbs) program.template = 'hbs';
+  var templateEngineList = ['jade', 'hbs', 'hjs', 'ejs']; // List of supported engines
+  if (program.view) {
+    if (templateEngineList.indexOf(program.view)>-1) { // Check if the input matching an entry in the list
+      program.template = program.view;
+    } else {  // No matches, notify and exit
+      console.error('Only these template engines supported as a value to -v: ' + templateEngineList.join(', '));
+      exit(1);
+    }
+  } else {
+    program.template = 'jade'; // Default template engine
+  }
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
