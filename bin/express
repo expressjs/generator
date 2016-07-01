@@ -34,8 +34,15 @@ var eol = os.EOL;
 
 // Template engine
 
-program.template = 'jade';
-if (program.view && ['hbs', 'hjs', 'ejs'].indexOf(program.view)>-1) program.template = program.view;
+program.template = 'jade'; // Default template engine
+var templateEngineList = ['jade', 'hbs', 'hjs', 'ejs'];
+if (program.view) {
+  if (templateEngineList.indexOf(program.view)>-1)
+    program.template = program.view;
+  else
+    abort('Only these template engines supported as a value to -v: ' + templateEngineList.join(', '));
+}
+
 
 function load_template(name) {
   return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
