@@ -30,6 +30,7 @@ program
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-d, --dust', 'add dust.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -160,6 +161,10 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
+        case 'dust':
+          copy_template('dust/index.dust', path + '/views/index.dust');
+          copy_template('dust/error.dust', path + '/views/error.dust');
+          break;
       }
       complete();
     });
@@ -184,6 +189,16 @@ function createApplication(app_name, path) {
 
     // Template support
     app = app.replace('{views}', program.template);
+
+    // Conditionally add dust.js template code
+    if (program.template === 'dust') {
+      app = app.replace('{adaro}', eol + "var adaro = require('adaro');");
+      app = app.replace('{dust}', eol + "app.engine('dust', adaro.dust());");
+    }
+    else {
+      app = app.replace('{adaro}', '');
+      app = app.replace('{dust}', '');
+    }
 
     // package.json
     var pkg = {
@@ -213,6 +228,9 @@ function createApplication(app_name, path) {
         break;
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.0';
+        break;
+      case 'dust':
+        pkg.dependencies['adaro'] = '~1.0.4';
         break;
       default:
     }
@@ -332,6 +350,7 @@ function main() {
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+  if (program.dust) program.template = 'dust';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
