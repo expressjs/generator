@@ -30,6 +30,7 @@ program
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-t, --twig', 'add twig.js engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -160,6 +161,11 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
+        case 'twig':
+          copy_template('twig/index.twig', path + '/views/index.twig');
+          copy_template('twig/layout.twig', path + '/views/layout.twig');
+          copy_template('twig/error.twig', path + '/views/error.twig');
+          break;
       }
       complete();
     });
@@ -213,6 +219,9 @@ function createApplication(app_name, path) {
         break;
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.0';
+        break;
+      case 'twig':
+        pkg.dependencies['twig'] = '~0.8.7';
         break;
       default:
     }
@@ -332,6 +341,7 @@ function main() {
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+  if (program.twig) program.template = 'twig';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
