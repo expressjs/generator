@@ -45,6 +45,7 @@ This generator can also be further configured with the following command line fl
     --es2015            add ECMAScript® 2015 (ES6) support (defaults to ES5)
     -e, --ejs           add ejs engine support (defaults to jade)
         --hbs           add handlebars engine support
+        --pug           add pug engine support
     -H, --hogan         add hogan.js engine support
     -c, --css <engine>  add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git           add .gitignore
