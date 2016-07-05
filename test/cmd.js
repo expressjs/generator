@@ -18,7 +18,7 @@ describe('express(1)', function () {
   });
 
   after(function (done) {
-    this.timeout(60000);
+    this.timeout(120000);
     cleanup(done);
   });
 
@@ -160,7 +160,7 @@ describe('express(1)', function () {
     });
 
     it('should have installable dependencies', function (done) {
-      this.timeout(240000);
+      this.timeout(480000);
       npmInstall(ctx.dir, done);
     });
 
@@ -607,7 +607,7 @@ describe('express(1)', function () {
       run(ctx.dir, ['--pug'], function (err, stdout) {
         if (err) return done(err)
         ctx.files = parseCreatedFiles(stdout, ctx.dir)
-        assert.equal(ctx.files.length, 17)
+        assert.equal(ctx.files.length, 18)
         done()
       })
     })
@@ -632,7 +632,7 @@ describe('express(1)', function () {
     })
 
     it('should have installable dependencies', function (done) {
-      this.timeout(30000)
+      this.timeout(60000)
       npmInstall(ctx.dir, done)
     })
 

@@ -44,7 +44,7 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('--es2015', 'add ECMAScript® 2015 (ES6) support (defaults to ES5)')
+  .option('--es2015', 'add ECMAScript® 2015 (ES6) syntax support, using babel (defaults to ES5)')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')

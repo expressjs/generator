@@ -3,7 +3,7 @@
  */
 
 import app from './app';
-import {default as debugModule} from 'debug';
+import debugModule from 'debug';
 import http from 'http';
 
 /**
