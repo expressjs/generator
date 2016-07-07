@@ -1,0 +1,7 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    <h1>@model.message</h1>
+    <h2>@model.error.status</h2>
+    <pre>@model.error.stack</pre>
+  })
+})

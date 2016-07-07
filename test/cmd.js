@@ -78,10 +78,10 @@ describe('express(1)', function () {
         + '    "start": "node ./bin/www"\n'
         + '  },\n'
         + '  "dependencies": {\n'
-        + '    "body-parser": "~1.15.1",\n'
+        + '    "body-parser": "~1.15.2",\n'
         + '    "cookie-parser": "~1.4.3",\n'
         + '    "debug": "~2.2.0",\n'
-        + '    "express": "~4.13.4",\n'
+        + '    "express": "~4.14.0",\n'
         + '    "jade": "~1.11.0",\n'
         + '    "morgan": "~1.7.0",\n'
         + '    "serve-favicon": "~2.3.0"\n'
@@ -439,6 +439,82 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('views/error.hbs'), -1);
       assert.notEqual(files.indexOf('views/index.hbs'), -1);
       assert.notEqual(files.indexOf('views/layout.hbs'), -1);
+    });
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(30000);
+      npmInstall(dir, done);
+    });
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+      assert.equal(typeof app, 'function');
+      assert.equal(typeof app.handle, 'function');
+    });
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done);
+    });
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(dir, 'app.js');
+      var app = require(file);
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<h1>Not Found<\/h1>/, done);
+    });
+  });
+
+  describe('--vash', function () {
+    var dir;
+    var files;
+
+    mocha.before(function (done) {
+      createEnvironment(function (err, newDir) {
+        if (err) return done(err);
+        dir = newDir;
+        done();
+      });
+    });
+
+    mocha.after(function (done) {
+      this.timeout(30000);
+      cleanup(dir, done);
+    });
+
+    it('should create basic app with vash templates', function (done) {
+      run(dir, ['--vash'], function (err, stdout) {
+        if (err) return done(err);
+        files = parseCreatedFiles(stdout, dir);
+        assert.equal(files.length, 17);
+        done();
+      });
+    });
+
+    it('should have basic files', function () {
+      assert.notEqual(files.indexOf('bin/www'), -1);
+      assert.notEqual(files.indexOf('app.js'), -1);
+      assert.notEqual(files.indexOf('package.json'), -1);
+    });
+
+    it('should have vash in package dependencies', function () {
+      var file = path.resolve(dir, 'package.json');
+      var contents = fs.readFileSync(file, 'utf8');
+      var dependencies = JSON.parse(contents).dependencies;
+      assert.ok(typeof dependencies.vash === 'string');
+    });
+
+    it('should have vash templates', function () {
+      assert.notEqual(files.indexOf('views/error.vash'), -1);
+      assert.notEqual(files.indexOf('views/index.vash'), -1);
+      assert.notEqual(files.indexOf('views/layout.vash'), -1);
     });
 
     it('should have installable dependencies', function (done) {

@@ -30,6 +30,7 @@ program
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-v, --vash', 'add vash engine support')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -160,6 +161,11 @@ function createApplication(app_name, path) {
           copy_template('hbs/layout.hbs', path + '/views/layout.hbs');
           copy_template('hbs/error.hbs', path + '/views/error.hbs');
           break;
+        case 'vash':
+          copy_template('vash/index.vash', path + '/views/index.vash');
+          copy_template('vash/layout.vash', path + '/views/layout.vash');
+          copy_template('vash/error.vash', path + '/views/error.vash');
+          break;
       }
       complete();
     });
@@ -192,8 +198,8 @@ function createApplication(app_name, path) {
       , private: true
       , scripts: { start: 'node ./bin/www' }
       , dependencies: {
-          'express': '~4.13.4',
-          'body-parser': '~1.15.1',
+          'express': '~4.14.0',
+          'body-parser': '~1.15.2',
           'cookie-parser': '~1.4.3',
           'debug': '~2.2.0',
           'morgan': '~1.7.0',
@@ -214,6 +220,8 @@ function createApplication(app_name, path) {
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.0';
         break;
+      case 'vash':
+        pkg.dependencies['vash'] = '~0.12.1';
       default:
     }
 
@@ -332,6 +340,7 @@ function main() {
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
+  if (program.vash) program.template = 'vash';
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
