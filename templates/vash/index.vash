@@ -1,0 +1,6 @@
+@html.extend('layout', function(model) {
+  @html.block('content', function(model) {
+    <h1>@model.title</h1>
+    <p>Welcome to @model.title</p>
+  })
+})

@@ -48,7 +48,7 @@ program
   .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')
   .option('-H, --hogan', 'add hogan.js engine support')
-  .option('-v, --view <engine>', 'add view <engine> support (ejs|hbs|hjs|jade) (defaults to jade)')
+  .option('-v, --view <engine>', 'add view <engine> support (ejs|hbs|hjs|jade|vash) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -198,6 +198,11 @@ function createApplication(app_name, path) {
           copy_template('pug/layout.pug', path + '/views/layout.pug');
           copy_template('pug/error.pug', path + '/views/error.pug');
           break;
+        case 'vash':
+          copy_template('vash/index.vash', path + '/views/index.vash');
+          copy_template('vash/layout.vash', path + '/views/layout.vash');
+          copy_template('vash/error.vash', path + '/views/error.vash');
+          break;
       }
       complete();
     });
@@ -254,6 +259,9 @@ function createApplication(app_name, path) {
         break;
       case 'pug':
         pkg.dependencies['pug'] = '~2.0.0-beta3';
+        break;
+      case 'vash':
+        pkg.dependencies['vash'] = '~0.12.1';
         break;
       default:
     }
