@@ -42,7 +42,7 @@ This generator can also be further configured with the following command line fl
 
     -h, --help          output usage information
     -V, --version       output the version number
-    -e, --ejs           add ejs engine support (defaults to jade)
+    -e, --ejs           add ejs engine support (defaults to pug)
         --hbs           add handlebars engine support
     -H, --hogan         add hogan.js engine support
     -c, --css <engine>  add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
