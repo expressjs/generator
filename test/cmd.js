@@ -82,8 +82,8 @@ describe('express(1)', function () {
         + '    "cookie-parser": "~1.4.3",\n'
         + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.13.4",\n'
-        + '    "pug": "^2.0.0-beta4",\n'
         + '    "morgan": "~1.7.0",\n'
+        + '    "pug": "^2.0.0-beta4",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
         + '}\n');
