@@ -723,7 +723,7 @@ describe('express(1)', function () {
       });
     });
 
-    describe('--hogan', function () {
+    describe('hogan', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with hogan templates', function (done) {

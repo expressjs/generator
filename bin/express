@@ -44,7 +44,7 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('    --view <engine>', 'specify the default view <engine> (jade|ejs|pug|hbs|hogan) (defaults to jade)')
+  .option('    --view <engine>', 'specify the default view <engine> (jade|ejs|pug|hbs|hogan)')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')
@@ -391,8 +391,9 @@ function main() {
         program.template = 'hjs';
         break;
       case 'jade':
-      default:
         program.template = 'jade';
+        break;
+      default:
         break;
     }
   }
