@@ -13,12 +13,12 @@ var binPath = path.resolve(__dirname, '../bin/express');
 var tempDir = path.resolve(__dirname, '../temp');
 
 describe('express(1)', function () {
-  mocha.before(function (done) {
+  before(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
 
-  mocha.after(function (done) {
+  after(function (done) {
     this.timeout(30000);
     cleanup(done);
   });
@@ -28,7 +28,7 @@ describe('express(1)', function () {
     var files;
     var output;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -36,7 +36,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -61,10 +61,10 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('package.json'), -1);
     });
 
-    it('should have jade templates', function () {
-      assert.notEqual(files.indexOf('views/error.jade'), -1);
-      assert.notEqual(files.indexOf('views/index.jade'), -1);
-      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    it('should have pug templates', function () {
+      assert.notEqual(files.indexOf('views/error.pug'), -1);
+      assert.notEqual(files.indexOf('views/index.pug'), -1);
+      assert.notEqual(files.indexOf('views/layout.pug'), -1);
     });
 
     it('should have a package.json file', function () {
@@ -82,8 +82,8 @@ describe('express(1)', function () {
         + '    "cookie-parser": "~1.4.3",\n'
         + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.13.4",\n'
-        + '    "jade": "~1.11.0",\n'
         + '    "morgan": "~1.7.0",\n'
+        + '    "pug": "~2.0.0-beta6",\n'
         + '    "serve-favicon": "~2.3.0"\n'
         + '  }\n'
         + '}\n');
@@ -125,7 +125,7 @@ describe('express(1)', function () {
       var dir;
       var files;
 
-      mocha.before(function (done) {
+      before(function (done) {
         createEnvironment(function (err, newDir) {
           if (err) return done(err);
           dir = newDir;
@@ -133,7 +133,7 @@ describe('express(1)', function () {
         });
       });
 
-      mocha.after(function (done) {
+      after(function (done) {
         this.timeout(30000);
         cleanup(dir, done);
       });
@@ -192,7 +192,7 @@ describe('express(1)', function () {
       var dir;
       var files;
 
-      mocha.before(function (done) {
+      before(function (done) {
         createEnvironment(function (err, newDir) {
           if (err) return done(err);
           dir = newDir;
@@ -200,7 +200,7 @@ describe('express(1)', function () {
         });
       });
 
-      mocha.after(function (done) {
+      after(function (done) {
         this.timeout(30000);
         cleanup(dir, done);
       });
@@ -260,7 +260,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -268,7 +268,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -328,7 +328,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -336,7 +336,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -360,17 +360,17 @@ describe('express(1)', function () {
       assert.notEqual(files.indexOf('.gitignore'), -1, 'should have .gitignore file');
     });
 
-    it('should have jade templates', function () {
-      assert.notEqual(files.indexOf('views/error.jade'), -1);
-      assert.notEqual(files.indexOf('views/index.jade'), -1);
-      assert.notEqual(files.indexOf('views/layout.jade'), -1);
+    it('should have pug templates', function () {
+      assert.notEqual(files.indexOf('views/error.pug'), -1);
+      assert.notEqual(files.indexOf('views/index.pug'), -1);
+      assert.notEqual(files.indexOf('views/layout.pug'), -1);
     });
   });
 
   describe('-h', function () {
     var dir;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -378,7 +378,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -400,7 +400,7 @@ describe('express(1)', function () {
     var dir;
     var files;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -408,7 +408,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
@@ -475,7 +475,7 @@ describe('express(1)', function () {
   describe('--help', function () {
     var dir;
 
-    mocha.before(function (done) {
+    before(function (done) {
       createEnvironment(function (err, newDir) {
         if (err) return done(err);
         dir = newDir;
@@ -483,7 +483,7 @@ describe('express(1)', function () {
       });
     });
 
-    mocha.after(function (done) {
+    after(function (done) {
       this.timeout(30000);
       cleanup(dir, done);
     });
