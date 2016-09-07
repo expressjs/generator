@@ -147,9 +147,9 @@ function createApplication(app_name, path) {
           copy_template('ejs/error.ejs', path + '/views/error.ejs');
           break;
         case 'pug':
-          copy_template('pug/index.jade', path + '/views/index.pug');
-          copy_template('pug/layout.jade', path + '/views/layout.pug');
-          copy_template('pug/error.jade', path + '/views/error.pug');
+          copy_template('pug/index.pug', path + '/views/index.pug');
+          copy_template('pug/layout.pug', path + '/views/layout.pug');
+          copy_template('pug/error.pug', path + '/views/error.pug');
           break;
         case 'hjs':
           copy_template('hogan/index.hjs', path + '/views/index.hjs');
@@ -203,7 +203,7 @@ function createApplication(app_name, path) {
 
     switch (program.template) {
       case 'pug':
-        pkg.dependencies['pug'] = '~2.0.0';
+        pkg.dependencies['pug'] = '~2.0.0-beta6';
         break;
       case 'ejs':
         pkg.dependencies['ejs'] = '~2.4.1';
@@ -328,7 +328,7 @@ function main() {
   var appName = path.basename(path.resolve(destinationPath));
 
   // Template engine
-  program.template = 'jade';
+  program.template = 'pug';
   if (program.ejs) program.template = 'ejs';
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
