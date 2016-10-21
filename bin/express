@@ -44,6 +44,7 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
+  .option('    --view <engine>', 'specify the default view <engine> (jade|ejs|pug|hbs|hogan)')
   .option('-e, --ejs', 'add ejs engine support (defaults to jade)')
   .option('    --pug', 'add pug engine support')
   .option('    --hbs', 'add handlebars engine support')
@@ -373,6 +374,29 @@ function main() {
   if (program.hogan) program.template = 'hjs';
   if (program.hbs) program.template = 'hbs';
   if (program.pug) program.template = 'pug';
+
+  // View parameter for template engine
+  if(program.view) {
+    switch(program.view) {
+      case 'ejs':
+        program.template = 'ejs';
+        break;
+      case 'hbs':
+        program.template = 'hbs';
+        break;
+      case 'pug':
+        program.template = 'pug';
+        break;
+      case 'hogan':
+        program.template = 'hjs';
+        break;
+      case 'jade':
+        program.template = 'jade';
+        break;
+      default:
+        break;
+    }
+  }
 
   // Generate application
   emptyDirectory(destinationPath, function (empty) {

@@ -42,6 +42,7 @@ This generator can also be further configured with the following command line fl
 
     -h, --help          output usage information
         --version       output the version number
+        --view          specify the default view engine (jade|ejs|pug|hbs|hogan)
     -e, --ejs           add ejs engine support (defaults to jade)
         --hbs           add handlebars engine support
         --pug           add pug engine support
