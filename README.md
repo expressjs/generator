@@ -30,7 +30,7 @@ Install dependencies:
 $ npm install
 ```
 
-Rock and Roll
+Start your Express.js app at `http://localhost:3000/`:
 
 ```bash
 $ npm start
