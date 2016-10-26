@@ -269,7 +269,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['twig'] = '~0.9.5';
         break;
       case 'vash':
-        pkg.dependencies['vash'] = '~0.12.1';
+        pkg.dependencies['vash'] = '~0.12.2';
         break;
       default:
     }
