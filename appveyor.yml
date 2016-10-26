@@ -9,8 +9,12 @@ environment:
     - nodejs_version: "5.12"
     - nodejs_version: "6.9"
     - nodejs_version: "7.0"
+cache:
+  - node_modules
 install:
   - ps: Install-Product node $env:nodejs_version
+  - if exist node_modules npm prune
+  - if exist node_modules npm rebuild
   - npm install
 build: off
 test_script:
