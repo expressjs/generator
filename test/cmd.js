@@ -26,17 +26,22 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app', function (done) {
-      run(ctx.dir, [], function (err, stdout) {
+      runRaw(ctx.dir, [], function (err, code, stdout, stderr) {
         if (err) return done(err);
         ctx.files = parseCreatedFiles(stdout, ctx.dir)
-        ctx.output = stdout
+        ctx.stderr = stderr
+        ctx.stdout = stdout
         assert.equal(ctx.files.length, 17)
         done();
       });
     });
 
+    it('should print jade view warning', function () {
+      assert.equal(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+    })
+
     it('should provide debug instructions', function () {
-      assert.ok(/DEBUG=test-express\(1\)-\(no-args\)-(?:[0-9\.]+):\* (?:\& )?npm start/.test(ctx.output))
+      assert.ok(/DEBUG=test-express\(1\)-\(no-args\)-(?:[0-9\.]+):\* (?:\& )?npm start/.test(ctx.stdout))
     });
 
     it('should have basic files', function () {
@@ -912,16 +917,16 @@ function run(dir, args, callback) {
       return callback(err);
     }
 
-    process.stderr.write(stderr);
+    process.stderr.write(stripWarnings(stderr))
 
     try {
-      assert.equal(stderr, '');
+      assert.equal(stripWarnings(stderr), '')
       assert.strictEqual(code, 0);
     } catch (e) {
       return callback(e);
     }
 
-    callback(null, stdout.replace(/\x1b\[(\d+)m/g, '_color_$1_'));
+    callback(null, stripColors(stdout))
   });
 }
 
@@ -970,4 +975,12 @@ function setupTestEnvironment (title) {
   })
 
   return ctx
+}
+
+function stripColors (str) {
+  return str.replace(/\x1b\[(\d+)m/g, '_color_$1_')
+}
+
+function stripWarnings (str) {
+  return str.replace(/\n(?:  warning: [^\n]+\n)+\n/g, '')
 }

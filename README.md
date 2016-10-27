@@ -21,7 +21,7 @@ The quickest way to get started with express is to utilize the executable `expre
 Create the app:
 
 ```bash
-$ express /tmp/foo && cd /tmp/foo
+$ express --view=hbs /tmp/foo && cd /tmp/foo
 ```
 
 Install dependencies:
