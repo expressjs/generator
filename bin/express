@@ -386,11 +386,16 @@ function main() {
 
   // View engine
   if (program.view === undefined) {
-    program.view = 'jade'
     if (program.ejs) program.view = 'ejs'
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
     if (program.pug) program.view = 'pug'
+  }
+
+  // Default view engine
+  if (program.view === undefined) {
+    warning("the default view engine will not be jade in future releases\nuse `--view=jade' or `--help' for additional options")
+    program.view = 'jade'
   }
 
   // Generate application
@@ -409,6 +414,20 @@ function main() {
       });
     }
   });
+}
+
+/**
+ * Display a warning similar to how errors are displayed by commander.
+ *
+ * @param {String} message
+ */
+
+function warning(message) {
+  console.error()
+  message.split('\n').forEach(function (line) {
+    console.error('  warning: %s', line)
+  })
+  console.error()
 }
 
 /**
