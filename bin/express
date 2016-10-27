@@ -7,6 +7,7 @@ var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
 var sortedObject = require('sorted-object');
+var util = require('util');
 
 var _exit = process.exit;
 var eol = os.EOL;
@@ -44,10 +45,10 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support')
-  .option('    --pug', 'add pug engine support')
-  .option('    --hbs', 'add handlebars engine support')
-  .option('-H, --hogan', 'add hogan.js engine support')
+  .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
+  .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
+  .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
+  .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
@@ -414,6 +415,20 @@ function main() {
       });
     }
   });
+}
+
+/**
+ * Generate a callback function for commander to warn about renamed option.
+ *
+ * @param {String} originalName
+ * @param {String} newName
+ */
+
+function renamedOption(originalName, newName) {
+  return function (val) {
+    warning(util.format("option `%s' has been renamed to `%s'", originalName, newName))
+    return val
+  }
 }
 
 /**
