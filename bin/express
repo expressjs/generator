@@ -316,6 +316,18 @@ function copy_template(from, to) {
   from = path.join(__dirname, '..', 'templates', from);
   write(to, fs.readFileSync(from, 'utf-8'));
 }
+/**
+ * Create an app name from a directory path, fitting npm naming requirements.
+ *
+ * @param {String} pathName
+ */
+
+function createAppName(pathName) {
+  return path.basename(pathName)
+    .replace(/[^A-Za-z0-9\.()!~*'-]+/g, '-')
+    .replace(/^[-_\.]+|-+$/g, '')
+    .toLowerCase()
+}
 
 /**
  * Check if the given directory `path` is empty.
@@ -383,7 +395,7 @@ function main() {
   var destinationPath = program.args.shift() || '.';
 
   // App name
-  var appName = path.basename(path.resolve(destinationPath));
+  var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
   // View engine
   if (program.view === undefined) {
