@@ -7,9 +7,10 @@ var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
 var spawn = require('child_process').spawn;
+var validateNpmName = require('validate-npm-package-name')
 
 var binPath = path.resolve(__dirname, '../bin/express');
-var TEMP_DIR = path.resolve(__dirname, '../temp')
+var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
 
 describe('express(1)', function () {
   before(function (done) {
@@ -41,7 +42,7 @@ describe('express(1)', function () {
     })
 
     it('should provide debug instructions', function () {
-      assert.ok(/DEBUG=test-express\(1\)-\(no-args\)-(?:[0-9\.]+):\* (?:\& )?npm start/.test(ctx.stdout))
+      assert.ok(/DEBUG=express\(1\)-\(no-args\):\* (?:\& )?npm start/.test(ctx.stdout))
     });
 
     it('should have basic files', function () {
@@ -60,7 +61,7 @@ describe('express(1)', function () {
       var file = path.resolve(ctx.dir, 'package.json');
       var contents = fs.readFileSync(file, 'utf8');
       assert.equal(contents, '{\n'
-        + '  "name": ' + JSON.stringify(path.basename(ctx.dir)) + ',\n'
+        + '  "name": "express(1)-(no-args)",\n'
         + '  "version": "0.0.0",\n'
         + '  "private": true,\n'
         + '  "scripts": {\n'
@@ -107,6 +108,46 @@ describe('express(1)', function () {
       .get('/does_not_exist')
       .expect(404, /<h1>Not Found<\/h1>/, done);
     });
+
+    describe('when directory contains spaces', function () {
+      var ctx = setupTestEnvironment('foo bar (BAZ!)')
+
+      it('should create basic app', function (done) {
+        run(ctx.dir, [], function (err, output) {
+          if (err) return done(err)
+          assert.equal(parseCreatedFiles(output, ctx.dir).length, 17)
+          done()
+        })
+      })
+
+      it('should have a valid npm package name', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var name = JSON.parse(contents).name
+        assert.ok(validateNpmName(name).validForNewPackages)
+        assert.equal(name, 'foo-bar-(baz!)')
+      })
+    })
+
+    describe('when directory is not a valid name', function () {
+      var ctx = setupTestEnvironment('_')
+
+      it('should create basic app', function (done) {
+        run(ctx.dir, [], function (err, output) {
+          if (err) return done(err)
+          assert.equal(parseCreatedFiles(output, ctx.dir).length, 17)
+          done()
+        })
+      })
+
+      it('should default to name "hello-world"', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var name = JSON.parse(contents).name
+        assert.ok(validateNpmName(name).validForNewPackages)
+        assert.equal(name, 'hello-world')
+      })
+    })
   });
 
   describe('(unknown args)', function () {
@@ -863,7 +904,7 @@ function cleanup(dir, callback) {
     dir = TEMP_DIR;
   }
 
-  rimraf(TEMP_DIR, function (err) {
+  rimraf(dir, function (err) {
     callback(err);
   });
 }
@@ -957,16 +998,12 @@ function runRaw(dir, args, callback) {
   }
 }
 
-function setupTestEnvironment (title) {
+function setupTestEnvironment (name) {
   var ctx = {}
 
   before('create environment', function (done) {
-    var num = process.pid + Math.random()
-    var str = String(title).toLowerCase().replace(/[^0-9A-Za-z()_]+/g, '-')
-    var dir = path.join(TEMP_DIR, ('test-' + str + '-' + num))
-
-    ctx.dir = dir
-    mkdirp(dir, done)
+    ctx.dir = path.join(TEMP_DIR, name.replace(/[<>]/g, ''))
+    mkdirp(ctx.dir, done)
   })
 
   after('cleanup environment', function (done) {
