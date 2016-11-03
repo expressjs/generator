@@ -34,8 +34,6 @@ if(fs.existsSync(routesDir)) {
 			app.use('/'+nameRoute, require(routesDir + nameRoute));
 		}
 	}
-} else {
-	console.log('Error >>> This folder "'+routesDir+'" is not exists!');
 }
 
 // catch 404 and forward to error handler
