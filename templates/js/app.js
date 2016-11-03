@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var routesDir = './routes/';
-
+var registerLog = false;
 var app = express();
 
 // view engine setup
@@ -30,8 +30,10 @@ if(fs.existsSync(routesDir)) {
 	for (var i in dinamicRoutes) {
 		if(dinamicRoutes[i] != 'index.js') {
 			var nameRoute = dinamicRoutes[i].substr(0,dinamicRoutes[i].lastIndexOf('.'));
-			console.log('Route /'+nameRoute+' registered!');
 			app.use('/'+nameRoute, require(routesDir + nameRoute));
+			if(registerLog) {
+				console.log('Route /'+nameRoute+' registered!');
+			}
 		}
 	}
 }
