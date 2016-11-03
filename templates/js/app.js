@@ -7,8 +7,6 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var routesDir = './routes/';
 
-var index = require(routesDir + 'index');
-
 var app = express();
 
 // view engine setup
@@ -23,15 +21,21 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());{css}
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', index);
-// register dinamic routes in the routes folder.
-var dinamicRoutes = fs.readdirSync(routesDir);
-for (var i in dinamicRoutes) {
-	if(dinamicRoutes[i] != 'index.js') {
-		var nameRoute = dinamicRoutes[i].substr(0,dinamicRoutes[i].lastIndexOf('.'));
-		console.log('Route /'+nameRoute+' registered!');
-		app.use('/'+nameRoute, require(routesDir + nameRoute));
+if(fs.existsSync(routesDir)) {
+	var index = require(routesDir + 'index');
+	app.use('/', index);
+
+	// register dinamic routes in the routes folder.
+	var dinamicRoutes = fs.readdirSync(routesDir);
+	for (var i in dinamicRoutes) {
+		if(dinamicRoutes[i] != 'index.js') {
+			var nameRoute = dinamicRoutes[i].substr(0,dinamicRoutes[i].lastIndexOf('.'));
+			console.log('Route /'+nameRoute+' registered!');
+			app.use('/'+nameRoute, require(routesDir + nameRoute));
+		}
 	}
+} else {
+	console.log('Error >>> This folder "'+routesDir+'" is not exists!');
 }
 
 // catch 404 and forward to error handler
