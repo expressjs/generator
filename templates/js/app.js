@@ -4,9 +4,10 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var fs = require('fs');
+var routesDir = './routes/';
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+var index = require(routesDir + 'index');
 
 var app = express();
 
@@ -23,7 +24,15 @@ app.use(cookieParser());{css}
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+// register dinamic routes in the routes folder.
+var dinamicRoutes = fs.readdirSync(routesDir);
+for (var i in dinamicRoutes) {
+	if(dinamicRoutes[i] != 'index.js') {
+		var nameRoute = dinamicRoutes[i].substr(0,dinamicRoutes[i].lastIndexOf('.'));
+		console.log('Route /'+nameRoute+' registered!');
+		app.use('/'+nameRoute, require(routesDir + nameRoute));
+	}
+}
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
