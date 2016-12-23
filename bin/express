@@ -45,6 +45,7 @@ before(program, 'unknownOption', function () {
 program
   .version(version, '    --version')
   .usage('[options] [dir]')
+  .option('--es2015', 'add ECMAScript® 2015 (ES6) syntax support, using babel (defaults to ES5)')
   .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
@@ -132,10 +133,15 @@ function createApplication(app_name, path) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js');
-  var www = loadTemplate('js/www');
-  var index = loadTemplate('js/routes/index.js');
-  var users = loadTemplate('js/routes/users.js');
+  var baseJsDir = program.es2015 ? 'es2015/' : 'js/';
+  var app = loadTemplate(baseJsDir + 'app.js');
+  var server = loadTemplate(baseJsDir + 'server.js');
+  var www = loadTemplate(baseJsDir + 'www');
+  var index = loadTemplate(baseJsDir + 'routes/index.js');
+  var users = loadTemplate(baseJsDir + 'routes/users.js');
+
+  // ES2015
+  var babelrc = program.es2015 ? loadTemplate(baseJsDir + '.babelrc') : undefined;
 
   // CSS
   var css = loadTemplate('css/style.css');
@@ -250,6 +256,14 @@ function createApplication(app_name, path) {
       }
     }
 
+    if (program.es2015) {
+      // sort dependencies like npm(1)
+      pkg.devDependencies = sortedObject({
+          "babel-core": "^6.1.2",
+          "babel-preset-es2015": "^6.1.2"
+        });
+    }
+
     switch (program.view) {
       case 'jade':
         pkg.dependencies['jade'] = '~1.11.0';
@@ -297,9 +311,13 @@ function createApplication(app_name, path) {
 
     // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n');
+    if (program.es2015) {
+      write(path + '/.babelrc', babelrc);
+    }
     write(path + '/app.js', app);
+    server = server.replace('{name}', app_name);
+    write(path + '/server.js', server);
     mkdir(path + '/bin', function(){
-      www = www.replace('{name}', app_name);
       write(path + '/bin/www', www, 0755);
       complete();
     });
