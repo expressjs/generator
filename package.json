@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "mocha": "2.5.3",
-    "rimraf": "2.5.2",
+    "rimraf": "2.5.4",
     "supertest": "1.2.0",
     "validate-npm-package-name": "2.2.2"
   },
