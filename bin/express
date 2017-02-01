@@ -255,7 +255,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['jade'] = '~1.11.0';
         break;
       case 'ejs':
-        pkg.dependencies['ejs'] = '~2.5.2';
+        pkg.dependencies['ejs'] = '~2.5.5';
         break;
       case 'hjs':
         pkg.dependencies['hjs'] = '~0.0.6';
