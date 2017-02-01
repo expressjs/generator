@@ -267,7 +267,7 @@ function createApplication(app_name, path) {
         pkg.dependencies['pug'] = '~2.0.0-beta10';
         break;
       case 'twig':
-        pkg.dependencies['twig'] = '~0.9.5';
+        pkg.dependencies['twig'] = '~0.10.3';
         break;
       case 'vash':
         pkg.dependencies['vash'] = '~0.12.2';
