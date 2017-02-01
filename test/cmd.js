@@ -68,7 +68,7 @@ describe('express(1)', function () {
         + '    "start": "node ./bin/www"\n'
         + '  },\n'
         + '  "dependencies": {\n'
-        + '    "body-parser": "~1.15.2",\n'
+        + '    "body-parser": "~1.16.0",\n'
         + '    "cookie-parser": "~1.4.3",\n'
         + '    "debug": "~2.2.0",\n'
         + '    "express": "~4.14.1",\n'
