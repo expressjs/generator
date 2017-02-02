@@ -35,6 +35,8 @@
     "express": "./bin/express"
   },
   "devDependencies": {
+    "babel-core": "^6.1.2",
+    "babel-preset-es2015": "^6.1.2",
     "mocha": "2.5.3",
     "rimraf": "2.5.4",
     "supertest": "1.2.0",
@@ -49,7 +51,7 @@
     "templates/"
   ],
   "scripts": {
-    "test": "mocha --reporter spec --bail --check-leaks test/",
-    "test-ci": "mocha --reporter spec --check-leaks test/"
+    "test": "mocha --globals __core-js_shared__ --reporter spec --bail --check-leaks test/",
+    "test-ci": "mocha --globals __core-js_shared__ --reporter spec --check-leaks test/"
   }
 }
