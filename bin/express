@@ -135,6 +135,9 @@ function createApplication(app_name, path) {
   var app = loadTemplate('js/app.js');
   var www = loadTemplate('js/www');
 
+  // App name
+  www.locals.name = app_name
+
   mkdir(path, function(){
     mkdir(path + '/public', function () {
       mkdir(path + '/public/javascripts')
@@ -209,23 +212,21 @@ function createApplication(app_name, path) {
     // CSS Engine support
     switch (program.css) {
       case 'less':
-        app = app.replace('{css}', eol + 'app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));');
+        app.locals.css = eol + 'app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));'
         break;
       case 'stylus':
-        app = app.replace('{css}', eol + 'app.use(require(\'stylus\').middleware(path.join(__dirname, \'public\')));');
+        app.locals.css = eol + 'app.use(require(\'stylus\').middleware(path.join(__dirname, \'public\')));'
         break;
       case 'compass':
-        app = app.replace('{css}', eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));');
+        app.locals.css = eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));'
         break;
       case 'sass':
-        app = app.replace('{css}', eol + 'app.use(require(\'node-sass-middleware\')({\n  src: path.join(__dirname, \'public\'),\n  dest: path.join(__dirname, \'public\'),\n  indentedSyntax: true,\n  sourceMap: true\n}));');
+        app.locals.css = eol + 'app.use(require(\'node-sass-middleware\')({\n  src: path.join(__dirname, \'public\'),\n  dest: path.join(__dirname, \'public\'),\n  indentedSyntax: true,\n  sourceMap: true\n}));'
         break;
-      default:
-        app = app.replace('{css}', '');
     }
 
     // Template support
-    app = app.replace('{views}', program.view);
+    app.locals.view = program.view
 
     // package.json
     var pkg = {
@@ -290,10 +291,9 @@ function createApplication(app_name, path) {
 
     // write files
     write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n');
-    write(path + '/app.js', app);
+    write(path + '/app.js', app.render())
     mkdir(path + '/bin', function(){
-      www = www.replace('{name}', app_name);
-      write(path + '/bin/www', www, 0755);
+      write(path + '/bin/www', www.render(), 0755)
       complete();
     });
 
@@ -376,7 +376,19 @@ function launchedFromCmd() {
  */
 
 function loadTemplate(name) {
-  return fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8');
+  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8')
+  var locals = Object.create(null)
+
+  function render () {
+    return contents.replace(/{([a-zA-Z0-9]+)}/g, function (match, name) {
+      return locals[name] || ''
+    })
+  }
+
+  return {
+    locals: locals,
+    render: render
+  }
 }
 
 /**
