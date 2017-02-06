@@ -134,15 +134,6 @@ function createApplication(app_name, path) {
   // JavaScript
   var app = loadTemplate('js/app.js');
   var www = loadTemplate('js/www');
-  var index = loadTemplate('js/routes/index.js');
-  var users = loadTemplate('js/routes/users.js');
-
-  // CSS
-  var css = loadTemplate('css/style.css');
-  var less = loadTemplate('css/style.less');
-  var stylus = loadTemplate('css/style.styl');
-  var compass = loadTemplate('css/style.scss');
-  var sass = loadTemplate('css/style.sass');
 
   mkdir(path, function(){
     mkdir(path + '/public');
@@ -151,26 +142,27 @@ function createApplication(app_name, path) {
     mkdir(path + '/public/stylesheets', function(){
       switch (program.css) {
         case 'less':
-          write(path + '/public/stylesheets/style.less', less);
+          copy_template('css/style.less', path + '/public/stylesheets/style.less')
           break;
         case 'stylus':
-          write(path + '/public/stylesheets/style.styl', stylus);
+          copy_template('css/style.styl', path + '/public/stylesheets/style.styl')
           break;
         case 'compass':
-          write(path + '/public/stylesheets/style.scss', compass);
+          copy_template('css/style.scss', path + '/public/stylesheets/style.scss')
           break;
         case 'sass':
-          write(path + '/public/stylesheets/style.sass', sass);
+          copy_template('css/style.sass', path + '/public/stylesheets/style.sass')
           break;
         default:
-          write(path + '/public/stylesheets/style.css', css);
+          copy_template('css/style.css', path + '/public/stylesheets/style.css')
+          break
       }
       complete();
     });
 
     mkdir(path + '/routes', function(){
-      write(path + '/routes/index.js', index);
-      write(path + '/routes/users.js', users);
+      copy_template('js/routes/index.js', path + '/routes/index.js')
+      copy_template('js/routes/users.js', path + '/routes/users.js')
       complete();
     });
 
@@ -305,7 +297,7 @@ function createApplication(app_name, path) {
     });
 
     if (program.git) {
-      write(path + '/.gitignore', fs.readFileSync(__dirname + '/../templates/js/gitignore', 'utf-8'));
+      copy_template('js/gitignore', path + '/.gitignore')
     }
 
     complete();
