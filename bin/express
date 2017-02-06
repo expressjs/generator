@@ -136,28 +136,29 @@ function createApplication(app_name, path) {
   var www = loadTemplate('js/www');
 
   mkdir(path, function(){
-    mkdir(path + '/public');
-    mkdir(path + '/public/javascripts');
-    mkdir(path + '/public/images');
-    mkdir(path + '/public/stylesheets', function(){
-      switch (program.css) {
-        case 'less':
-          copy_template('css/style.less', path + '/public/stylesheets/style.less')
-          break;
-        case 'stylus':
-          copy_template('css/style.styl', path + '/public/stylesheets/style.styl')
-          break;
-        case 'compass':
-          copy_template('css/style.scss', path + '/public/stylesheets/style.scss')
-          break;
-        case 'sass':
-          copy_template('css/style.sass', path + '/public/stylesheets/style.sass')
-          break;
-        default:
-          copy_template('css/style.css', path + '/public/stylesheets/style.css')
-          break
-      }
-      complete();
+    mkdir(path + '/public', function () {
+      mkdir(path + '/public/javascripts')
+      mkdir(path + '/public/images')
+      mkdir(path + '/public/stylesheets', function () {
+        switch (program.css) {
+          case 'less':
+            copy_template('css/style.less', path + '/public/stylesheets/style.less')
+            break
+          case 'stylus':
+            copy_template('css/style.styl', path + '/public/stylesheets/style.styl')
+            break
+          case 'compass':
+            copy_template('css/style.scss', path + '/public/stylesheets/style.scss')
+            break
+          case 'sass':
+            copy_template('css/style.sass', path + '/public/stylesheets/style.sass')
+            break
+          default:
+            copy_template('css/style.css', path + '/public/stylesheets/style.css')
+            break
+        }
+        complete()
+      })
     });
 
     mkdir(path + '/routes', function(){
