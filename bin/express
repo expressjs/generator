@@ -50,6 +50,7 @@ program
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('    --no-view', 'use HTML directly instead of a view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -57,6 +58,39 @@ program
 
 if (!exit.exited) {
   main();
+}
+
+/**
+ * Replace placeholders for serving index page
+ */
+
+function addIndexServing(app, viewEngine) {
+  if (program.view == 'none') {
+    app.locals.requireIndexRoute = '';
+    app.locals.indexRoute = '';
+  } else {
+    app.locals.requireIndexRoute = eol + "var index = require('./routes/index');";
+    app.locals.indexRoute = eol + "app.use('/', index);";
+  }
+}
+
+/**
+ * Replace the template placeholders according to the configured view engine
+ */
+
+function addViewEngine(app, viewEngine) {
+  if (program.view == 'none') {
+    app.locals.viewEngineSetUp = '';
+    app.locals.renderError = "res.sendFile('error.html', {\n" +
+      "    root: __dirname + '/public/'\n" +
+      "  });";
+  } else {
+    app.locals.viewEngineSetUp = "\n" +
+      "// view engine setup\n" +
+      "app.set('views', path.join(__dirname, 'views'));\n" +
+      "app.set('view engine', '" + viewEngine + "');\n";
+    app.locals.renderError = "res.render('error');";
+  }
 }
 
 /**
@@ -134,6 +168,8 @@ function createApplication(app_name, path) {
   // JavaScript
   var app = loadTemplate('js/app.js');
   var www = loadTemplate('js/www');
+  var index = program.view == 'none' ? null : loadTemplate('js/routes/index.js');
+  var users = loadTemplate('js/routes/users.js');
 
   // App name
   www.locals.name = app_name
@@ -165,8 +201,11 @@ function createApplication(app_name, path) {
     });
 
     mkdir(path + '/routes', function(){
-      copy_template('js/routes/index.js', path + '/routes/index.js')
-      copy_template('js/routes/users.js', path + '/routes/users.js')
+      if (program.view != 'none') {
+        copy_template('js/routes/index.js', path + '/routes/index.js') 
+      }
+
+      copy_template('js/routes/users.js', path + '/routes/users.js') 
       complete();
     });
 
@@ -205,6 +244,10 @@ function createApplication(app_name, path) {
           copy_template('vash/layout.vash', path + '/views/layout.vash');
           copy_template('vash/error.vash', path + '/views/error.vash');
           break;
+        case 'none':
+          copy_template('none/index.html', path + '/public/index.html');
+          copy_template('none/error.html', path + '/public/error.html');
+          break;
       }
       complete();
     });
@@ -226,7 +269,10 @@ function createApplication(app_name, path) {
     }
 
     // Template support
-    app.locals.view = program.view
+    addViewEngine(app, program.view);
+
+    // Index route
+    addIndexServing(app, program.view);
 
     // package.json
     var pkg = {
@@ -265,6 +311,9 @@ function createApplication(app_name, path) {
         break;
       case 'vash':
         pkg.dependencies['vash'] = '~0.12.2';
+        break;
+      case 'none':
+        // No additional dependencies needed
         break;
       default:
     }
@@ -309,6 +358,7 @@ function copy_template(from, to) {
   from = path.join(__dirname, '..', 'templates', from);
   write(to, fs.readFileSync(from, 'utf-8'));
 }
+
 /**
  * Create an app name from a directory path, fitting npm naming requirements.
  *
@@ -372,6 +422,14 @@ function launchedFromCmd() {
 }
 
 /**
+ * Determine whether legacy view syntax (e.g. '--ejs') was used to specify view
+ */
+
+function legacyViewSpecified() {
+  return program.ejs || program.hbs || program.hogan || program.pug;
+}
+
+/**
  * Load template file.
  */
 
@@ -403,15 +461,17 @@ function main() {
   var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
   // View engine
-  if (program.view === undefined) {
+  if (!program.view) {
+    program.view = 'none'
+  } else if (legacyViewSpecified() && program.view === true) {
     if (program.ejs) program.view = 'ejs'
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
     if (program.pug) program.view = 'pug'
   }
-
-  // Default view engine
-  if (program.view === undefined) {
+  
+  // Default view engine (a value of true here indicates the view engine has not been otherwise specified)
+  if (program.view === true) {
     warning("the default view engine will not be jade in future releases\nuse `--view=jade' or `--help' for additional options")
     program.view = 'jade'
   }
