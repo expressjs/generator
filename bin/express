@@ -81,14 +81,14 @@ function addIndexServing(app, viewEngine) {
 function addViewEngine(app, viewEngine) {
   if (program.view == 'none') {
     app.locals.viewEngineSetUp = '';
-    app.locals.renderError = "res.sendFile('error.html', {\n" +
-      "    root: __dirname + '/public/'\n" +
+    app.locals.renderError = "res.sendFile('error.html', {" + eol + 
+      "    root: __dirname + '/public/'" + eol + 
       "  });";
   } else {
-    app.locals.viewEngineSetUp = "\n" +
-      "// view engine setup\n" +
-      "app.set('views', path.join(__dirname, 'views'));\n" +
-      "app.set('view engine', '" + viewEngine + "');\n";
+    app.locals.viewEngineSetUp = eol +
+      "// view engine setup" + eol +
+      "app.set('views', path.join(__dirname, 'views'));" + eol +
+      "app.set('view engine', '" + viewEngine + "');" + eol;
     app.locals.renderError = "res.render('error');";
   }
 }
@@ -264,7 +264,13 @@ function createApplication(app_name, path) {
         app.locals.css = eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));'
         break;
       case 'sass':
-        app.locals.css = eol + 'app.use(require(\'node-sass-middleware\')({\n  src: path.join(__dirname, \'public\'),\n  dest: path.join(__dirname, \'public\'),\n  indentedSyntax: true,\n  sourceMap: true\n}));'
+        app.locals.css = eol + 
+          'app.use(require(\'node-sass-middleware\')({' + eol + 
+          '  src: path.join(__dirname, \'public\'),' + eol + 
+          '  dest: path.join(__dirname, \'public\'),' + eol + 
+          '  indentedSyntax: true,' + eol + 
+          '  sourceMap: true' + eol + 
+          '}));'
         break;
     }
 
@@ -339,7 +345,7 @@ function createApplication(app_name, path) {
     pkg.dependencies = sortedObject(pkg.dependencies);
 
     // write files
-    write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n');
+    write(path + '/package.json', JSON.stringify(pkg, null, 2) + eol);
     write(path + '/app.js', app.render())
     mkdir(path + '/bin', function(){
       write(path + '/bin/www', www.render(), 0755)
@@ -472,7 +478,7 @@ function main() {
   
   // Default view engine (a value of true here indicates the view engine has not been otherwise specified)
   if (program.view === true) {
-    warning("the default view engine will not be jade in future releases\nuse `--view=jade' or `--help' for additional options")
+    warning("the default view engine will not be jade in future releases" + eol + "use `--view=jade' or `--help' for additional options")
     program.view = 'jade'
   }
 
@@ -516,7 +522,7 @@ function renamedOption(originalName, newName) {
 
 function warning(message) {
   console.error()
-  message.split('\n').forEach(function (line) {
+  message.split(eol).forEach(function (line) {
     console.error('  warning: %s', line)
   })
   console.error()
