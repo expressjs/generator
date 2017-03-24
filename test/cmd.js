@@ -3,6 +3,7 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var os = require('os');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
@@ -10,6 +11,7 @@ var spawn = require('child_process').spawn;
 var validateNpmName = require('validate-npm-package-name')
 
 var binPath = path.resolve(__dirname, '../bin/express');
+var eol = os.EOL;
 var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
 
 describe('express(1)', function () {
@@ -38,7 +40,7 @@ describe('express(1)', function () {
     });
 
     it('should print jade view warning', function () {
-      assert.equal(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      assert.equal(ctx.stderr, eol + "  warning: the default view engine will not be jade in future releases" + eol + "  warning: use `--view=jade' or `--help' for additional options" + eol + eol)
     })
 
     it('should provide debug instructions', function () {
@@ -60,23 +62,23 @@ describe('express(1)', function () {
     it('should have a package.json file', function () {
       var file = path.resolve(ctx.dir, 'package.json');
       var contents = fs.readFileSync(file, 'utf8');
-      assert.equal(contents, '{\n'
-        + '  "name": "express(1)-(no-args)",\n'
-        + '  "version": "0.0.0",\n'
-        + '  "private": true,\n'
-        + '  "scripts": {\n'
-        + '    "start": "node ./bin/www"\n'
-        + '  },\n'
-        + '  "dependencies": {\n'
-        + '    "body-parser": "~1.16.0",\n'
-        + '    "cookie-parser": "~1.4.3",\n'
-        + '    "debug": "~2.6.0",\n'
-        + '    "express": "~4.14.1",\n'
-        + '    "jade": "~1.11.0",\n'
-        + '    "morgan": "~1.8.0",\n'
-        + '    "serve-favicon": "~2.3.2"\n'
-        + '  }\n'
-        + '}\n');
+      assert.equal(contents, '{' + eol
+        + '  "name": "express(1)-(no-args)",' + eol  
+        + '  "version": "0.0.0",' + eol  
+        + '  "private": true,' + eol  
+        + '  "scripts": {' + eol  
+        + '    "start": "node ./bin/www"' + eol  
+        + '  },' + eol  
+        + '  "dependencies": {' + eol  
+        + '    "body-parser": "~1.16.0",' + eol  
+        + '    "cookie-parser": "~1.4.3",' + eol  
+        + '    "debug": "~2.6.0",' + eol  
+        + '    "express": "~4.14.1",' + eol  
+        + '    "jade": "~1.11.0",' + eol  
+        + '    "morgan": "~1.8.0",' + eol  
+        + '    "serve-favicon": "~2.3.2"' + eol  
+        + '  }' + eol  
+        + '}' + eol); 
     });
 
     it('should have installable dependencies', function (done) {
@@ -1112,5 +1114,6 @@ function stripColors (str) {
 }
 
 function stripWarnings (str) {
-  return str.replace(/\n(?:  warning: [^\n]+\n)+\n/g, '')
+  var warningRegex = new RegExp(eol + "(?:  warning: [^" + eol + "]+" + eol + ")+" + eol, "g")
+  return str.replace(warningRegex, '')
 }
