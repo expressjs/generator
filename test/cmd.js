@@ -3,6 +3,7 @@ var assert = require('assert');
 var exec = require('child_process').exec;
 var fs = require('fs');
 var mkdirp = require('mkdirp');
+var os = require('os');
 var path = require('path');
 var request = require('supertest');
 var rimraf = require('rimraf');
@@ -10,6 +11,9 @@ var spawn = require('child_process').spawn;
 var validateNpmName = require('validate-npm-package-name')
 
 var binPath = path.resolve(__dirname, '../bin/express');
+var eol = os.EOL;
+// Newlines end up mixed between platforms, so need to match either
+var eolPattern = "(?:\\r\\n?|\\n)";
 var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
 
 describe('express(1)', function () {
@@ -38,7 +42,9 @@ describe('express(1)', function () {
     });
 
     it('should print jade view warning', function () {
-      assert.equal(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      var warningRegex = new RegExp(eolPattern + "  warning: the default view engine will not be jade in future releases" 
+        + eolPattern + "  warning: use `--view=jade' or `--help' for additional options" + eolPattern + eolPattern, "g")
+      assert.ok(warningRegex.test(ctx.stderr));
     })
 
     it('should provide debug instructions', function () {
@@ -60,23 +66,24 @@ describe('express(1)', function () {
     it('should have a package.json file', function () {
       var file = path.resolve(ctx.dir, 'package.json');
       var contents = fs.readFileSync(file, 'utf8');
-      assert.equal(contents, '{\n'
-        + '  "name": "express(1)-(no-args)",\n'
-        + '  "version": "0.0.0",\n'
-        + '  "private": true,\n'
-        + '  "scripts": {\n'
-        + '    "start": "node ./bin/www"\n'
-        + '  },\n'
-        + '  "dependencies": {\n'
-        + '    "body-parser": "~1.16.0",\n'
-        + '    "cookie-parser": "~1.4.3",\n'
-        + '    "debug": "~2.6.0",\n'
-        + '    "express": "~4.14.1",\n'
-        + '    "jade": "~1.11.0",\n'
-        + '    "morgan": "~1.8.0",\n'
-        + '    "serve-favicon": "~2.3.2"\n'
-        + '  }\n'
-        + '}\n');
+      var packageRegex = new RegExp('{' + eolPattern
+        + '  "name": "express\\(1\\)-\\(no-args\\)",' + eolPattern  
+        + '  "version": "0.0.0",' + eolPattern  
+        + '  "private": true,' + eolPattern  
+        + '  "scripts": {' + eolPattern  
+        + '    "start": "node ./bin/www"' + eolPattern  
+        + '  },' + eolPattern  
+        + '  "dependencies": {' + eolPattern  
+        + '    "body-parser": "~1.16.0",' + eolPattern  
+        + '    "cookie-parser": "~1.4.3",' + eolPattern  
+        + '    "debug": "~2.6.0",' + eolPattern  
+        + '    "express": "~4.14.1",' + eolPattern  
+        + '    "jade": "~1.11.0",' + eolPattern  
+        + '    "morgan": "~1.8.0",' + eolPattern  
+        + '    "serve-favicon": "~2.3.2"' + eolPattern  
+        + '  }' + eolPattern  
+        + '}' + eolPattern, "g");
+      assert.ok(packageRegex.test(contents));
     });
 
     it('should have installable dependencies', function (done) {
@@ -343,6 +350,45 @@ describe('express(1)', function () {
     });
   });
 
+  describe('--ejs --view=pug', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app with pug templates', function (done) {
+      run(ctx.dir, ['--ejs', '--view', 'pug'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 17)
+        done()
+      })
+    })
+
+    it('should have pug in package dependencies', function () {
+      var file = path.resolve(ctx.dir, 'package.json')
+      var contents = fs.readFileSync(file, 'utf8')
+      var dependencies = JSON.parse(contents).dependencies
+      assert.ok(typeof dependencies.pug === 'string')
+    })
+
+    it('should not have ejs in package dependencies', function () {
+      var file = path.resolve(ctx.dir, 'package.json')
+      var contents = fs.readFileSync(file, 'utf8')
+      var dependencies = JSON.parse(contents).dependencies
+      assert.ok(typeof dependencies.ejs === 'undefined')
+    })
+
+    it('should have pug templates', function () {
+      assert.notEqual(ctx.files.indexOf('views/error.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/index.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1)
+    })
+
+    it('should not have ejs templates', function () {
+      assert.equal(ctx.files.indexOf('views/error.ejs'), -1)
+      assert.equal(ctx.files.indexOf('views/index.ejs'), -1)
+      assert.equal(ctx.files.indexOf('views/layout.ejs'), -1)
+    })
+  });
+
   describe('--git', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
@@ -464,6 +510,60 @@ describe('express(1)', function () {
     it('should have hjs templates', function () {
       assert.notEqual(ctx.files.indexOf('views/error.hjs'), -1)
       assert.notEqual(ctx.files.indexOf('views/index.hjs'), -1)
+    })
+  })
+
+  describe('--no-view', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app with no view engine', function (done) {
+      run(ctx.dir, ['--no-view'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 15)
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+      assert.notEqual(ctx.files.indexOf('app.js'), -1)
+      assert.notEqual(ctx.files.indexOf('package.json'), -1)
+    })
+
+    it('should have HTML files to serve', function () {
+      assert.notEqual(ctx.files.indexOf('public/index.html'), -1)
+      assert.notEqual(ctx.files.indexOf('public/error.html'), -1)
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(30000)
+      npmInstall(ctx.dir, done)
+    })
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+      assert.equal(typeof app, 'function')
+      assert.equal(typeof app.handle, 'function')
+    })
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done)
+    })
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<p>An error has occurred<\/p>/, done)
     })
   })
 
@@ -1019,5 +1119,6 @@ function stripColors (str) {
 }
 
 function stripWarnings (str) {
-  return str.replace(/\n(?:  warning: [^\n]+\n)+\n/g, '')
+  var warningRegex = new RegExp(eolPattern + "(?:  warning: [^\\r\\n]+" + eolPattern + ")+" + eolPattern, "g")
+  return str.replace(warningRegex, '')
 }
