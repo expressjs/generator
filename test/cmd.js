@@ -12,6 +12,8 @@ var validateNpmName = require('validate-npm-package-name')
 
 var binPath = path.resolve(__dirname, '../bin/express');
 var eol = os.EOL;
+// Newlines end up mixed between platforms, so need to match either
+var eolPattern = "(?:\\r\\n?|\\n)";
 var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
 
 describe('express(1)', function () {
@@ -40,7 +42,9 @@ describe('express(1)', function () {
     });
 
     it('should print jade view warning', function () {
-      assert.equal(ctx.stderr, eol + "  warning: the default view engine will not be jade in future releases" + eol + "  warning: use `--view=jade' or `--help' for additional options" + eol + eol)
+      var warningRegex = new RegExp(eolPattern + "  warning: the default view engine will not be jade in future releases" 
+        + eolPattern + "  warning: use `--view=jade' or `--help' for additional options" + eolPattern + eolPattern, "g")
+      assert.ok(warningRegex.test(ctx.stderr));
     })
 
     it('should provide debug instructions', function () {
@@ -62,23 +66,24 @@ describe('express(1)', function () {
     it('should have a package.json file', function () {
       var file = path.resolve(ctx.dir, 'package.json');
       var contents = fs.readFileSync(file, 'utf8');
-      assert.equal(contents, '{' + eol
-        + '  "name": "express(1)-(no-args)",' + eol  
-        + '  "version": "0.0.0",' + eol  
-        + '  "private": true,' + eol  
-        + '  "scripts": {' + eol  
-        + '    "start": "node ./bin/www"' + eol  
-        + '  },' + eol  
-        + '  "dependencies": {' + eol  
-        + '    "body-parser": "~1.16.0",' + eol  
-        + '    "cookie-parser": "~1.4.3",' + eol  
-        + '    "debug": "~2.6.0",' + eol  
-        + '    "express": "~4.14.1",' + eol  
-        + '    "jade": "~1.11.0",' + eol  
-        + '    "morgan": "~1.8.0",' + eol  
-        + '    "serve-favicon": "~2.3.2"' + eol  
-        + '  }' + eol  
-        + '}' + eol); 
+      var packageRegex = new RegExp('{' + eolPattern
+        + '  "name": "express\\(1\\)-\\(no-args\\)",' + eolPattern  
+        + '  "version": "0.0.0",' + eolPattern  
+        + '  "private": true,' + eolPattern  
+        + '  "scripts": {' + eolPattern  
+        + '    "start": "node ./bin/www"' + eolPattern  
+        + '  },' + eolPattern  
+        + '  "dependencies": {' + eolPattern  
+        + '    "body-parser": "~1.16.0",' + eolPattern  
+        + '    "cookie-parser": "~1.4.3",' + eolPattern  
+        + '    "debug": "~2.6.0",' + eolPattern  
+        + '    "express": "~4.14.1",' + eolPattern  
+        + '    "jade": "~1.11.0",' + eolPattern  
+        + '    "morgan": "~1.8.0",' + eolPattern  
+        + '    "serve-favicon": "~2.3.2"' + eolPattern  
+        + '  }' + eolPattern  
+        + '}' + eolPattern, "g");
+      assert.ok(packageRegex.test(contents));
     });
 
     it('should have installable dependencies', function (done) {
@@ -1114,6 +1119,6 @@ function stripColors (str) {
 }
 
 function stripWarnings (str) {
-  var warningRegex = new RegExp(eol + "(?:  warning: [^" + eol + "]+" + eol + ")+" + eol, "g")
+  var warningRegex = new RegExp(eolPattern + "(?:  warning: [^\\r\\n]+" + eolPattern + ")+" + eolPattern, "g")
   return str.replace(warningRegex, '')
 }
