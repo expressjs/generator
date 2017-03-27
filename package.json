@@ -30,10 +30,10 @@
     "mkdirp": "0.5.1",
     "sorted-object": "2.0.1"
   },
-  "main": "bin/express",
+  "main": "bin/express-cli.js",
   "preferGlobal": true,
   "bin": {
-    "express": "./bin/express"
+    "express": "./bin/express-cli.js"
   },
   "devDependencies": {
     "mocha": "2.5.3",

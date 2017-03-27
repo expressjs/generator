@@ -9,7 +9,8 @@ var rimraf = require('rimraf');
 var spawn = require('child_process').spawn;
 var validateNpmName = require('validate-npm-package-name')
 
-var binPath = path.resolve(__dirname, '../bin/express');
+var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
+var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
 var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
 
 describe('express(1)', function () {
@@ -1026,7 +1027,7 @@ function run(dir, args, callback) {
 }
 
 function runRaw(dir, args, callback) {
-  var argv = [binPath].concat(args);
+  var argv = [BIN_PATH].concat(args)
   var exec = process.argv[0];
   var stderr = '';
   var stdout = '';
