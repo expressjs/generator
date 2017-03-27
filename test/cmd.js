@@ -964,15 +964,21 @@ function cleanup (dir, callback) {
   })
 }
 
-function npmInstall (dir, callback) {
+function childEnvironment () {
   var env = Object.create(null)
 
-  // copy the environment except for "undefined" strings
+  // copy the environment except for npm veriables
   for (var key in process.env) {
-    if (process.env[key] !== 'undefined') {
+    if (key.substr(0, 4) !== 'npm_') {
       env[key] = process.env[key]
     }
   }
+
+  return env
+}
+
+function npmInstall (dir, callback) {
+  var env = childEnvironment()
 
   exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
     if (err) {
