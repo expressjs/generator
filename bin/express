@@ -3,6 +3,7 @@
 var program = require('commander');
 var mkdirp = require('mkdirp');
 var os = require('os');
+var ejs = require('ejs')
 var fs = require('fs');
 var path = require('path');
 var readline = require('readline');
@@ -10,7 +11,6 @@ var sortedObject = require('sorted-object');
 var util = require('util');
 
 var _exit = process.exit;
-var eol = os.EOL;
 var pkg = require('../package.json');
 
 var version = pkg.version;
@@ -138,6 +138,10 @@ function createApplication(app_name, path) {
   // App name
   www.locals.name = app_name
 
+  // App modules
+  app.locals.modules = Object.create(null)
+  app.locals.uses = []
+
   mkdir(path, function(){
     mkdir(path + '/public', function () {
       mkdir(path + '/public/javascripts')
@@ -212,16 +216,20 @@ function createApplication(app_name, path) {
     // CSS Engine support
     switch (program.css) {
       case 'less':
-        app.locals.css = eol + 'app.use(require(\'less-middleware\')(path.join(__dirname, \'public\')));'
+        app.locals.modules.lessMiddleware = 'less-middleware'
+        app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
         break;
       case 'stylus':
-        app.locals.css = eol + 'app.use(require(\'stylus\').middleware(path.join(__dirname, \'public\')));'
+        app.locals.modules.stylus = 'stylus'
+        app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
         break;
       case 'compass':
-        app.locals.css = eol + 'app.use(require(\'node-compass\')({mode: \'expanded\'}));'
+        app.locals.modules.compass = 'node-compass'
+        app.locals.uses.push("compass({ mode: 'expanded' })")
         break;
       case 'sass':
-        app.locals.css = eol + 'app.use(require(\'node-sass-middleware\')({\n  src: path.join(__dirname, \'public\'),\n  dest: path.join(__dirname, \'public\'),\n  indentedSyntax: true,\n  sourceMap: true\n}));'
+        app.locals.modules.sassMiddleware = 'node-sass-middleware'
+        app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true,\n  sourceMap: true\n})")
         break;
     }
 
@@ -376,13 +384,11 @@ function launchedFromCmd() {
  */
 
 function loadTemplate(name) {
-  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8')
+  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
   var locals = Object.create(null)
 
   function render () {
-    return contents.replace(/{([a-zA-Z0-9]+)}/g, function (match, name) {
-      return locals[name] || ''
-    })
+    return ejs.render(contents, locals)
   }
 
   return {
