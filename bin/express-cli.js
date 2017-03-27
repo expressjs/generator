@@ -244,7 +244,7 @@ function createApplication (name, path) {
         break
       case 'sass':
         app.locals.modules.sassMiddleware = 'node-sass-middleware'
-        app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true,\n  sourceMap: true\n})")
+        app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
         break
     }
 
