@@ -53,6 +53,7 @@ program
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('    --no-view', 'use static html instead of view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -145,8 +146,7 @@ function createApplication (name, dir) {
     },
     dependencies: {
       'debug': '~2.6.9',
-      'express': '~4.16.0',
-      'http-errors': '~1.6.2'
+      'express': '~4.16.0'
     }
   }
 
@@ -209,33 +209,39 @@ function createApplication (name, dir) {
   mkdir(dir, 'routes')
   copyTemplateMulti('js/routes', dir + '/routes', '*.js')
 
-  // copy view templates
-  mkdir(dir, 'views')
-  switch (program.view) {
-    case 'dust':
-      copyTemplateMulti('views', dir + '/views', '*.dust')
-      break
-    case 'ejs':
-      copyTemplateMulti('views', dir + '/views', '*.ejs')
-      break
-    case 'jade':
-      copyTemplateMulti('views', dir + '/views', '*.jade')
-      break
-    case 'hjs':
-      copyTemplateMulti('views', dir + '/views', '*.hjs')
-      break
-    case 'hbs':
-      copyTemplateMulti('views', dir + '/views', '*.hbs')
-      break
-    case 'pug':
-      copyTemplateMulti('views', dir + '/views', '*.pug')
-      break
-    case 'twig':
-      copyTemplateMulti('views', dir + '/views', '*.twig')
-      break
-    case 'vash':
-      copyTemplateMulti('views', dir + '/views', '*.vash')
-      break
+  if (program.view) {
+    // Copy view templates
+    mkdir(dir, 'views')
+    pkg.dependencies['http-errors'] = '~1.6.2'
+    switch (program.view) {
+      case 'dust':
+        copyTemplateMulti('views', dir + '/views', '*.dust')
+        break
+      case 'ejs':
+        copyTemplateMulti('views', dir + '/views', '*.ejs')
+        break
+      case 'hbs':
+        copyTemplateMulti('views', dir + '/views', '*.hbs')
+        break
+      case 'hjs':
+        copyTemplateMulti('views', dir + '/views', '*.hjs')
+        break
+      case 'jade':
+        copyTemplateMulti('views', dir + '/views', '*.jade')
+        break
+      case 'pug':
+        copyTemplateMulti('views', dir + '/views', '*.pug')
+        break
+      case 'twig':
+        copyTemplateMulti('views', dir + '/views', '*.twig')
+        break
+      case 'vash':
+        copyTemplateMulti('views', dir + '/views', '*.vash')
+        break
+    }
+  } else {
+    // Copy extra public files
+    copyTemplate('js/index.html', path.join(dir, 'public/index.html'))
   }
 
   // CSS Engine support
@@ -307,6 +313,9 @@ function createApplication (name, dir) {
     case 'vash':
       app.locals.view = { engine: 'vash' }
       pkg.dependencies.vash = '~0.12.4'
+      break
+    default:
+      app.locals.view = false
       break
   }
 
@@ -443,7 +452,7 @@ function main () {
   var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
   // View engine
-  if (program.view === undefined) {
+  if (program.view === true) {
     if (program.ejs) program.view = 'ejs'
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
@@ -451,7 +460,7 @@ function main () {
   }
 
   // Default view engine
-  if (program.view === undefined) {
+  if (program.view === true) {
     warning('the default view engine will not be jade in future releases\n' +
       "use `--view=jade' or `--help' for additional options")
     program.view = 'jade'
