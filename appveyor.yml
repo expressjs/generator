@@ -9,10 +9,12 @@ environment:
     - nodejs_version: "5.12"
     - nodejs_version: "6.11"
     - nodejs_version: "7.10"
+    - nodejs_version: "8.1"
 cache:
   - node_modules
 install:
   - ps: Install-Product node $env:nodejs_version
+  - npm config set shrinkwrap false
   - for /f tokens^=2^ delims^=^" %%m in ('findstr /r /c:"eslint[^ ]" package.json') do call npm rm --save-dev %%m
   - if exist node_modules npm prune
   - if exist node_modules npm rebuild
