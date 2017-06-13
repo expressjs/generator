@@ -257,6 +257,18 @@ function createApplication (name, path) {
           render: 'adaro.dust()'
         }
         break
+      case 'hbs':
+        app.locals.modules.handlebars = 'express-handlebars'
+        app.locals.view = {
+          engine: program.view,
+          render: 'handlebars.create({\n'
+            + '  extname:       \'hbs\',\n'
+            + '  layoutsDir:    path.join(__dirname, \'views\'),\n'
+            + '  partialsDir:   path.join(__dirname, \'views\', \'partials\'),\n'
+            + '  defaultLayout: \'layout\'\n'
+            + '}).engine'
+        }
+        break
       default:
         app.locals.view = {
           engine: program.view
@@ -296,7 +308,7 @@ function createApplication (name, path) {
         pkg.dependencies['hjs'] = '~0.0.6'
         break
       case 'hbs':
-        pkg.dependencies['hbs'] = '~4.0.1'
+        pkg.dependencies['express-handlebars'] = '^3.0.0'
         break
       case 'pug':
         pkg.dependencies['pug'] = '~2.0.0-beta11'
