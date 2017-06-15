@@ -261,12 +261,12 @@ function createApplication (name, path) {
         app.locals.modules.handlebars = 'express-handlebars'
         app.locals.view = {
           engine: program.view,
-          render: 'handlebars.create({\n'
-            + '  extname:       \'hbs\',\n'
-            + '  layoutsDir:    path.join(__dirname, \'views\'),\n'
-            + '  partialsDir:   path.join(__dirname, \'views\', \'partials\'),\n'
-            + '  defaultLayout: \'layout\'\n'
-            + '}).engine'
+          render: 'handlebars.create({\n' +
+            '  extname:       \'hbs\',\n' +
+            '  layoutsDir:    path.join(__dirname, \'views\'),\n' +
+            '  partialsDir:   path.join(__dirname, \'views\', \'partials\'),\n' +
+            '  defaultLayout: \'layout\'\n' +
+            '}).engine'
         }
         break
       default:
