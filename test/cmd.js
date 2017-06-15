@@ -411,7 +411,7 @@ describe('express(1)', function () {
       var file = path.resolve(ctx.dir, 'package.json')
       var contents = fs.readFileSync(file, 'utf8')
       var dependencies = JSON.parse(contents).dependencies
-      assert.ok(typeof dependencies.hbs === 'string')
+      assert.ok(typeof dependencies['express-handlebars'] === 'string')
     })
 
     it('should have hbs templates', function () {
@@ -661,7 +661,7 @@ describe('express(1)', function () {
         var file = path.resolve(ctx.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         var dependencies = JSON.parse(contents).dependencies
-        assert.ok(typeof dependencies.hbs === 'string')
+        assert.ok(typeof dependencies['express-handlebars'] === 'string')
       })
 
       it('should have hbs templates', function () {
