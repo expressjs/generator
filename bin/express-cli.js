@@ -308,7 +308,7 @@ function createApplication (name, path) {
         pkg.dependencies['hjs'] = '~0.0.6'
         break
       case 'hbs':
-        pkg.dependencies['express-handlebars'] = '^3.0.0'
+        pkg.dependencies['express-handlebars'] = '~3.0.0'
         break
       case 'pug':
         pkg.dependencies['pug'] = '~2.0.0-beta11'
