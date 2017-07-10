@@ -13,7 +13,7 @@ cache:
   - node_modules
 install:
   - ps: Install-Product node $env:nodejs_version
-  - npm rm --save-dev eslint eslint-config-standard eslint-plugin-promise eslint-plugin-standard
+  - for /f tokens^=2^ delims^=^" %%m in ('findstr /r /c:"eslint[^ ]" package.json') do call npm rm --save-dev %%m
   - if exist node_modules npm prune
   - if exist node_modules npm rebuild
   - npm install
