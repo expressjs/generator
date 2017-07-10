@@ -7,6 +7,7 @@ var path = require('path')
 var request = require('supertest')
 var rimraf = require('rimraf')
 var spawn = require('child_process').spawn
+var utils = require('./support/utils')
 var validateNpmName = require('validate-npm-package-name')
 
 var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
@@ -30,7 +31,7 @@ describe('express(1)', function () {
     it('should create basic app', function (done) {
       runRaw(ctx.dir, [], function (err, code, stdout, stderr) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         ctx.stderr = stderr
         ctx.stdout = stdout
         assert.equal(ctx.files.length, 17)
@@ -116,7 +117,7 @@ describe('express(1)', function () {
       it('should create basic app', function (done) {
         run(ctx.dir, [], function (err, output) {
           if (err) return done(err)
-          assert.equal(parseCreatedFiles(output, ctx.dir).length, 17)
+          assert.equal(utils.parseCreatedFiles(output, ctx.dir).length, 17)
           done()
         })
       })
@@ -136,7 +137,7 @@ describe('express(1)', function () {
       it('should create basic app', function (done) {
         run(ctx.dir, [], function (err, output) {
           if (err) return done(err)
-          assert.equal(parseCreatedFiles(output, ctx.dir).length, 17)
+          assert.equal(utils.parseCreatedFiles(output, ctx.dir).length, 17)
           done()
         })
       })
@@ -219,7 +220,7 @@ describe('express(1)', function () {
       it('should create basic app with less files', function (done) {
         run(ctx.dir, ['--css', 'less'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17, 'should have 17 files')
           done()
         })
@@ -272,7 +273,7 @@ describe('express(1)', function () {
       it('should create basic app with stylus files', function (done) {
         run(ctx.dir, ['--css', 'stylus'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17, 'should have 17 files')
           done()
         })
@@ -326,7 +327,7 @@ describe('express(1)', function () {
     it('should create basic app with ejs templates', function (done) {
       run(ctx.dir, ['--ejs'], function (err, stdout) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(ctx.files.length, 16, 'should have 16 files')
         done()
       })
@@ -350,7 +351,7 @@ describe('express(1)', function () {
     it('should create basic app with git files', function (done) {
       run(ctx.dir, ['--git'], function (err, stdout) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(ctx.files.length, 18, 'should have 18 files')
         done()
       })
@@ -379,7 +380,7 @@ describe('express(1)', function () {
     it('should print usage', function (done) {
       run(ctx.dir, ['-h'], function (err, stdout) {
         if (err) return done(err)
-        var files = parseCreatedFiles(stdout, ctx.dir)
+        var files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(files.length, 0)
         assert.ok(/Usage: express/.test(stdout))
         assert.ok(/--help/.test(stdout))
@@ -395,7 +396,7 @@ describe('express(1)', function () {
     it('should create basic app with hbs templates', function (done) {
       run(ctx.dir, ['--hbs'], function (err, stdout) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(ctx.files.length, 17)
         done()
       })
@@ -427,7 +428,7 @@ describe('express(1)', function () {
     it('should print usage', function (done) {
       run(ctx.dir, ['--help'], function (err, stdout) {
         if (err) return done(err)
-        var files = parseCreatedFiles(stdout, ctx.dir)
+        var files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(files.length, 0)
         assert.ok(/Usage: express/.test(stdout))
         assert.ok(/--help/.test(stdout))
@@ -443,7 +444,7 @@ describe('express(1)', function () {
     it('should create basic app with hogan templates', function (done) {
       run(ctx.dir, ['--hogan'], function (err, stdout) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(ctx.files.length, 16)
         done()
       })
@@ -474,7 +475,7 @@ describe('express(1)', function () {
     it('should create basic app with pug templates', function (done) {
       run(ctx.dir, ['--pug'], function (err, stdout) {
         if (err) return done(err)
-        ctx.files = parseCreatedFiles(stdout, ctx.dir)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.equal(ctx.files.length, 17)
         done()
       })
@@ -537,7 +538,7 @@ describe('express(1)', function () {
       it('should create basic app with dust templates', function (done) {
         run(ctx.dir, ['--view', 'dust'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 16, 'should have 16 files')
           done()
         })
@@ -591,7 +592,7 @@ describe('express(1)', function () {
       it('should create basic app with ejs templates', function (done) {
         run(ctx.dir, ['--view', 'ejs'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 16, 'should have 16 files')
           done()
         })
@@ -645,7 +646,7 @@ describe('express(1)', function () {
       it('should create basic app with hbs templates', function (done) {
         run(ctx.dir, ['--view', 'hbs'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17)
           done()
         })
@@ -707,7 +708,7 @@ describe('express(1)', function () {
       it('should create basic app with hogan templates', function (done) {
         run(ctx.dir, ['--view', 'hjs'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 16)
           done()
         })
@@ -771,7 +772,7 @@ describe('express(1)', function () {
       it('should create basic app with pug templates', function (done) {
         run(ctx.dir, ['--view', 'pug'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17)
           done()
         })
@@ -833,7 +834,7 @@ describe('express(1)', function () {
       it('should create basic app with twig templates', function (done) {
         run(ctx.dir, ['--view', 'twig'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17)
           done()
         })
@@ -895,7 +896,7 @@ describe('express(1)', function () {
       it('should create basic app with vash templates', function (done) {
         run(ctx.dir, ['--view', 'vash'], function (err, stdout) {
           if (err) return done(err)
-          ctx.files = parseCreatedFiles(stdout, ctx.dir)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.equal(ctx.files.length, 17)
           done()
         })
@@ -964,21 +965,8 @@ function cleanup (dir, callback) {
   })
 }
 
-function childEnvironment () {
-  var env = Object.create(null)
-
-  // copy the environment except for npm veriables
-  for (var key in process.env) {
-    if (key.substr(0, 4) !== 'npm_') {
-      env[key] = process.env[key]
-    }
-  }
-
-  return env
-}
-
 function npmInstall (dir, callback) {
-  var env = childEnvironment()
+  var env = utils.childEnvironment()
 
   exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
     if (err) {
@@ -991,44 +979,22 @@ function npmInstall (dir, callback) {
   })
 }
 
-function parseCreatedFiles (output, dir) {
-  var files = []
-  var lines = output.split(/[\r\n]+/)
-  var match
-
-  for (var i = 0; i < lines.length; i++) {
-    if ((match = /create.*?: (.*)$/.exec(lines[i]))) {
-      var file = match[1]
-
-      if (dir) {
-        file = path.resolve(dir, file)
-        file = path.relative(dir, file)
-      }
-
-      file = file.replace(/\\/g, '/')
-      files.push(file)
-    }
-  }
-
-  return files
-}
-
 function run (dir, args, callback) {
   runRaw(dir, args, function (err, code, stdout, stderr) {
     if (err) {
       return callback(err)
     }
 
-    process.stderr.write(stripWarnings(stderr))
+    process.stderr.write(utils.stripWarnings(stderr))
 
     try {
-      assert.equal(stripWarnings(stderr), '')
+      assert.equal(utils.stripWarnings(stderr), '')
       assert.strictEqual(code, 0)
     } catch (e) {
       return callback(e)
     }
 
-    callback(null, stripColors(stdout))
+    callback(null, utils.stripColors(stdout))
   })
 }
 
@@ -1073,13 +1039,4 @@ function setupTestEnvironment (name) {
   })
 
   return ctx
-}
-
-function stripColors (str) {
-  // eslint-disable-next-line no-control-regex
-  return str.replace(/\x1b\[(\d+)m/g, '_color_$1_')
-}
-
-function stripWarnings (str) {
-  return str.replace(/\n(?:\x20{2}warning: [^\n]+\n)+\n/g, '')
 }
