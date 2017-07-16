@@ -1,5 +1,6 @@
 
 var assert = require('assert')
+var AppRunner = require('./support/app-runner')
 var exec = require('child_process').exec
 var fs = require('fs')
 var mkdirp = require('mkdirp')
@@ -93,22 +94,31 @@ describe('express(1)', function () {
       assert.equal(typeof app.handle, 'function')
     })
 
-    it('should respond to HTTP request', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
 
-      request(app)
-      .get('/')
-      .expect(200, /<title>Express<\/title>/, done)
-    })
+      after('stop app', function (done) {
+        this.app.stop(done)
+      })
 
-    it('should generate a 404', function (done) {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
+      it('should start app', function (done) {
+        this.timeout(5000)
+        this.app.start(done)
+      })
 
-      request(app)
-      .get('/does_not_exist')
-      .expect(404, /<h1>Not Found<\/h1>/, done)
+      it('should respond to HTTP request', function (done) {
+        request(this.app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        request(this.app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
     })
 
     describe('when directory contains spaces', function () {
@@ -241,29 +251,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should respond with stylesheet', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/stylesheets/style.css')
-        .expect(200, /sans-serif/, done)
+        it('should respond with stylesheet', function (done) {
+          request(this.app)
+          .get('/stylesheets/style.css')
+          .expect(200, /sans-serif/, done)
+        })
       })
     })
 
@@ -294,29 +306,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should respond with stylesheet', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/stylesheets/style.css')
-        .expect(200, /sans-serif/, done)
+        it('should respond with stylesheet', function (done) {
+          request(this.app)
+          .get('/stylesheets/style.css')
+          .expect(200, /sans-serif/, done)
+        })
       })
     })
   })
@@ -560,29 +574,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -614,29 +630,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -676,29 +694,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -737,32 +757,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        // the "hjs" module has a global leak
-        this.runnable().globals('renderPartials')
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -802,29 +821,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -864,29 +885,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
 
@@ -926,29 +949,31 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
-        assert.equal(typeof app, 'function')
-        assert.equal(typeof app.handle, 'function')
-      })
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
 
-      it('should respond to HTTP request', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
 
-        request(app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
-      })
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
 
-      it('should generate a 404', function (done) {
-        var file = path.resolve(ctx.dir, 'app.js')
-        var app = require(file)
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
 
-        request(app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
       })
     })
   })
