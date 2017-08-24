@@ -30,6 +30,8 @@ AppRunner.prototype.start = function start (callback) {
     env: env
   })
 
+  this.child.stderr.pipe(process.stderr, { end: false })
+
   this.child.on('exit', function onExit (code) {
     app.child = null
 
