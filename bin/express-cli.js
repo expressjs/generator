@@ -312,7 +312,7 @@ function createApplication (name, path) {
     // CSS Engine support
     switch (program.css) {
       case 'less':
-        pkg.dependencies['less-middleware'] = '~2.2.0'
+        pkg.dependencies['less-middleware'] = '~2.2.1'
         break
       case 'compass':
         pkg.dependencies['node-compass'] = '0.2.3'
