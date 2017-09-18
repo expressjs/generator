@@ -273,7 +273,7 @@ function createApplication (name, path) {
         start: 'node ./bin/www'
       },
       dependencies: {
-        'body-parser': '~1.17.1',
+        'body-parser': '~1.18.1',
         'cookie-parser': '~1.4.3',
         'debug': '~2.6.3',
         'express': '~4.15.2',
