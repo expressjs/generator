@@ -299,7 +299,7 @@ function createApplication (name, path) {
         pkg.dependencies['hbs'] = '~4.0.1'
         break
       case 'pug':
-        pkg.dependencies['pug'] = '~2.0.0-beta11'
+        pkg.dependencies['pug'] = '2.0.0-beta11'
         break
       case 'twig':
         pkg.dependencies['twig'] = '~0.10.3'
