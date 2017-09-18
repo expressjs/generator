@@ -25,7 +25,7 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "commander": "2.10.0",
+    "commander": "2.11.0",
     "ejs": "2.5.6",
     "mkdirp": "0.5.1",
     "sorted-object": "2.0.1"
