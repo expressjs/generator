@@ -77,7 +77,7 @@ describe('express(1)', function () {
         '    "express": "~4.15.5",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.9.0",\n' +
-        '    "serve-favicon": "~2.4.4"\n' +
+        '    "serve-favicon": "~2.4.5"\n' +
         '  }\n' +
         '}\n')
     })
