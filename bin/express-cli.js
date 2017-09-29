@@ -277,7 +277,7 @@ function createApplication (name, path) {
         'body-parser': '~1.18.1',
         'cookie-parser': '~1.4.3',
         'debug': '~2.6.8',
-        'express': '~4.15.4',
+        'express': '~4.15.5',
         'morgan': '~1.8.2',
         'serve-favicon': '~2.4.4'
       }
