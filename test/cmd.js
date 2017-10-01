@@ -71,10 +71,9 @@ describe('express(1)', function () {
         '    "start": "node ./bin/www"\n' +
         '  },\n' +
         '  "dependencies": {\n' +
-        '    "body-parser": "~1.18.2",\n' +
         '    "cookie-parser": "~1.4.3",\n' +
         '    "debug": "~2.6.9",\n' +
-        '    "express": "~4.15.5",\n' +
+        '    "express": "~4.16.0",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.9.0",\n' +
         '    "serve-favicon": "~2.4.5"\n' +
