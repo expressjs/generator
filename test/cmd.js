@@ -18,12 +18,12 @@ var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.r
 describe('express(1)', function () {
   before(function (done) {
     this.timeout(30000)
-    cleanup(done)
+    rimraf(TEMP_DIR, done)
   })
 
   after(function (done) {
     this.timeout(30000)
-    cleanup(done)
+    rimraf(TEMP_DIR, done)
   })
 
   describe('(no args)', function () {
@@ -978,17 +978,6 @@ describe('express(1)', function () {
   })
 })
 
-function cleanup (dir, callback) {
-  if (typeof dir === 'function') {
-    callback = dir
-    dir = TEMP_DIR
-  }
-
-  rimraf(dir, function (err) {
-    callback(err)
-  })
-}
-
 function npmInstall (dir, callback) {
   var env = utils.childEnvironment()
 
@@ -1059,7 +1048,7 @@ function setupTestEnvironment (name) {
 
   after('cleanup environment', function (done) {
     this.timeout(30000)
-    cleanup(ctx.dir, done)
+    rimraf(ctx.dir, done)
   })
 
   return ctx
