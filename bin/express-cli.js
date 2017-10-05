@@ -2,6 +2,7 @@
 
 var ejs = require('ejs')
 var fs = require('fs')
+var minimatch = require('minimatch')
 var mkdirp = require('mkdirp')
 var path = require('path')
 var program = require('commander')
@@ -11,6 +12,7 @@ var util = require('util')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
+var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 
 var _exit = process.exit
 var pkg = require('../package.json')
@@ -110,8 +112,19 @@ function confirm (msg, callback) {
  */
 
 function copyTemplate (from, to) {
-  from = path.join(__dirname, '..', 'templates', from)
-  write(to, fs.readFileSync(from, 'utf-8'))
+  write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), 'utf-8'))
+}
+
+/**
+ * Copy multiple files from template directory.
+ */
+
+function copyTemplateMulti (fromDir, toDir, nameGlob) {
+  fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
+  .filter(minimatch.filter(nameGlob, { matchBase: true }))
+  .forEach(function (name) {
+    copyTemplate(path.join(fromDir, name), path.join(toDir, name))
+  })
 }
 
 /**
@@ -161,19 +174,19 @@ function createApplication (name, path) {
       mkdir(path + '/public/stylesheets', function () {
         switch (program.css) {
           case 'less':
-            copyTemplate('css/style.less', path + '/public/stylesheets/style.less')
+            copyTemplateMulti('css', path + '/public/stylesheets', '*.less')
             break
           case 'stylus':
-            copyTemplate('css/style.styl', path + '/public/stylesheets/style.styl')
+            copyTemplateMulti('css', path + '/public/stylesheets', '*.styl')
             break
           case 'compass':
-            copyTemplate('css/style.scss', path + '/public/stylesheets/style.scss')
+            copyTemplateMulti('css', path + '/public/stylesheets', '*.scss')
             break
           case 'sass':
-            copyTemplate('css/style.sass', path + '/public/stylesheets/style.sass')
+            copyTemplateMulti('css', path + '/public/stylesheets', '*.sass')
             break
           default:
-            copyTemplate('css/style.css', path + '/public/stylesheets/style.css')
+            copyTemplateMulti('css', path + '/public/stylesheets', '*.css')
             break
         }
         complete()
@@ -181,49 +194,35 @@ function createApplication (name, path) {
     })
 
     mkdir(path + '/routes', function () {
-      copyTemplate('js/routes/index.js', path + '/routes/index.js')
-      copyTemplate('js/routes/users.js', path + '/routes/users.js')
+      copyTemplateMulti('js/routes', path + '/routes', '*.js')
       complete()
     })
 
     mkdir(path + '/views', function () {
       switch (program.view) {
         case 'dust':
-          copyTemplate('views/index.dust', path + '/views/index.dust')
-          copyTemplate('views/error.dust', path + '/views/error.dust')
+          copyTemplateMulti('views', path + '/views', '*.dust')
           break
         case 'ejs':
-          copyTemplate('views/index.ejs', path + '/views/index.ejs')
-          copyTemplate('views/error.ejs', path + '/views/error.ejs')
+          copyTemplateMulti('views', path + '/views', '*.ejs')
           break
         case 'jade':
-          copyTemplate('views/index.jade', path + '/views/index.jade')
-          copyTemplate('views/layout.jade', path + '/views/layout.jade')
-          copyTemplate('views/error.jade', path + '/views/error.jade')
+          copyTemplateMulti('views', path + '/views', '*.jade')
           break
         case 'hjs':
-          copyTemplate('views/index.hjs', path + '/views/index.hjs')
-          copyTemplate('views/error.hjs', path + '/views/error.hjs')
+          copyTemplateMulti('views', path + '/views', '*.hjs')
           break
         case 'hbs':
-          copyTemplate('views/index.hbs', path + '/views/index.hbs')
-          copyTemplate('views/layout.hbs', path + '/views/layout.hbs')
-          copyTemplate('views/error.hbs', path + '/views/error.hbs')
+          copyTemplateMulti('views', path + '/views', '*.hbs')
           break
         case 'pug':
-          copyTemplate('views/index.pug', path + '/views/index.pug')
-          copyTemplate('views/layout.pug', path + '/views/layout.pug')
-          copyTemplate('views/error.pug', path + '/views/error.pug')
+          copyTemplateMulti('views', path + '/views', '*.pug')
           break
         case 'twig':
-          copyTemplate('views/index.twig', path + '/views/index.twig')
-          copyTemplate('views/layout.twig', path + '/views/layout.twig')
-          copyTemplate('views/error.twig', path + '/views/error.twig')
+          copyTemplateMulti('views', path + '/views', '*.twig')
           break
         case 'vash':
-          copyTemplate('views/index.vash', path + '/views/index.vash')
-          copyTemplate('views/layout.vash', path + '/views/layout.vash')
-          copyTemplate('views/error.vash', path + '/views/error.vash')
+          copyTemplateMulti('views', path + '/views', '*.vash')
           break
       }
       complete()
