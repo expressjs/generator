@@ -189,41 +189,41 @@ function createApplication (name, path) {
     mkdir(path + '/views', function () {
       switch (program.view) {
         case 'dust':
-          copyTemplate('dust/index.dust', path + '/views/index.dust')
-          copyTemplate('dust/error.dust', path + '/views/error.dust')
+          copyTemplate('views/index.dust', path + '/views/index.dust')
+          copyTemplate('views/error.dust', path + '/views/error.dust')
           break
         case 'ejs':
-          copyTemplate('ejs/index.ejs', path + '/views/index.ejs')
-          copyTemplate('ejs/error.ejs', path + '/views/error.ejs')
+          copyTemplate('views/index.ejs', path + '/views/index.ejs')
+          copyTemplate('views/error.ejs', path + '/views/error.ejs')
           break
         case 'jade':
-          copyTemplate('jade/index.jade', path + '/views/index.jade')
-          copyTemplate('jade/layout.jade', path + '/views/layout.jade')
-          copyTemplate('jade/error.jade', path + '/views/error.jade')
+          copyTemplate('views/index.jade', path + '/views/index.jade')
+          copyTemplate('views/layout.jade', path + '/views/layout.jade')
+          copyTemplate('views/error.jade', path + '/views/error.jade')
           break
         case 'hjs':
-          copyTemplate('hogan/index.hjs', path + '/views/index.hjs')
-          copyTemplate('hogan/error.hjs', path + '/views/error.hjs')
+          copyTemplate('views/index.hjs', path + '/views/index.hjs')
+          copyTemplate('views/error.hjs', path + '/views/error.hjs')
           break
         case 'hbs':
-          copyTemplate('hbs/index.hbs', path + '/views/index.hbs')
-          copyTemplate('hbs/layout.hbs', path + '/views/layout.hbs')
-          copyTemplate('hbs/error.hbs', path + '/views/error.hbs')
+          copyTemplate('views/index.hbs', path + '/views/index.hbs')
+          copyTemplate('views/layout.hbs', path + '/views/layout.hbs')
+          copyTemplate('views/error.hbs', path + '/views/error.hbs')
           break
         case 'pug':
-          copyTemplate('pug/index.pug', path + '/views/index.pug')
-          copyTemplate('pug/layout.pug', path + '/views/layout.pug')
-          copyTemplate('pug/error.pug', path + '/views/error.pug')
+          copyTemplate('views/index.pug', path + '/views/index.pug')
+          copyTemplate('views/layout.pug', path + '/views/layout.pug')
+          copyTemplate('views/error.pug', path + '/views/error.pug')
           break
         case 'twig':
-          copyTemplate('twig/index.twig', path + '/views/index.twig')
-          copyTemplate('twig/layout.twig', path + '/views/layout.twig')
-          copyTemplate('twig/error.twig', path + '/views/error.twig')
+          copyTemplate('views/index.twig', path + '/views/index.twig')
+          copyTemplate('views/layout.twig', path + '/views/layout.twig')
+          copyTemplate('views/error.twig', path + '/views/error.twig')
           break
         case 'vash':
-          copyTemplate('vash/index.vash', path + '/views/index.vash')
-          copyTemplate('vash/layout.vash', path + '/views/layout.vash')
-          copyTemplate('vash/error.vash', path + '/views/error.vash')
+          copyTemplate('views/index.vash', path + '/views/index.vash')
+          copyTemplate('views/layout.vash', path + '/views/layout.vash')
+          copyTemplate('views/error.vash', path + '/views/error.vash')
           break
       }
       complete()
