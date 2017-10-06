@@ -192,6 +192,45 @@ describe('express(1)', function () {
     })
   })
 
+  describe('<dir>', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app in directory', function (done) {
+      runRaw(ctx.dir, ['foo'], function (err, code, stdout, stderr) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        ctx.stderr = stderr
+        ctx.stdout = stdout
+        assert.equal(ctx.files.length, 17)
+        done()
+      })
+    })
+
+    it('should provide change directory instructions', function () {
+      assert.ok(/cd foo/.test(ctx.stdout))
+    })
+
+    it('should provide install instructions', function () {
+      assert.ok(/npm install/.test(ctx.stdout))
+    })
+
+    it('should provide debug instructions', function () {
+      assert.ok(/DEBUG=foo:\* (?:& )?npm start/.test(ctx.stdout))
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('foo/bin/www'), -1)
+      assert.notEqual(ctx.files.indexOf('foo/app.js'), -1)
+      assert.notEqual(ctx.files.indexOf('foo/package.json'), -1)
+    })
+
+    it('should have jade templates', function () {
+      assert.notEqual(ctx.files.indexOf('foo/views/error.jade'), -1)
+      assert.notEqual(ctx.files.indexOf('foo/views/index.jade'), -1)
+      assert.notEqual(ctx.files.indexOf('foo/views/layout.jade'), -1)
+    })
+  })
+
   describe('--css <engine>', function () {
     describe('(no engine)', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
