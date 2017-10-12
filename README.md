@@ -49,8 +49,8 @@ This generator can also be further configured with the following command line fl
     -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git            add .gitignore
     -f, --force          force on non-empty directory
-        --es2015         allow using ES2015 standards
-        --es5            force the generator to use es5
+        --es2015         use ES2015 standards
+        --es5            use ES5 standards
     -h, --help           output usage information
 
 ## License
