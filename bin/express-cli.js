@@ -8,6 +8,7 @@ var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
+var detect = require('feature-detect-es6')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -56,7 +57,14 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .option('    --es2015', 'use ES2015 standards')
+  .option('    --es5', 'use ES5 standards')
   .parse(process.argv)
+
+var esVersion = program.es5 ? 'es5'
+                  : program.es2015 ? 'es2015'
+                  : detect.all('arrowFunction', 'let') ? 'es2015'
+                  : 'es5'
 
 if (!exit.exited) {
   main()
@@ -144,8 +152,8 @@ function createApplication (name, path) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate('js/' + esVersion + '/app.js')
+  var www = loadTemplate('js/' + esVersion + '/www')
 
   // App name
   www.locals.name = name
@@ -181,8 +189,8 @@ function createApplication (name, path) {
     })
 
     mkdir(path + '/routes', function () {
-      copyTemplate('js/routes/index.js', path + '/routes/index.js')
-      copyTemplate('js/routes/users.js', path + '/routes/users.js')
+      copyTemplate('js/' + esVersion + '/routes/index.js', path + '/routes/index.js')
+      copyTemplate('js/' + esVersion + '/routes/users.js', path + '/routes/users.js')
       complete()
     })
 
