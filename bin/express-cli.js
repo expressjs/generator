@@ -255,7 +255,7 @@ function createApplication (name, path) {
         app.locals.modules.adaro = 'adaro'
         app.locals.view = {
           engine: 'dust',
-          render: 'adaro.dust({helpers: ['dustjs-helpers']})'
+          render: 'adaro.dust({helpers: ["dustjs-helpers"]})'
         }
         break
       default:
