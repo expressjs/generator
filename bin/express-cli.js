@@ -9,6 +9,7 @@ var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
+var detect = require('feature-detect-es6')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -58,7 +59,14 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .option('    --es2015', 'use ES2015 standards')
+  .option('    --es5', 'use ES5 standards')
   .parse(process.argv)
+
+var esVersion = program.es5 ? 'es5'
+  : program.es2015 ? 'es2015'
+    : detect.all('arrowFunction', 'let') ? 'es2015'
+      : 'es5'
 
 if (!exit.exited) {
   main()
@@ -68,7 +76,7 @@ if (!exit.exited) {
  * Install an around function; AOP.
  */
 
-function around (obj, method, fn) {
+function around(obj, method, fn) {
   var old = obj[method]
 
   obj[method] = function () {
@@ -82,7 +90,7 @@ function around (obj, method, fn) {
  * Install a before function; AOP.
  */
 
-function before (obj, method, fn) {
+function before(obj, method, fn) {
   var old = obj[method]
 
   obj[method] = function () {
@@ -95,7 +103,7 @@ function before (obj, method, fn) {
  * Prompt for confirmation on STDOUT/STDIN
  */
 
-function confirm (msg, callback) {
+function confirm(msg, callback) {
   var rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -111,7 +119,7 @@ function confirm (msg, callback) {
  * Copy file from template directory.
  */
 
-function copyTemplate (from, to) {
+function copyTemplate(from, to) {
   write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), 'utf-8'))
 }
 
@@ -119,12 +127,12 @@ function copyTemplate (from, to) {
  * Copy multiple files from template directory.
  */
 
-function copyTemplateMulti (fromDir, toDir, nameGlob) {
+function copyTemplateMulti(fromDir, toDir, nameGlob) {
   fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
-  .filter(minimatch.filter(nameGlob, { matchBase: true }))
-  .forEach(function (name) {
-    copyTemplate(path.join(fromDir, name), path.join(toDir, name))
-  })
+    .filter(minimatch.filter(nameGlob, { matchBase: true }))
+    .forEach(function (name) {
+      copyTemplate(path.join(fromDir, name), path.join(toDir, name))
+    })
 }
 
 /**
@@ -134,12 +142,12 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
  * @param {string} dir
  */
 
-function createApplication (name, dir) {
+function createApplication(name, dir) {
   console.log()
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate('js/' + esVersion + '/app.js')
+  var www = loadTemplate('js/' + esVersion + '/www')
 
   // App name
   www.locals.name = name
@@ -178,7 +186,7 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  copyTemplateMulti('js/' + esVersion + '/routes', dir + '/routes', '*.js')
 
   // copy view templates
   mkdir(dir, 'views')
@@ -347,7 +355,7 @@ function createApplication (name, dir) {
  * @param {String} pathName
  */
 
-function createAppName (pathName) {
+function createAppName(pathName) {
   return path.basename(pathName)
     .replace(/[^A-Za-z0-9.()!~*'-]+/g, '-')
     .replace(/^[-_.]+|-+$/g, '')
@@ -361,7 +369,7 @@ function createAppName (pathName) {
  * @param {Function} fn
  */
 
-function emptyDirectory (path, fn) {
+function emptyDirectory(path, fn) {
   fs.readdir(path, function (err, files) {
     if (err && err.code !== 'ENOENT') throw err
     fn(!files || !files.length)
@@ -372,11 +380,11 @@ function emptyDirectory (path, fn) {
  * Graceful exit for async STDIO
  */
 
-function exit (code) {
+function exit(code) {
   // flush output for Node.js Windows pipe bug
   // https://github.com/joyent/node/issues/6247 is just one bug example
   // https://github.com/visionmedia/mocha/issues/333 has a good discussion
-  function done () {
+  function done() {
     if (!(draining--)) _exit(code)
   }
 
@@ -398,7 +406,7 @@ function exit (code) {
  * Determine if launched from cmd.exe
  */
 
-function launchedFromCmd () {
+function launchedFromCmd() {
   return process.platform === 'win32' &&
     process.env._ === undefined
 }
@@ -407,11 +415,11 @@ function launchedFromCmd () {
  * Load template file.
  */
 
-function loadTemplate (name) {
+function loadTemplate(name) {
   var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
   var locals = Object.create(null)
 
-  function render () {
+  function render() {
     return ejs.render(contents, locals)
   }
 
@@ -425,7 +433,7 @@ function loadTemplate (name) {
  * Main program.
  */
 
-function main () {
+function main() {
   // Path
   var destinationPath = program.args.shift() || '.'
 
@@ -472,7 +480,7 @@ function main () {
  * @param {string} dir
  */
 
-function mkdir (base, dir) {
+function mkdir(base, dir) {
   var loc = path.join(base, dir)
 
   console.log('   \x1b[36mcreate\x1b[0m : ' + loc + path.sep)
@@ -486,7 +494,7 @@ function mkdir (base, dir) {
  * @param {String} newName
  */
 
-function renamedOption (originalName, newName) {
+function renamedOption(originalName, newName) {
   return function (val) {
     warning(util.format("option `%s' has been renamed to `%s'", originalName, newName))
     return val
@@ -499,7 +507,7 @@ function renamedOption (originalName, newName) {
  * @param {String} message
  */
 
-function warning (message) {
+function warning(message) {
   console.error()
   message.split('\n').forEach(function (line) {
     console.error('  warning: %s', line)
@@ -514,7 +522,7 @@ function warning (message) {
  * @param {String} str
  */
 
-function write (path, str, mode) {
+function write(path, str, mode) {
   fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
   console.log('   \x1b[36mcreate\x1b[0m : ' + path)
 }
