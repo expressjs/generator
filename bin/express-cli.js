@@ -152,7 +152,6 @@ function createApplication (name, dir) {
     mkdir(dir, '.')
   }
 
-
   mkdir(dir, 'public')
   mkdir(dir, 'public/javascripts')
   mkdir(dir, 'public/images')
