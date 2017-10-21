@@ -2,6 +2,7 @@
 
 var ejs = require('ejs')
 var fs = require('fs')
+var minimatch = require('minimatch')
 var mkdirp = require('mkdirp')
 var path = require('path')
 var program = require('commander')
@@ -11,6 +12,7 @@ var util = require('util')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
+var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 
 var _exit = process.exit
 var pkg = require('../package.json')
@@ -110,38 +112,30 @@ function confirm (msg, callback) {
  */
 
 function copyTemplate (from, to) {
-  from = path.join(__dirname, '..', 'templates', from)
-  write(to, fs.readFileSync(from, 'utf-8'))
+  write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), 'utf-8'))
 }
 
 /**
- * Create application at the given directory `path`.
- *
- * @param {String} path
+ * Copy multiple files from template directory.
  */
 
-function createApplication (name, path) {
-  var wait = 5
+function copyTemplateMulti (fromDir, toDir, nameGlob) {
+  fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
+  .filter(minimatch.filter(nameGlob, { matchBase: true }))
+  .forEach(function (name) {
+    copyTemplate(path.join(fromDir, name), path.join(toDir, name))
+  })
+}
 
+/**
+ * Create application at the given directory.
+ *
+ * @param {string} name
+ * @param {string} dir
+ */
+
+function createApplication (name, dir) {
   console.log()
-  function complete () {
-    if (--wait) return
-    var prompt = launchedFromCmd() ? '>' : '$'
-
-    console.log()
-    console.log('   install dependencies:')
-    console.log('     %s cd %s && npm install', prompt, path)
-    console.log()
-    console.log('   run the app:')
-
-    if (launchedFromCmd()) {
-      console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
-    } else {
-      console.log('     %s DEBUG=%s:* npm start', prompt, name)
-    }
-
-    console.log()
-  }
 
   // JavaScript
   var app = loadTemplate('js/app.js')
@@ -154,195 +148,198 @@ function createApplication (name, path) {
   app.locals.modules = Object.create(null)
   app.locals.uses = []
 
-  mkdir(path, function () {
-    mkdir(path + '/public', function () {
-      mkdir(path + '/public/javascripts')
-      mkdir(path + '/public/images')
-      mkdir(path + '/public/stylesheets', function () {
-        switch (program.css) {
-          case 'less':
-            copyTemplate('css/style.less', path + '/public/stylesheets/style.less')
-            break
-          case 'stylus':
-            copyTemplate('css/style.styl', path + '/public/stylesheets/style.styl')
-            break
-          case 'compass':
-            copyTemplate('css/style.scss', path + '/public/stylesheets/style.scss')
-            break
-          case 'sass':
-            copyTemplate('css/style.sass', path + '/public/stylesheets/style.sass')
-            break
-          default:
-            copyTemplate('css/style.css', path + '/public/stylesheets/style.css')
-            break
-        }
-        complete()
-      })
-    })
+  if (dir !== '.') {
+    mkdir(dir, '.')
+  }
 
-    mkdir(path + '/routes', function () {
-      copyTemplate('js/routes/index.js', path + '/routes/index.js')
-      copyTemplate('js/routes/users.js', path + '/routes/users.js')
-      complete()
-    })
 
-    mkdir(path + '/views', function () {
-      switch (program.view) {
-        case 'dust':
-          copyTemplate('dust/index.dust', path + '/views/index.dust')
-          copyTemplate('dust/error.dust', path + '/views/error.dust')
-          break
-        case 'ejs':
-          copyTemplate('ejs/index.ejs', path + '/views/index.ejs')
-          copyTemplate('ejs/error.ejs', path + '/views/error.ejs')
-          break
-        case 'jade':
-          copyTemplate('jade/index.jade', path + '/views/index.jade')
-          copyTemplate('jade/layout.jade', path + '/views/layout.jade')
-          copyTemplate('jade/error.jade', path + '/views/error.jade')
-          break
-        case 'hjs':
-          copyTemplate('hogan/index.hjs', path + '/views/index.hjs')
-          copyTemplate('hogan/error.hjs', path + '/views/error.hjs')
-          break
-        case 'hbs':
-          copyTemplate('hbs/index.hbs', path + '/views/index.hbs')
-          copyTemplate('hbs/layout.hbs', path + '/views/layout.hbs')
-          copyTemplate('hbs/error.hbs', path + '/views/error.hbs')
-          break
-        case 'pug':
-          copyTemplate('pug/index.pug', path + '/views/index.pug')
-          copyTemplate('pug/layout.pug', path + '/views/layout.pug')
-          copyTemplate('pug/error.pug', path + '/views/error.pug')
-          break
-        case 'twig':
-          copyTemplate('twig/index.twig', path + '/views/index.twig')
-          copyTemplate('twig/layout.twig', path + '/views/layout.twig')
-          copyTemplate('twig/error.twig', path + '/views/error.twig')
-          break
-        case 'vash':
-          copyTemplate('vash/index.vash', path + '/views/index.vash')
-          copyTemplate('vash/layout.vash', path + '/views/layout.vash')
-          copyTemplate('vash/error.vash', path + '/views/error.vash')
-          break
+  mkdir(dir, 'public')
+  mkdir(dir, 'public/javascripts')
+  mkdir(dir, 'public/images')
+  mkdir(dir, 'public/stylesheets')
+
+  // copy css templates
+  switch (program.css) {
+    case 'less':
+      copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
+      break
+    case 'stylus':
+      copyTemplateMulti('css', dir + '/public/stylesheets', '*.styl')
+      break
+    case 'compass':
+      copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
+      break
+    case 'sass':
+      copyTemplateMulti('css', dir + '/public/stylesheets', '*.sass')
+      break
+    default:
+      copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
+      break
+  }
+
+  // copy route templates
+  mkdir(dir, 'routes')
+  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+
+  // copy view templates
+  mkdir(dir, 'views')
+  switch (program.view) {
+    case 'dust':
+      copyTemplateMulti('views', dir + '/views', '*.dust')
+      break
+    case 'ejs':
+      copyTemplateMulti('views', dir + '/views', '*.ejs')
+      break
+    case 'jade':
+      copyTemplateMulti('views', dir + '/views', '*.jade')
+      break
+    case 'hjs':
+      copyTemplateMulti('views', dir + '/views', '*.hjs')
+      break
+    case 'hbs':
+      copyTemplateMulti('views', dir + '/views', '*.hbs')
+      break
+    case 'pug':
+      copyTemplateMulti('views', dir + '/views', '*.pug')
+      break
+    case 'twig':
+      copyTemplateMulti('views', dir + '/views', '*.twig')
+      break
+    case 'vash':
+      copyTemplateMulti('views', dir + '/views', '*.vash')
+      break
+  }
+
+  // CSS Engine support
+  switch (program.css) {
+    case 'less':
+      app.locals.modules.lessMiddleware = 'less-middleware'
+      app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
+      break
+    case 'stylus':
+      app.locals.modules.stylus = 'stylus'
+      app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
+      break
+    case 'compass':
+      app.locals.modules.compass = 'node-compass'
+      app.locals.uses.push("compass({ mode: 'expanded' })")
+      break
+    case 'sass':
+      app.locals.modules.sassMiddleware = 'node-sass-middleware'
+      app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
+      break
+  }
+
+  // Template support
+  switch (program.view) {
+    case 'dust':
+      app.locals.modules.adaro = 'adaro'
+      app.locals.view = {
+        engine: 'dust',
+        render: 'adaro.dust({helpers: ["dustjs-helpers"]})'
       }
-      complete()
-    })
-
-    // CSS Engine support
-    switch (program.css) {
-      case 'less':
-        app.locals.modules.lessMiddleware = 'less-middleware'
-        app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-        break
-      case 'stylus':
-        app.locals.modules.stylus = 'stylus'
-        app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
-        break
-      case 'compass':
-        app.locals.modules.compass = 'node-compass'
-        app.locals.uses.push("compass({ mode: 'expanded' })")
-        break
-      case 'sass':
-        app.locals.modules.sassMiddleware = 'node-sass-middleware'
-        app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
-        break
-    }
-
-    // Template support
-    switch (program.view) {
-      case 'dust':
-        app.locals.modules.adaro = 'adaro'
-        app.locals.view = {
-          engine: 'dust',
-          render: 'adaro.dust({helpers: ["dustjs-helpers"]})'
-        }
-        break
-      default:
-        app.locals.view = {
-          engine: program.view
-        }
-        break
-    }
-
-    // package.json
-    var pkg = {
-      name: name,
-      version: '0.0.0',
-      private: true,
-      scripts: {
-        start: 'node ./bin/www'
-      },
-      dependencies: {
-        'body-parser': '~1.18.2',
-        'cookie-parser': '~1.4.3',
-        'debug': '~2.6.9',
-        'express': '~4.15.5',
-        'morgan': '~1.9.0',
-        'serve-favicon': '~2.4.5'
+      break
+    default:
+      app.locals.view = {
+        engine: program.view
       }
+      break
+  }
+
+  // package.json
+  var pkg = {
+    name: name,
+    version: '0.0.0',
+    private: true,
+    scripts: {
+      start: 'node ./bin/www'
+    },
+    dependencies: {
+      'cookie-parser': '~1.4.3',
+      'debug': '~2.6.9',
+      'express': '~4.16.0',
+      'morgan': '~1.9.0',
+      'serve-favicon': '~2.4.5'
     }
+  }
 
-    switch (program.view) {
-      case 'dust':
-        pkg.dependencies.adaro = '~1.0.4'
-        break
-      case 'jade':
-        pkg.dependencies['jade'] = '~1.11.0'
-        break
-      case 'ejs':
-        pkg.dependencies['ejs'] = '~2.5.7'
-        break
-      case 'hjs':
-        pkg.dependencies['hjs'] = '~0.0.6'
-        break
-      case 'hbs':
-        pkg.dependencies['hbs'] = '~4.0.1'
-        break
-      case 'pug':
-        pkg.dependencies['pug'] = '2.0.0-beta11'
-        break
-      case 'twig':
-        pkg.dependencies['twig'] = '~0.10.3'
-        break
-      case 'vash':
-        pkg.dependencies['vash'] = '~0.12.2'
-        break
-    }
+  switch (program.view) {
+    case 'dust':
+      pkg.dependencies.adaro = '~1.0.4'
+      break
+    case 'jade':
+      pkg.dependencies['jade'] = '~1.11.0'
+      break
+    case 'ejs':
+      pkg.dependencies['ejs'] = '~2.5.7'
+      break
+    case 'hjs':
+      pkg.dependencies['hjs'] = '~0.0.6'
+      break
+    case 'hbs':
+      pkg.dependencies['hbs'] = '~4.0.1'
+      break
+    case 'pug':
+      pkg.dependencies['pug'] = '2.0.0-beta11'
+      break
+    case 'twig':
+      pkg.dependencies['twig'] = '~0.10.3'
+      break
+    case 'vash':
+      pkg.dependencies['vash'] = '~0.12.2'
+      break
+  }
 
-    // CSS Engine support
-    switch (program.css) {
-      case 'less':
-        pkg.dependencies['less-middleware'] = '~2.2.1'
-        break
-      case 'compass':
-        pkg.dependencies['node-compass'] = '0.2.3'
-        break
-      case 'stylus':
-        pkg.dependencies['stylus'] = '0.54.5'
-        break
-      case 'sass':
-        pkg.dependencies['node-sass-middleware'] = '0.9.8'
-        break
-    }
+  // CSS Engine support
+  switch (program.css) {
+    case 'less':
+      pkg.dependencies['less-middleware'] = '~2.2.1'
+      break
+    case 'compass':
+      pkg.dependencies['node-compass'] = '0.2.3'
+      break
+    case 'stylus':
+      pkg.dependencies['stylus'] = '0.54.5'
+      break
+    case 'sass':
+      pkg.dependencies['node-sass-middleware'] = '0.9.8'
+      break
+  }
 
-    // sort dependencies like npm(1)
-    pkg.dependencies = sortedObject(pkg.dependencies)
+  // sort dependencies like npm(1)
+  pkg.dependencies = sortedObject(pkg.dependencies)
 
-    // write files
-    write(path + '/package.json', JSON.stringify(pkg, null, 2) + '\n')
-    write(path + '/app.js', app.render())
-    mkdir(path + '/bin', function () {
-      write(path + '/bin/www', www.render(), MODE_0755)
-      complete()
-    })
+  if (program.git) {
+    copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
+  }
 
-    if (program.git) {
-      copyTemplate('js/gitignore', path + '/.gitignore')
-    }
+  // write files
+  write(path.join(dir, 'app.js'), app.render())
+  write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
+  mkdir(dir, 'bin')
+  write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
 
-    complete()
-  })
+  var prompt = launchedFromCmd() ? '>' : '$'
+
+  if (dir !== '.') {
+    console.log()
+    console.log('   change directory:')
+    console.log('     %s cd %s', prompt, dir)
+  }
+
+  console.log()
+  console.log('   install dependencies:')
+  console.log('     %s npm install', prompt)
+  console.log()
+  console.log('   run the app:')
+
+  if (launchedFromCmd()) {
+    console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
+  } else {
+    console.log('     %s DEBUG=%s:* npm start', prompt, name)
+  }
+
+  console.log()
 }
 
 /**
@@ -470,18 +467,17 @@ function main () {
 }
 
 /**
- * Mkdir -p.
+ * Make the given dir relative to base.
  *
- * @param {String} path
- * @param {Function} fn
+ * @param {string} base
+ * @param {string} dir
  */
 
-function mkdir (path, fn) {
-  mkdirp(path, MODE_0755, function (err) {
-    if (err) throw err
-    console.log('   \x1b[36mcreate\x1b[0m : ' + path)
-    fn && fn()
-  })
+function mkdir (base, dir) {
+  var loc = path.join(base, dir)
+
+  console.log('   \x1b[36mcreate\x1b[0m : ' + loc + path.sep)
+  mkdirp.sync(loc, MODE_0755)
 }
 
 /**
