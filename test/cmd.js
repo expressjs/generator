@@ -1014,6 +1014,128 @@ describe('express(1)', function () {
         })
       })
     })
+    
+    describe('es2015', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with vash templates', function (done) {
+        run(ctx.dir, ['--es2015'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should have "const" instead of "var" in every JavaScript file', function () {
+        ['bin/www', 'routes/index.js', 'routes/users.js'].forEach(function (fileName) {
+          var filePath = path.resolve(ctx.dir, fileName)
+          var contents = fs.readFileSync(filePath, 'utf8')
+          
+          assert.equal(contents.indexOf('var'), -1)
+          assert.notEqual(contents.indexOf('const'), -1)
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    })
+
+    describe('es5', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with vash templates', function (done) {
+        run(ctx.dir, ['--es5'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should have "var" and should not have "const" in every JavaScript file', function () {
+        ['bin/www', 'routes/index.js', 'routes/users.js'].forEach(function (fileName) {
+          var filePath = path.resolve(ctx.dir, fileName)
+          var contents = fs.readFileSync(filePath, 'utf8')
+          
+          assert.notEqual(contents.indexOf('var'), -1)
+          assert.equal(contents.indexOf('const'), -1)
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    })
   })
 })
 
