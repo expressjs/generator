@@ -11,6 +11,7 @@ var spawn = require('child_process').spawn
 var utils = require('./support/utils')
 var validateNpmName = require('validate-npm-package-name')
 
+var APP_START_STOP_TIMEOUT = 5000
 var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
 var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
 var NPM_INSTALL_TIMEOUT = 60000
@@ -100,11 +101,12 @@ describe('express(1)', function () {
       })
 
       after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
         this.app.stop(done)
       })
 
       it('should start app', function (done) {
-        this.timeout(5000)
+        this.timeout(APP_START_STOP_TIMEOUT)
         this.app.start(done)
       })
 
@@ -296,11 +298,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -351,11 +354,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -619,11 +623,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -675,11 +680,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -739,11 +745,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -802,11 +809,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -866,11 +874,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -930,11 +939,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
@@ -994,11 +1004,12 @@ describe('express(1)', function () {
         })
 
         after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.stop(done)
         })
 
         it('should start app', function (done) {
-          this.timeout(5000)
+          this.timeout(APP_START_STOP_TIMEOUT)
           this.app.start(done)
         })
 
