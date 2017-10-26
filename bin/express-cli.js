@@ -271,7 +271,9 @@ function createApplication (name, path) {
       version: '0.0.0',
       private: true,
       scripts: {
-        start: 'node ./bin/www'
+        start: 'node ./bin/www',
+        dev: "nodemon app.js",
+        debugger: "DEBUG=*:* npm run dev",
       },
       dependencies: {
         'body-parser': '~1.18.2',
