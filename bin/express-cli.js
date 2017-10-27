@@ -272,7 +272,7 @@ function createApplication (name, path) {
       private: true,
       scripts: {
         start: 'node ./bin/www',
-        dev: "nodemon app.js",
+        dev: "nodemon ./bin/www",
         debugger: "DEBUG=*:* npm run dev",
       },
       dependencies: {
