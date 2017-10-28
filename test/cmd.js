@@ -1014,7 +1014,7 @@ describe('express(1)', function () {
         })
       })
     })
-    
+
     describe('es2015', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
 
@@ -1031,7 +1031,7 @@ describe('express(1)', function () {
         ['bin/www', 'routes/index.js', 'routes/users.js'].forEach(function (fileName) {
           var filePath = path.resolve(ctx.dir, fileName)
           var contents = fs.readFileSync(filePath, 'utf8')
-          
+
           assert.equal(contents.indexOf('var'), -1)
           assert.notEqual(contents.indexOf('const'), -1)
         })
@@ -1092,7 +1092,7 @@ describe('express(1)', function () {
         ['bin/www', 'routes/index.js', 'routes/users.js'].forEach(function (fileName) {
           var filePath = path.resolve(ctx.dir, fileName)
           var contents = fs.readFileSync(filePath, 'utf8')
-          
+
           assert.notEqual(contents.indexOf('var'), -1)
           assert.equal(contents.indexOf('const'), -1)
         })
