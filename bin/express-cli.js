@@ -322,7 +322,7 @@ function createApplication (name, path) {
         pkg.dependencies['stylus'] = '0.54.5'
         break
       case 'sass':
-        pkg.dependencies['node-sass-middleware'] = '0.9.8'
+        pkg.dependencies['node-sass-middleware'] = '0.11.0'
         break
     }
 
