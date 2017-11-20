@@ -206,6 +206,7 @@ function createApplication (name, path) {
           copyTemplate('nunjucks/index.html', path + '/views/index.html')
           copyTemplate('nunjucks/layout.html', path + '/views/layout.html')
           copyTemplate('nunjucks/error.html', path + '/views/error.html')
+          break
         case 'hjs':
           copyTemplate('hogan/index.hjs', path + '/views/index.hjs')
           copyTemplate('hogan/error.hjs', path + '/views/error.hjs')
