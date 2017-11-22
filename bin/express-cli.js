@@ -51,7 +51,7 @@ program
   .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
-  .option('    --nunjucks', 'add nunjucks engine support', renamtedOption('--nunjucks', '--view=nunjucks'))
+  .option('    --nunjucks', 'add nunjucks engine support', renamedOption('--nunjucks', '--view=nunjucks'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
