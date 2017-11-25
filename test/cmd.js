@@ -41,7 +41,7 @@ describe('express(1)', function () {
     })
 
     it('should print jade view warning', function () {
-      assert.equal(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      assert.equal(ctx.stderr, "\n  warning: the default view engine has changed from jade to pug\n  warning: use `--view=pug' or `--help' for additional options\n\n")
     })
 
     it('should provide debug instructions', function () {
@@ -54,10 +54,10 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('package.json'), -1)
     })
 
-    it('should have jade templates', function () {
-      assert.notEqual(ctx.files.indexOf('views/error.jade'), -1)
-      assert.notEqual(ctx.files.indexOf('views/index.jade'), -1)
-      assert.notEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    it('should have pug templates', function () {
+      assert.notEqual(ctx.files.indexOf('views/error.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/index.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1)
     })
 
     it('should have a package.json file', function () {
@@ -75,8 +75,8 @@ describe('express(1)', function () {
         '    "cookie-parser": "~1.4.3",\n' +
         '    "debug": "~2.6.9",\n' +
         '    "express": "~4.15.5",\n' +
-        '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.9.0",\n' +
+        '    "pug": "~2.0.0-rc.4",\n' +
         '    "serve-favicon": "~2.4.5"\n' +
         '  }\n' +
         '}\n')
@@ -381,10 +381,10 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('.gitignore'), -1, 'should have .gitignore file')
     })
 
-    it('should have jade templates', function () {
-      assert.notEqual(ctx.files.indexOf('views/error.jade'), -1)
-      assert.notEqual(ctx.files.indexOf('views/index.jade'), -1)
-      assert.notEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    it('should have pug templates', function () {
+      assert.notEqual(ctx.files.indexOf('views/error.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/index.pug'), -1)
+      assert.notEqual(ctx.files.indexOf('views/layout.pug'), -1)
     })
   })
 
