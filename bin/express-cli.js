@@ -255,7 +255,8 @@ function createApplication (name, dir) {
     },
     dependencies: {
       'cookie-parser': '~1.4.3',
-      'debug': '~2.6.9',
+      'debug': '~2
+      .6.9',
       'express': '~4.16.0',
       'morgan': '~1.9.0',
       'serve-favicon': '~2.4.5'
@@ -288,22 +289,22 @@ function createApplication (name, dir) {
       pkg.dependencies['vash'] = '~0.12.2'
       break
   }
-
-  // CSS Engine support
-  switch (program.css) {
-    case 'less':
-      pkg.dependencies['less-middleware'] = '~2.2.1'
-      break
-    case 'compass':
-      pkg.dependencies['node-compass'] = '0.2.3'
-      break
-    case 'stylus':
-      pkg.dependencies['stylus'] = '0.54.5'
-      break
-    case 'sass':
-      pkg.dependencies['node-sass-middleware'] = '0.9.8'
-      break
-  }
+  
+    // CSS Engine support
+    switch (program.css) {
+      case 'less':
+        pkg.dependencies['less-middleware'] = '~2.2.1'
+        break
+      case 'compass':
+        pkg.dependencies['node-compass'] = '0.2.3'
+        break
+      case 'stylus':
+        pkg.dependencies['stylus'] = '0.54.5'
+        break
+      case 'sass':
+        pkg.dependencies['node-sass-middleware'] = '0.11.0'
+        break
+    }
 
   // sort dependencies like npm(1)
   pkg.dependencies = sortedObject(pkg.dependencies)
