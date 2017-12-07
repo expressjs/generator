@@ -317,6 +317,62 @@ describe('express(1)', function () {
       })
     })
 
+    describe('sass', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with sass files', function (done) {
+        run(ctx.dir, ['--css', 'sass'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 16, 'should have 16 files')
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+        assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+        assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+      })
+
+      it('should have sass files', function () {
+        assert.notEqual(ctx.files.indexOf('public/stylesheets/style.sass'), -1, 'should have style.sass file')
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should respond with stylesheet', function (done) {
+          request(this.app)
+          .get('/stylesheets/style.css')
+          .expect(200, /sans-serif/, done)
+        })
+      })
+    })
+
     describe('stylus', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
 
