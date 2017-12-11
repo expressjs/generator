@@ -2,6 +2,7 @@
 
 var ejs = require('ejs')
 var fs = require('fs')
+var https = require('https')
 var mkdirp = require('mkdirp')
 var path = require('path')
 var program = require('commander')
@@ -338,7 +339,20 @@ function createApplication (name, path) {
     })
 
     if (program.git) {
-      copyTemplate('js/gitignore', path + '/.gitignore')
+      write(path + '/.gitignore', '')
+
+      var gitignore = fs.createWriteStream(path + '/.gitignore')
+
+      https.get('https://raw.githubusercontent.com/github/gitignore/master/Node.gitignore', function (res) {
+        // use latest `github/gitignore` as a dynamic template,
+        // when resource not found or meet network error, use the backup gitignore instead
+        //
+        // reference: https://github.com/expressjs/generator/issues/181
+        if (res.statusCode === 200) res.pipe(gitignore)
+        else copyTemplate('js/gitignore', path + '/.gitignore')
+      }).on('error', function () {
+        copyTemplate('js/gitignore', path + '/.gitignore')
+      })
     }
 
     complete()
