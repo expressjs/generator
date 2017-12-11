@@ -8,6 +8,7 @@ var path = require('path')
 var request = require('supertest')
 var rimraf = require('rimraf')
 var spawn = require('child_process').spawn
+var tmp = require('tmp')
 var utils = require('./support/utils')
 var validateNpmName = require('validate-npm-package-name')
 
@@ -15,14 +16,9 @@ var APP_START_STOP_TIMEOUT = 5000
 var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
 var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
 var NPM_INSTALL_TIMEOUT = 60000
-var TEMP_DIR = path.resolve(__dirname, '..', 'temp', String(process.pid + Math.random()))
+var TEMP_DIR = tmp.dirSync().name
 
 describe('express(1)', function () {
-  before(function (done) {
-    this.timeout(30000)
-    rimraf(TEMP_DIR, done)
-  })
-
   after(function (done) {
     this.timeout(30000)
     rimraf(TEMP_DIR, done)
