@@ -349,7 +349,7 @@ function createApplication (name, dir) {
 
 function createAppName (pathName) {
   return path.basename(pathName)
-    .replace(/[^A-Za-z0-9.()!~*'-]+/g, '-')
+    .replace(/[^A-Za-z0-9.-]+/g, '-')
     .replace(/^[-_.]+|-+$/g, '')
     .toLowerCase()
 }

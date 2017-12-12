@@ -43,7 +43,7 @@ describe('express(1)', function () {
     })
 
     it('should provide debug instructions', function () {
-      assert.ok(/DEBUG=express\(1\)-\(no-args\):\* (?:& )?npm start/.test(ctx.stdout))
+      assert.ok(/DEBUG=express-1-no-args:\* (?:& )?npm start/.test(ctx.stdout))
     })
 
     it('should have basic files', function () {
@@ -62,7 +62,7 @@ describe('express(1)', function () {
       var file = path.resolve(ctx.dir, 'package.json')
       var contents = fs.readFileSync(file, 'utf8')
       assert.equal(contents, '{\n' +
-        '  "name": "express(1)-(no-args)",\n' +
+        '  "name": "express-1-no-args",\n' +
         '  "version": "0.0.0",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
@@ -134,8 +134,8 @@ describe('express(1)', function () {
         var file = path.resolve(ctx.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         var name = JSON.parse(contents).name
-        assert.ok(validateNpmName(name).validForNewPackages)
-        assert.equal(name, 'foo-bar-(baz!)')
+        assert.ok(validateNpmName(name).validForNewPackages, 'package name "' + name + '" is valid')
+        assert.equal(name, 'foo-bar-baz')
       })
     })
 
