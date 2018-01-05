@@ -1,10 +1,11 @@
 const React = require('react');
+const Layout = require('./layout')
 
 const Index = props => (
-  <React.Fragment>
+  <Layout title={props.title}>
     <h1>{props.title}</h1>
     <p>Welcome to {props.title}</p>
-  </React.Fragment>
+  </Layout>
 );
 
 module.exports = Index;

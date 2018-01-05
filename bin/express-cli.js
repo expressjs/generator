@@ -212,6 +212,7 @@ function createApplication (name, path) {
           break
         case 'jsx':
           copyTemplate('jsx/index.jsx', path + '/views/index.jsx')
+          copyTemplate('jsx/layout.jsx', path + '/views/layout.jsx')
           copyTemplate('jsx/error.jsx', path + '/views/error.jsx')
           break
         case 'pug':
