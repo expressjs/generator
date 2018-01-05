@@ -51,8 +51,9 @@ program
   .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
+  .option('    --jsx', 'add react jsx engine support', renamedOption('--jsx', '--view=jsx'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash|jsx) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -225,6 +226,10 @@ function createApplication (name, path) {
           copyTemplate('vash/layout.vash', path + '/views/layout.vash')
           copyTemplate('vash/error.vash', path + '/views/error.vash')
           break
+        case 'jsx':
+          copyTemplate('jsx/index.jsx', path + '/views/index.jsx')
+          copyTemplate('jsx/error.jsx', path + '/views/error.jsx')
+          break
       }
       complete()
     })
@@ -256,6 +261,12 @@ function createApplication (name, path) {
         app.locals.view = {
           engine: 'dust',
           render: 'adaro.dust()'
+        }
+        break
+      case 'jsx':
+        app.locals.view = {
+          engine: 'jsx',
+          render: "require('express-react-views').createEngine()"
         }
         break
       default:
@@ -307,6 +318,11 @@ function createApplication (name, path) {
         break
       case 'vash':
         pkg.dependencies['vash'] = '~0.12.2'
+        break
+      case 'jsx':
+        pkg.dependencies['react'] = '^16.2.0'
+        pkg.dependencies['react-dom'] = '^16.2.0'
+        pkg.dependencies['express-react-views'] = '^0.10.4'
         break
     }
 
@@ -442,6 +458,7 @@ function main () {
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
     if (program.pug) program.view = 'pug'
+    if (program.jsx) program.view = 'jsx'
   }
 
   // Default view engine
