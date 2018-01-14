@@ -285,7 +285,7 @@ function createApplication (name, dir) {
       pkg.dependencies['twig'] = '~0.10.3'
       break
     case 'vash':
-      pkg.dependencies['vash'] = '~0.12.2'
+      pkg.dependencies['vash'] = '~0.12.4'
       break
   }
 
