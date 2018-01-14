@@ -237,21 +237,25 @@ function createApplication (name, dir) {
 
   // CSS Engine support
   switch (program.css) {
-    case 'less':
-      app.locals.modules.lessMiddleware = 'less-middleware'
-      app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      break
-    case 'stylus':
-      app.locals.modules.stylus = 'stylus'
-      app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
-      break
     case 'compass':
       app.locals.modules.compass = 'node-compass'
       app.locals.uses.push("compass({ mode: 'expanded' })")
+      pkg.dependencies['node-compass'] = '0.2.3'
+      break
+    case 'less':
+      app.locals.modules.lessMiddleware = 'less-middleware'
+      app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
+      pkg.dependencies['less-middleware'] = '~2.2.1'
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
       app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
+      pkg.dependencies['node-sass-middleware'] = '0.11.0'
+      break
+    case 'stylus':
+      app.locals.modules.stylus = 'stylus'
+      app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
+      pkg.dependencies['stylus'] = '0.54.5'
       break
   }
 
@@ -298,22 +302,6 @@ function createApplication (name, dir) {
       break
     case 'vash':
       pkg.dependencies['vash'] = '~0.12.4'
-      break
-  }
-
-  // CSS Engine support
-  switch (program.css) {
-    case 'less':
-      pkg.dependencies['less-middleware'] = '~2.2.1'
-      break
-    case 'compass':
-      pkg.dependencies['node-compass'] = '0.2.3'
-      break
-    case 'stylus':
-      pkg.dependencies['stylus'] = '0.54.5'
-      break
-    case 'sass':
-      pkg.dependencies['node-sass-middleware'] = '0.11.0'
       break
   }
 
