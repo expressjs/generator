@@ -120,18 +120,18 @@ describe('express(1)', function () {
     })
 
     describe('when directory contains spaces', function () {
-      var ctx = setupTestEnvironment('foo bar (BAZ!)')
+      var ctx0 = setupTestEnvironment('foo bar (BAZ!)')
 
       it('should create basic app', function (done) {
-        run(ctx.dir, [], function (err, output) {
+        run(ctx0.dir, [], function (err, output) {
           if (err) return done(err)
-          assert.equal(utils.parseCreatedFiles(output, ctx.dir).length, 16)
+          assert.equal(utils.parseCreatedFiles(output, ctx0.dir).length, 16)
           done()
         })
       })
 
       it('should have a valid npm package name', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
+        var file = path.resolve(ctx0.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         var name = JSON.parse(contents).name
         assert.ok(validateNpmName(name).validForNewPackages, 'package name "' + name + '" is valid')
@@ -140,18 +140,18 @@ describe('express(1)', function () {
     })
 
     describe('when directory is not a valid name', function () {
-      var ctx = setupTestEnvironment('_')
+      var ctx1 = setupTestEnvironment('_')
 
       it('should create basic app', function (done) {
-        run(ctx.dir, [], function (err, output) {
+        run(ctx1.dir, [], function (err, output) {
           if (err) return done(err)
-          assert.equal(utils.parseCreatedFiles(output, ctx.dir).length, 16)
+          assert.equal(utils.parseCreatedFiles(output, ctx1.dir).length, 16)
           done()
         })
       })
 
       it('should default to name "hello-world"', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
+        var file = path.resolve(ctx1.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         var name = JSON.parse(contents).name
         assert.ok(validateNpmName(name).validForNewPackages)
@@ -1060,11 +1060,11 @@ function run (dir, args, callback) {
 
 function runRaw (dir, args, callback) {
   var argv = [BIN_PATH].concat(args)
-  var exec = process.argv[0]
+  var binp = process.argv[0]
   var stderr = ''
   var stdout = ''
 
-  var child = spawn(exec, argv, {
+  var child = spawn(binp, argv, {
     cwd: dir
   })
 

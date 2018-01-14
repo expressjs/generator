@@ -13,11 +13,9 @@ var util = require('util')
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
+var VERSION = require('../package').version
 
 var _exit = process.exit
-var pkg = require('../package.json')
-
-var version = pkg.version
 
 // Re-assign process.exit because of commander
 // TODO: Switch to a different command framework
@@ -48,7 +46,7 @@ before(program, 'unknownOption', function () {
 
 program
   .name('express')
-  .version(version, '    --version')
+  .version(VERSION, '    --version')
   .usage('[options] [dir]')
   .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
@@ -355,14 +353,14 @@ function createAppName (pathName) {
 }
 
 /**
- * Check if the given directory `path` is empty.
+ * Check if the given directory `dir` is empty.
  *
- * @param {String} path
+ * @param {String} dir
  * @param {Function} fn
  */
 
-function emptyDirectory (path, fn) {
-  fs.readdir(path, function (err, files) {
+function emptyDirectory (dir, fn) {
+  fs.readdir(dir, function (err, files) {
     if (err && err.code !== 'ENOENT') throw err
     fn(!files || !files.length)
   })
@@ -508,13 +506,13 @@ function warning (message) {
 }
 
 /**
- * echo str > path.
+ * echo str > file.
  *
- * @param {String} path
+ * @param {String} file
  * @param {String} str
  */
 
-function write (path, str, mode) {
-  fs.writeFileSync(path, str, { mode: mode || MODE_0666 })
-  console.log('   \x1b[36mcreate\x1b[0m : ' + path)
+function write (file, str, mode) {
+  fs.writeFileSync(file, str, { mode: mode || MODE_0666 })
+  console.log('   \x1b[36mcreate\x1b[0m : ' + file)
 }
