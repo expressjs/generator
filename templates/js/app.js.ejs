@@ -1,8 +1,6 @@
 var express = require('express');
 var path = require('path');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-<% Object.keys(modules).forEach(function (variable) { -%>
+<% Object.keys(modules).sort().forEach(function (variable) { -%>
 var <%- variable %> = require('<%- modules[variable] %>');
 <% }); -%>
 
@@ -18,14 +16,9 @@ app.engine('<%- view.engine %>', <%- view.render %>);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', '<%- view.engine %>');
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 <% uses.forEach(function (use) { -%>
 app.use(<%- use %>);
 <% }); -%>
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);

@@ -135,6 +135,20 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 function createApplication (name, dir) {
   console.log()
 
+  // Package
+  var pkg = {
+    name: name,
+    version: '0.0.0',
+    private: true,
+    scripts: {
+      start: 'node ./bin/www'
+    },
+    dependencies: {
+      'debug': '~2.6.9',
+      'express': '~4.16.0'
+    }
+  }
+
   // JavaScript
   var app = loadTemplate('js/app.js')
   var www = loadTemplate('js/www')
@@ -145,6 +159,20 @@ function createApplication (name, dir) {
   // App modules
   app.locals.modules = Object.create(null)
   app.locals.uses = []
+
+  // Request logger
+  app.locals.modules.logger = 'morgan'
+  app.locals.uses.push("logger('dev')")
+  pkg.dependencies.morgan = '~1.9.0'
+
+  // Body parsers
+  app.locals.uses.push('express.json()')
+  app.locals.uses.push('express.urlencoded({ extended: false })')
+
+  // Cookie parser
+  app.locals.modules.cookieParser = 'cookie-parser'
+  app.locals.uses.push('cookieParser()')
+  pkg.dependencies['cookie-parser'] = '~1.4.3'
 
   if (dir !== '.') {
     mkdir(dir, '.')
@@ -243,21 +271,8 @@ function createApplication (name, dir) {
       break
   }
 
-  // package.json
-  var pkg = {
-    name: name,
-    version: '0.0.0',
-    private: true,
-    scripts: {
-      start: 'node ./bin/www'
-    },
-    dependencies: {
-      'cookie-parser': '~1.4.3',
-      'debug': '~2.6.9',
-      'express': '~4.16.0',
-      'morgan': '~1.9.0'
-    }
-  }
+  // Static files
+  app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
 
   switch (program.view) {
     case 'dust':
@@ -302,12 +317,12 @@ function createApplication (name, dir) {
       break
   }
 
-  // sort dependencies like npm(1)
-  pkg.dependencies = sortedObject(pkg.dependencies)
-
   if (program.git) {
     copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
   }
+
+  // sort dependencies like npm(1)
+  pkg.dependencies = sortedObject(pkg.dependencies)
 
   // write files
   write(path.join(dir, 'app.js'), app.render())
