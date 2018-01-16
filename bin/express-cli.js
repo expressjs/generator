@@ -267,43 +267,40 @@ function createApplication (name, dir) {
         engine: 'dust',
         render: 'adaro.dust()'
       }
+      pkg.dependencies.adaro = '~1.0.4'
       break
-    default:
-      app.locals.view = {
-        engine: program.view
-      }
+    case 'ejs':
+      app.locals.view = { engine: 'ejs' }
+      pkg.dependencies.ejs = '~2.5.7'
+      break
+    case 'hbs':
+      app.locals.view = { engine: 'hbs' }
+      pkg.dependencies.hbs = '~4.0.1'
+      break
+    case 'hjs':
+      app.locals.view = { engine: 'hjs' }
+      pkg.dependencies.hjs = '~0.0.6'
+      break
+    case 'jade':
+      app.locals.view = { engine: 'jade' }
+      pkg.dependencies.jade = '~1.11.0'
+      break
+    case 'pug':
+      app.locals.view = { engine: 'pug' }
+      pkg.dependencies.pug = '2.0.0-beta11'
+      break
+    case 'twig':
+      app.locals.view = { engine: 'twig' }
+      pkg.dependencies.twig = '~0.10.3'
+      break
+    case 'vash':
+      app.locals.view = { engine: 'vash' }
+      pkg.dependencies.vash = '~0.12.4'
       break
   }
 
   // Static files
   app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
-
-  switch (program.view) {
-    case 'dust':
-      pkg.dependencies.adaro = '~1.0.4'
-      break
-    case 'jade':
-      pkg.dependencies['jade'] = '~1.11.0'
-      break
-    case 'ejs':
-      pkg.dependencies['ejs'] = '~2.5.7'
-      break
-    case 'hjs':
-      pkg.dependencies['hjs'] = '~0.0.6'
-      break
-    case 'hbs':
-      pkg.dependencies['hbs'] = '~4.0.1'
-      break
-    case 'pug':
-      pkg.dependencies['pug'] = '2.0.0-beta11'
-      break
-    case 'twig':
-      pkg.dependencies['twig'] = '~0.10.3'
-      break
-    case 'vash':
-      pkg.dependencies['vash'] = '~0.12.4'
-      break
-  }
 
   if (program.git) {
     copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
