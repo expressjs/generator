@@ -52,7 +52,7 @@ program
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|jsx|pug|twig|vash) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -196,11 +196,6 @@ function createApplication (name, path) {
           copyTemplate('ejs/index.ejs', path + '/views/index.ejs')
           copyTemplate('ejs/error.ejs', path + '/views/error.ejs')
           break
-        case 'jade':
-          copyTemplate('jade/index.jade', path + '/views/index.jade')
-          copyTemplate('jade/layout.jade', path + '/views/layout.jade')
-          copyTemplate('jade/error.jade', path + '/views/error.jade')
-          break
         case 'hjs':
           copyTemplate('hogan/index.hjs', path + '/views/index.hjs')
           copyTemplate('hogan/error.hjs', path + '/views/error.hjs')
@@ -209,6 +204,16 @@ function createApplication (name, path) {
           copyTemplate('hbs/index.hbs', path + '/views/index.hbs')
           copyTemplate('hbs/layout.hbs', path + '/views/layout.hbs')
           copyTemplate('hbs/error.hbs', path + '/views/error.hbs')
+          break
+        case 'jade':
+          copyTemplate('jade/index.jade', path + '/views/index.jade')
+          copyTemplate('jade/layout.jade', path + '/views/layout.jade')
+          copyTemplate('jade/error.jade', path + '/views/error.jade')
+          break
+        case 'jsx':
+          copyTemplate('jsx/index.jsx', path + '/views/index.jsx')
+          copyTemplate('jsx/layout.jsx', path + '/views/layout.jsx')
+          copyTemplate('jsx/error.jsx', path + '/views/error.jsx')
           break
         case 'pug':
           copyTemplate('pug/index.pug', path + '/views/index.pug')
@@ -258,6 +263,12 @@ function createApplication (name, path) {
           render: 'adaro.dust()'
         }
         break
+      case 'jsx':
+        app.locals.view = {
+          engine: 'jsx',
+          render: "require('express-react-views').createEngine()"
+        }
+        break
       default:
         app.locals.view = {
           engine: program.view
@@ -287,9 +298,6 @@ function createApplication (name, path) {
       case 'dust':
         pkg.dependencies.adaro = '~1.0.4'
         break
-      case 'jade':
-        pkg.dependencies['jade'] = '~1.11.0'
-        break
       case 'ejs':
         pkg.dependencies['ejs'] = '~2.5.7'
         break
@@ -298,6 +306,14 @@ function createApplication (name, path) {
         break
       case 'hbs':
         pkg.dependencies['hbs'] = '~4.0.1'
+        break
+      case 'jade':
+        pkg.dependencies['jade'] = '~1.11.0'
+        break
+      case 'jsx':
+        pkg.dependencies['react'] = '~16.2.0'
+        pkg.dependencies['react-dom'] = '~16.2.0'
+        pkg.dependencies['express-react-views'] = '~0.10.4'
         break
       case 'pug':
         pkg.dependencies['pug'] = '2.0.0-beta11'
@@ -441,6 +457,7 @@ function main () {
     if (program.ejs) program.view = 'ejs'
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
+    if (program.jsx) program.view = 'jsx'
     if (program.pug) program.view = 'pug'
   }
 

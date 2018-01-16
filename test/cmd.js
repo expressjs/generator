@@ -785,6 +785,63 @@ describe('express(1)', function () {
       })
     })
 
+    describe('jsx', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with jsx templates', function (done) {
+        run(ctx.dir, ['--view', 'jsx'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 17, 'should have 17 files')
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+        assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+        assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+      })
+
+      it('should have ejs templates', function () {
+        assert.notEqual(ctx.files.indexOf('views/error.jsx'), -1, 'should have views/error.jsx file')
+        assert.notEqual(ctx.files.indexOf('views/layout.jsx'), -1, 'should have views/layout.jsx file')
+        assert.notEqual(ctx.files.indexOf('views/index.jsx'), -1, 'should have views/index.jsx file')
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(30000)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(5000)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    })
+
     describe('pug', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
 
