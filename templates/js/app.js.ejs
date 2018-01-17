@@ -1,3 +1,4 @@
+var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
@@ -27,9 +28,7 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+  next(createError(404));
 });
 
 // error handler

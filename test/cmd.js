@@ -72,6 +72,7 @@ describe('express(1)', function () {
         '    "cookie-parser": "~1.4.3",\n' +
         '    "debug": "~2.6.9",\n' +
         '    "express": "~4.16.0",\n' +
+        '    "http-errors": "~1.6.2",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.9.0"\n' +
         '  }\n' +
