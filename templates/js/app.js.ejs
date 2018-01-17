@@ -4,8 +4,9 @@ var path = require('path');
 var <%- variable %> = require('<%- modules[variable] %>');
 <% }); -%>
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+<% Object.keys(localModules).sort().forEach(function (variable) { -%>
+var <%- variable %> = require('<%- localModules[variable] %>');
+<% }); -%>
 
 var app = express();
 
@@ -20,8 +21,9 @@ app.set('view engine', '<%- view.engine %>');
 app.use(<%- use %>);
 <% }); -%>
 
-app.use('/', index);
-app.use('/users', users);
+<% mounts.forEach(function (mount) { -%>
+app.use(<%= mount.path %>, <%- mount.code %>);
+<% }); -%>
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -157,7 +157,9 @@ function createApplication (name, dir) {
   www.locals.name = name
 
   // App modules
+  app.locals.localModules = Object.create(null)
   app.locals.modules = Object.create(null)
+  app.locals.mounts = []
   app.locals.uses = []
 
   // Request logger
@@ -258,6 +260,14 @@ function createApplication (name, dir) {
       pkg.dependencies['stylus'] = '0.54.5'
       break
   }
+
+  // Index router mount
+  app.locals.localModules.indexRouter = './routes/index'
+  app.locals.mounts.push({ path: '/', code: 'indexRouter' })
+
+  // User router mount
+  app.locals.localModules.usersRouter = './routes/users'
+  app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
 
   // Template support
   switch (program.view) {
@@ -409,7 +419,9 @@ function loadTemplate (name) {
   var locals = Object.create(null)
 
   function render () {
-    return ejs.render(contents, locals)
+    return ejs.render(contents, locals, {
+      escape: util.inspect
+    })
   }
 
   return {
