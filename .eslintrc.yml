@@ -1,0 +1,5 @@
+root: true
+extends: standard
+rules:
+  no-param-reassign: error
+  no-shadow: error
