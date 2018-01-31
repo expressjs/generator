@@ -26,6 +26,6 @@ before_install:
   - "test ! -d node_modules || npm prune"
   - "test ! -d node_modules || npm rebuild"
 script:
-  - "npm install --no-save node-sass"
+  - "npm install --no-save nan@2.7.0 node-sass"
   - "npm run test-ci"
   - "test -z $(npm -ps ls eslint) || npm run lint"
