@@ -25,5 +25,6 @@ build: off
 test_script:
   - node --version
   - npm --version
+  - npm install --no-save node-sass
   - npm run test-ci
 version: "{build}"
