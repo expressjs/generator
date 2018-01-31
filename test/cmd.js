@@ -522,6 +522,60 @@ describe('express(1)', function () {
     })
   })
 
+  describe('--no-view', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app with no view engine', function (done) {
+      run(ctx.dir, ['--no-view'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 13)
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+      assert.notEqual(ctx.files.indexOf('app.js'), -1)
+      assert.notEqual(ctx.files.indexOf('package.json'), -1)
+    })
+
+    it('should have HTML files to serve', function () {
+      assert.notEqual(ctx.files.indexOf('public/index.html'), -1)
+      assert.notEqual(ctx.files.indexOf('public/error.html'), -1)
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(30000)
+      npmInstall(ctx.dir, done)
+    })
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+      assert.equal(typeof app, 'function')
+      assert.equal(typeof app.handle, 'function')
+    })
+
+    it('should respond to HTTP request', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+
+      request(app)
+      .get('/')
+      .expect(200, /<title>Express<\/title>/, done)
+    })
+
+    it('should generate a 404', function (done) {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var app = require(file)
+
+      request(app)
+      .get('/does_not_exist')
+      .expect(404, /<p>An error has occurred<\/p>/, done)
+    })
+  })
+
   describe('--pug', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 

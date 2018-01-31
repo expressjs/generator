@@ -55,6 +55,7 @@ program
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('    --no-view', 'use HTML directly instead of a view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -178,35 +179,44 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  if (program.view == null) {
+    // Serve the index route statically, so only copy users route
+    copyTemplateMulti('js/routes', dir + '/routes', 'users.js')
+  } else {
+    copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  }
 
-  // copy view templates
-  mkdir(dir, 'views')
-  switch (program.view) {
-    case 'dust':
-      copyTemplateMulti('views', dir + '/views', '*.dust')
-      break
-    case 'ejs':
-      copyTemplateMulti('views', dir + '/views', '*.ejs')
-      break
-    case 'jade':
-      copyTemplateMulti('views', dir + '/views', '*.jade')
-      break
-    case 'hjs':
-      copyTemplateMulti('views', dir + '/views', '*.hjs')
-      break
-    case 'hbs':
-      copyTemplateMulti('views', dir + '/views', '*.hbs')
-      break
-    case 'pug':
-      copyTemplateMulti('views', dir + '/views', '*.pug')
-      break
-    case 'twig':
-      copyTemplateMulti('views', dir + '/views', '*.twig')
-      break
-    case 'vash':
-      copyTemplateMulti('views', dir + '/views', '*.vash')
-      break
+  if (program.view == null) {
+    copyTemplateMulti('views', dir + '/public', '*.html')
+  } else {
+    // copy view templates
+    mkdir(dir, 'views')
+    switch (program.view) {
+      case 'dust':
+        copyTemplateMulti('views', dir + '/views', '*.dust')
+        break
+      case 'ejs':
+        copyTemplateMulti('views', dir + '/views', '*.ejs')
+        break
+      case 'jade':
+        copyTemplateMulti('views', dir + '/views', '*.jade')
+        break
+      case 'hjs':
+        copyTemplateMulti('views', dir + '/views', '*.hjs')
+        break
+      case 'hbs':
+        copyTemplateMulti('views', dir + '/views', '*.hbs')
+        break
+      case 'pug':
+        copyTemplateMulti('views', dir + '/views', '*.pug')
+        break
+      case 'twig':
+        copyTemplateMulti('views', dir + '/views', '*.twig')
+        break
+      case 'vash':
+        copyTemplateMulti('views', dir + '/views', '*.vash')
+        break
+    }
   }
 
   // CSS Engine support
@@ -404,6 +414,14 @@ function launchedFromCmd () {
 }
 
 /**
+ * Determine whether legacy view syntax (e.g. '--ejs') was used to specify view
+ */
+
+function legacyViewSpecified () {
+  return program.ejs || program.hbs || program.hogan || program.pug
+}
+
+/**
  * Load template file.
  */
 
@@ -433,7 +451,9 @@ function main () {
   var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
   // View engine
-  if (program.view === undefined) {
+  if (program.view === false) {
+    program.view = null
+  } else if (legacyViewSpecified()) {
     if (program.ejs) program.view = 'ejs'
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
@@ -441,7 +461,7 @@ function main () {
   }
 
   // Default view engine
-  if (program.view === undefined) {
+  if (program.view === true) {
     warning('the default view engine will not be jade in future releases\n' +
       "use `--view=jade' or `--help' for additional options")
     program.view = 'jade'
