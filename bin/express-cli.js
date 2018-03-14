@@ -51,6 +51,7 @@ program
   .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
+  .option('    --nunjucks', 'add nunjucks engine support', renamedOption('--nunjucks', '--view=nunjucks'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
@@ -201,6 +202,11 @@ function createApplication (name, path) {
           copyTemplate('jade/layout.jade', path + '/views/layout.jade')
           copyTemplate('jade/error.jade', path + '/views/error.jade')
           break
+        case 'nunjucks':
+          copyTemplate('nunjucks/index.html', path + '/views/index.html')
+          copyTemplate('nunjucks/layout.html', path + '/views/layout.html')
+          copyTemplate('nunjucks/error.html', path + '/views/error.html')
+          break
         case 'hjs':
           copyTemplate('hogan/index.hjs', path + '/views/index.hjs')
           copyTemplate('hogan/error.hjs', path + '/views/error.hjs')
@@ -302,6 +308,9 @@ function createApplication (name, path) {
       case 'pug':
         pkg.dependencies['pug'] = '2.0.0-beta11'
         break
+      case 'nunjucks':
+        pkg.dependencies['nunjucks'] = '3.0.1'
+	break
       case 'twig':
         pkg.dependencies['twig'] = '~0.10.3'
         break
@@ -442,6 +451,7 @@ function main () {
     if (program.hbs) program.view = 'hbs'
     if (program.hogan) program.view = 'hjs'
     if (program.pug) program.view = 'pug'
+    if (program.nunjucks) program.view = 'nunjucks'
   }
 
   // Default view engine
