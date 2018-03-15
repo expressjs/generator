@@ -10,6 +10,8 @@ node_js:
   - "6.11"
   - "7.10"
   - "8.4"
+matrix:
+  fast_finish: true
 sudo: false
 cache:
   directories:
