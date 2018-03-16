@@ -108,14 +108,14 @@ describe('express(1)', function () {
 
       it('should respond to HTTP request', function (done) {
         request(this.app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
       })
 
       it('should generate a 404', function (done) {
         request(this.app)
-        .get('/does_not_exist')
-        .expect(404, /<h1>Not Found<\/h1>/, done)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
       })
     })
 
@@ -305,14 +305,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should respond with stylesheet', function (done) {
           request(this.app)
-          .get('/stylesheets/style.css')
-          .expect(200, /sans-serif/, done)
+            .get('/stylesheets/style.css')
+            .expect(200, /sans-serif/, done)
         })
       })
     })
@@ -361,14 +361,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should respond with stylesheet', function (done) {
           request(this.app)
-          .get('/stylesheets/style.css')
-          .expect(200, /sans-serif/, done)
+            .get('/stylesheets/style.css')
+            .expect(200, /sans-serif/, done)
         })
       })
     })
@@ -566,14 +566,14 @@ describe('express(1)', function () {
 
       it('should respond to HTTP request', function (done) {
         request(this.app)
-        .get('/')
-        .expect(200, /<title>Express<\/title>/, done)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
       })
 
       it('should generate a 404', function (done) {
         request(this.app)
-        .get('/does_not_exist')
-        .expect(404, /Cannot GET \/does_not_exist/, done)
+          .get('/does_not_exist')
+          .expect(404, /Cannot GET \/does_not_exist/, done)
       })
     })
   })
@@ -686,14 +686,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -743,14 +743,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -808,14 +808,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -872,14 +872,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -937,14 +937,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -1002,14 +1002,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })
@@ -1067,14 +1067,14 @@ describe('express(1)', function () {
 
         it('should respond to HTTP request', function (done) {
           request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
         })
 
         it('should generate a 404', function (done) {
           request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /<h1>Not Found<\/h1>/, done)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
         })
       })
     })

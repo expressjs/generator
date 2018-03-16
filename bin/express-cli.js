@@ -120,10 +120,10 @@ function copyTemplate (from, to) {
 
 function copyTemplateMulti (fromDir, toDir, nameGlob) {
   fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
-  .filter(minimatch.filter(nameGlob, { matchBase: true }))
-  .forEach(function (name) {
-    copyTemplate(path.join(fromDir, name), path.join(toDir, name))
-  })
+    .filter(minimatch.filter(nameGlob, { matchBase: true }))
+    .forEach(function (name) {
+      copyTemplate(path.join(fromDir, name), path.join(toDir, name))
+    })
 }
 
 /**
