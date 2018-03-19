@@ -6,7 +6,6 @@
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Linux Build][travis-image]][travis-url]
 [![Windows Build][appveyor-image]][appveyor-url]
-[![Gratipay][gratipay-image]][gratipay-url]
 
 ## Installation
 
@@ -64,5 +63,3 @@ This generator can also be further configured with the following command line fl
 [appveyor-url]: https://ci.appveyor.com/project/dougwilson/generator
 [downloads-image]: https://img.shields.io/npm/dm/express-generator.svg
 [downloads-url]: https://npmjs.org/package/express-generator
-[gratipay-image]: https://img.shields.io/gratipay/dougwilson.svg
-[gratipay-url]: https://gratipay.com/dougwilson/
