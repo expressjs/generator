@@ -139,13 +139,13 @@ function createApplication (name, dir) {
   var package = path.join(dir, 'package.json')
   var dependencies = {}
   var devDependencies = {}
-
+  dependencies.express = '~4.16.0'
+  dependencies.debug = '~2.6.9'
   if(package){
     dependencies = package.dependencies
     devDependencies = package.devDependencies
   }
-  dependencies.express = '~4.16.0'
-  dependencies.debug = '~2.6.9'
+  
   // Package
   var pkg = {
     name: package.name || name,
