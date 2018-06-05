@@ -136,7 +136,7 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 function createApplication (name, dir) {
   console.log()
   // require previous package.json in if it exists
-  var package = require(dir, 'package.json')
+  var package = path.join(dir, 'package.json')
   var dependencies;
   var devDependencies;
 
