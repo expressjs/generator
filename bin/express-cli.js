@@ -136,26 +136,28 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 function createApplication (name, dir) {
   console.log()
   // require previous package.json in if it exists
+  // Package
   var package = path.join(dir, 'package.json')
   var dependencies = {}
   var devDependencies = {}
-  dependencies['express'] = '~4.16.0'
-  dependencies.debug = '~2.6.9'
+
   if(package){
     dependencies = package.dependencies
     devDependencies = package.devDependencies
   }
-  
-  // Package
+
   var pkg = {
-    name: package.name || name,
-    version: package.version || '0.0.0',
+    name:  name,
+    version: '0.0.0',
     private: true,
     scripts: {
       start: 'node ./bin/www'
     },
-    dependencies: dependencies,
-    devDependencies: devDependencies
+    dependencies: Object.assign({
+      'debug': '~2.6.9',
+      'express': '~4.16.0'
+    }, dependencies),
+    devDependencies
   }
 
   // JavaScript
