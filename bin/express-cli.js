@@ -139,8 +139,8 @@ function createApplication (name, dir) {
   var package = path.join(dir, 'package.json')
   var dependencies = {}
   var devDependencies = {}
-  dependencies.express = '~4.16.0'
-  dependencies.debug = '~2.6.9'
+  dependencies['express'] = '~4.16.0'
+  dependencies['express'] = '~2.6.9'
   if(package){
     dependencies = package.dependencies
     devDependencies = package.devDependencies
@@ -174,7 +174,7 @@ function createApplication (name, dir) {
   // Request logger
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
-  pkg.dependencies.morgan = '~1.9.0'
+  pkg.dependencies['morgan'] = '~1.9.0'
 
   // Body parsers
   app.locals.uses.push('express.json()')
