@@ -137,8 +137,8 @@ function createApplication (name, dir) {
   console.log()
   // require previous package.json in if it exists
   var package = path.join(dir, 'package.json')
-  var dependencies;
-  var devDependencies;
+  var dependencies = {}
+  var devDependencies = {}
 
   if(package){
     dependencies = package.dependencies
