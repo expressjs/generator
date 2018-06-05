@@ -142,7 +142,6 @@ function createApplication (name, dir) {
 
   if(package){
     dependencies = package.dependencies
-    dependencies.express = undefined
     devDependencies = package.devDependencies
   }
   // Package
