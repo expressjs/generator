@@ -144,6 +144,8 @@ function createApplication (name, dir) {
     dependencies = package.dependencies
     devDependencies = package.devDependencies
   }
+  dependencies.express = '~4.16.0'
+  dependencies.debug = '~2.6.9'
   // Package
   var pkg = {
     name: package.name || name,
@@ -152,10 +154,7 @@ function createApplication (name, dir) {
     scripts: {
       start: 'node ./bin/www'
     },
-    dependencies: Object.assign({
-      'debug': '~2.6.9',
-      'express': '~4.16.0'
-    }, dependencies),
+    dependencies: dependencies,
     devDependencies: devDependencies
   }
 
