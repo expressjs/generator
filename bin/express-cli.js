@@ -144,7 +144,6 @@ function createApplication (name, dir, force) {
   if(force){
     existingPackage = require(path.join(dir, 'package.json'))
     existingDependencies = existingPackage.dependencies
-    existingDevdependencies = existingPackage.devDependencies
   }
 
   var pkg = {
@@ -157,8 +156,7 @@ function createApplication (name, dir, force) {
     dependencies: Object.assign({
       'debug': '~2.6.9',
       'express': '~4.16.0'
-    }, existingDependencies),
-    devDependencies = existingDevdependencies
+    }, existingDependencies)
   }
 
   // JavaScript
