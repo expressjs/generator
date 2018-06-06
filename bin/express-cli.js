@@ -144,7 +144,7 @@ function createApplication (name, dir, force) {
   if (force) {
     existingPackage = require(path.join(dir, 'package.json'))
     existingDependencies = existingPackage.dependencies
-    existingDevdependencies = existingDependencies
+    existingDevdependencies = existingPackage.devDependencies
   }
 
   var pkg = {
