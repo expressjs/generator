@@ -158,7 +158,7 @@ function createApplication (name, dir, force) {
       'debug': '~2.6.9',
       'express': '~4.16.0'
     }, existingDependencies),
-    existingDevdependencies
+    devDependencies = existingDevdependencies
   }
 
   // JavaScript
