@@ -133,10 +133,19 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
  * @param {string} dir
  */
 
-function createApplication (name, dir) {
+function createApplication (name, dir, force) {
   console.log()
 
   // Package
+  var existingPackage
+  var existingDependencies
+  var existingDevdependencies
+
+  if(force){
+    existingPackage = require(path.join(dir, 'package.json'))
+    existingDependencies = existingPackage.dependencies
+  }
+
   var pkg = {
     name: name,
     version: '0.0.0',
@@ -144,10 +153,10 @@ function createApplication (name, dir) {
     scripts: {
       start: 'node ./bin/www'
     },
-    dependencies: {
+    dependencies: Object.assign({
       'debug': '~2.6.9',
       'express': '~4.16.0'
-    }
+    }, existingDependencies)
   }
 
   // JavaScript
@@ -469,7 +478,7 @@ function main () {
   // Generate application
   emptyDirectory(destinationPath, function (empty) {
     if (empty || program.force) {
-      createApplication(appName, destinationPath)
+      createApplication(appName, destinationPath, program.force)
     } else {
       confirm('destination is not empty, continue? [y/N] ', function (ok) {
         if (ok) {
