@@ -578,6 +578,86 @@ describe('express(1)', function () {
     })
   })
 
+  describe('--api', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create web api app without view engine', function (done) {
+      run(ctx.dir, ['--api'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 11)
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+      assert.notEqual(ctx.files.indexOf('app.js'), -1)
+      assert.notEqual(ctx.files.indexOf('package.json'), -1)
+    })
+
+    it('should not have views directory', function () {
+      assert.equal(ctx.files.indexOf('views'), -1)
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(NPM_INSTALL_TIMEOUT)
+      npmInstall(ctx.dir, done)
+    })
+
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
+
+      after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.stop(done)
+      })
+
+      it('should start app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.start(done)
+      })
+
+      it('should respond to HTTP GET request', function (done) {
+        request(this.app)
+          .get('/api/values')
+          .expect(200, ['value1', 'value2'], done)
+      })
+
+      it('should respond to HTTP GET request with id', function (done) {
+        request(this.app)
+          .get('/api/values/5')
+          .expect(200, 'value', done)
+      })
+
+      it('should respond to HTTP POST request', function (done) {
+        request(this.app)
+          .post('/api/values')
+          .expect(200, '', done)
+      })
+
+      it('should respond to HTTP PUT request with id', function (done) {
+        request(this.app)
+          .put('/api/values/5')
+          .expect(200, '', done)
+      })
+
+      it('should respond to HTTP DELETE request with id', function (done) {
+        request(this.app)
+          .delete('/api/values/5')
+          .expect(200, '', done)
+      })
+
+      it('should generate a 404', function (done) {
+        request(this.app)
+          .get('/api/does_not_exist')
+          .expect(404, {"message": "Not Found"}, done)
+      })
+    })
+  })
+
   describe('--pug', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 

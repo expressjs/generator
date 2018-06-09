@@ -332,6 +332,8 @@ function createApplication (name, dir) {
       break
   }
 
+  app.locals.api = program.api
+
   // Static files
   app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
 
