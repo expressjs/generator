@@ -491,7 +491,7 @@ function main () {
       confirm('destination is not empty, continue? [y/N] ', function (ok) {
         if (ok) {
           process.stdin.destroy()
-          createApplication(appName, destinationPath)
+          createApplication(appName, destinationPath, force)
         } else {
           console.error('aborting')
           exit(1)
