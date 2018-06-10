@@ -245,7 +245,10 @@ function createApplication (name, dir) {
         copyTemplateMulti('views', dir + '/views', '*.vash')
         break
     }
-  } else if (!program.api) {
+  } else if (program.api) {
+    // Add http-errors dependencies
+    pkg.dependencies['http-errors'] = '~1.6.2'
+  } else {
     // Copy extra public files
     copyTemplate('js/index.html', path.join(dir, 'public/index.html'))
   }
