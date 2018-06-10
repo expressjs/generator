@@ -208,13 +208,12 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  if(!program.api) {
+  if (!program.api) {
     copyTemplateMulti('js/routes', dir + '/routes', '*.js')
-  }
-  else {
+  } else {
     copyTemplateMulti('js/routes/api', dir + '/routes', '*.js')
   }
-  
+
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
@@ -277,7 +276,7 @@ function createApplication (name, dir) {
       break
   }
 
-  if(!program.api) {
+  if (!program.api) {
     // Index router mount
     app.locals.localModules.indexRouter = './routes/index'
     app.locals.mounts.push({ path: '/', code: 'indexRouter' })
@@ -285,11 +284,10 @@ function createApplication (name, dir) {
     // User router mount
     app.locals.localModules.usersRouter = './routes/users'
     app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
-  }
-  else {
+  } else {
     // Value router mounte
     app.locals.localModules.apiRouter = './routes/values'
-    app.locals.mounts.push({ path: '/api', code: 'apiRouter'})
+    app.locals.mounts.push({ path: '/api', code: 'apiRouter' })
   }
 
   // Template support
@@ -482,9 +480,8 @@ function main () {
     warning('the default view engine will not be jade in future releases\n' +
       "use `--view=jade' or `--help' for additional options")
     program.view = 'jade'
-  }
-  else if (program.api) {
-    program.view = false;
+  } else if (program.api) {
+    program.view = false
   }
 
   // Generate application

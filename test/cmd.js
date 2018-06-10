@@ -653,7 +653,7 @@ describe('express(1)', function () {
       it('should generate a 404', function (done) {
         request(this.app)
           .get('/api/does_not_exist')
-          .expect(404, {"message": "Not Found"}, done)
+          .expect(404, {'message': 'Not Found'}, done)
       })
     })
   })
