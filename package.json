@@ -26,7 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "2.13.0",
-    "ejs": "2.5.7",
+    "ejs": "2.6.1",
     "minimatch": "3.0.4",
     "mkdirp": "0.5.1",
     "sorted-object": "2.0.1"
