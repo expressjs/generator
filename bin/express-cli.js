@@ -171,6 +171,20 @@ function createApplication (name, dir) {
   app.locals.es6 = program.es6
   app.locals.varconst = varconst
 
+  var genFunc = null
+
+  if (program.es6) {
+    genFunc = function (params) {
+      return '(' + params.join(', ') + ') =>'
+    }
+  } else {
+    genFunc = function (params) {
+      return 'function (' + params.join(', ') + ')'
+    }
+  }
+
+  app.locals.genFunc = genFunc
+
   // App modules
   app.locals.localModules = Object.create(null)
   app.locals.modules = Object.create(null)
