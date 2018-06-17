@@ -9,6 +9,7 @@ var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
+var semver = require('semver')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -57,7 +58,13 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
-  .parse(process.argv)
+
+if (semver.gte(process.version, '6.0.0')) {
+  program
+    .option('    --es6', 'use ES6 (ES2015) language features')
+}
+
+program.parse(process.argv)
 
 if (!exit.exited) {
   main()
@@ -157,6 +164,27 @@ function createApplication (name, dir) {
   // App name
   www.locals.name = name
 
+  // es6 support
+  var varconst = program.es6 ? 'const' : 'var'
+  www.locals.es6 = program.es6
+  www.locals.varconst = varconst
+  app.locals.es6 = program.es6
+  app.locals.varconst = varconst
+
+  var genFunc = null
+
+  if (program.es6) {
+    genFunc = function (params) {
+      return '(' + params.join(', ') + ') =>'
+    }
+  } else {
+    genFunc = function (params) {
+      return 'function (' + params.join(', ') + ')'
+    }
+  }
+
+  app.locals.genFunc = genFunc
+
   // App modules
   app.locals.localModules = Object.create(null)
   app.locals.modules = Object.create(null)
@@ -207,7 +235,11 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  if (program.es6) {
+    copyTemplateMulti('js/routes/es6', dir + '/routes', '*.js')
+  } else {
+    copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  }
 
   if (program.view) {
     // Copy view templates
