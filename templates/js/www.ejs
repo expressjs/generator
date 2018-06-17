@@ -33,17 +33,17 @@ server.on('listening', onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
-  <%- varconst %> port = parseInt(val, 10);
+function normalizePort (val) {
+  <%- varconst %> parsedPort = parseInt(val, 10);
 
-  if (isNaN(port)) {
+  if (isNaN(parsedPort)) {
     // named pipe
     return val;
   }
 
-  if (port >= 0) {
+  if (parsedPort >= 0) {
     // port number
-    return port;
+    return parsedPort;
   }
 
   return false;
@@ -53,7 +53,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError (error) {
   if (error.syscall !== 'listen') {
     throw error;
   }
@@ -71,7 +71,6 @@ function onError(error) {
       console.error(bind + ' requires elevated privileges');
 <% } -%>
       process.exit(1);
-      break;
     case 'EADDRINUSE':
 <% if (es6) { -%>
       console.error(`${bind} is already in use`);
@@ -79,7 +78,6 @@ function onError(error) {
       console.error(bind + ' is already in use');
 <% } -%>
       process.exit(1);
-      break;
     default:
       throw error;
   }
@@ -89,7 +87,7 @@ function onError(error) {
  * Event listener for HTTP server "listening" event.
  */
 
-function onListening() {
+function onListening () {
   <%- varconst %> addr = server.address();
   <%- varconst %> bind = typeof addr === 'string'
     ? 'pipe ' + addr
