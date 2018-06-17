@@ -77,6 +77,7 @@ function onError (error) {
       console.error(bind + ' requires elevated privileges');
 <% } -%>
       process.exit(1);
+      break;
     case 'EADDRINUSE':
 <% if (es6) { -%>
       console.error(`${bind} is already in use`);
@@ -84,6 +85,7 @@ function onError (error) {
       console.error(bind + ' is already in use');
 <% } -%>
       process.exit(1);
+      break;
     default:
       throw error;
   }
