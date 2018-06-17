@@ -1151,7 +1151,7 @@ describe('--es6', function () {
   }
 })
 
-function npmInstall(dir, callback) {
+function npmInstall (dir, callback) {
   var env = utils.childEnvironment()
 
   exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
@@ -1165,7 +1165,7 @@ function npmInstall(dir, callback) {
   })
 }
 
-function run(dir, args, callback) {
+function run (dir, args, callback) {
   runRaw(dir, args, function (err, code, stdout, stderr) {
     if (err) {
       return callback(err)
@@ -1184,7 +1184,7 @@ function run(dir, args, callback) {
   })
 }
 
-function runRaw(dir, args, callback) {
+function runRaw (dir, args, callback) {
   var argv = [BIN_PATH].concat(args)
   var binp = process.argv[0]
   var stderr = ''
@@ -1195,23 +1195,23 @@ function runRaw(dir, args, callback) {
   })
 
   child.stdout.setEncoding('utf8')
-  child.stdout.on('data', function ondata(str) {
+  child.stdout.on('data', function ondata (str) {
     stdout += str
   })
   child.stderr.setEncoding('utf8')
-  child.stderr.on('data', function ondata(str) {
+  child.stderr.on('data', function ondata (str) {
     stderr += str
   })
 
   child.on('close', onclose)
   child.on('error', callback)
 
-  function onclose(code) {
+  function onclose (code) {
     callback(null, code, stdout, stderr)
   }
 }
 
-function setupTestEnvironment(name) {
+function setupTestEnvironment (name) {
   var ctx = {}
 
   before('create environment', function (done) {
