@@ -1,9 +1,9 @@
-
 var assert = require('assert')
 var AppRunner = require('./support/app-runner')
 var exec = require('child_process').exec
 var fs = require('fs')
 var mkdirp = require('mkdirp')
+var semver = require('semver')
 var path = require('path')
 var request = require('supertest')
 var rimraf = require('rimraf')
@@ -1081,10 +1081,80 @@ describe('express(1)', function () {
   })
 })
 
-function npmInstall (dir, callback) {
+describe('--es6', function () {
+  var ctx = setupTestEnvironment(this.fullTitle())
+
+  if (semver.lt(process.version, '6.0.0')) {
+    it('should exit if Node.js version is < 6.0.0', function (done) {
+      run(ctx.dir, ['--es6'], function (err, stdout) {
+        assert.notEqual(err.message.indexOf('unknown option'), -1, 'should show an error with invalid option')
+        done()
+      })
+    })
+  } else {
+    it('should create basic app', function (done) {
+      run(ctx.dir, ['--es6'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 16, 'should have 16 files')
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+      assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+      assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+    })
+
+    it('should use const instead of var', function () {
+      var wwwfile = path.resolve(ctx.dir, 'bin/www')
+      var appfile = path.resolve(ctx.dir, 'app.js')
+      var indexroutefile = path.resolve(ctx.dir, 'routes/index.js')
+
+      var wwwcontent = fs.readFileSync(wwwfile, 'utf8')
+      assert.notEqual(wwwcontent.indexOf('const http'), -1, 'should use const')
+
+      var appcontent = fs.readFileSync(appfile, 'utf8')
+      assert.notEqual(appcontent.indexOf('const express'), -1, 'should use const')
+
+      var indexroutecontent = fs.readFileSync(indexroutefile, 'utf8')
+      assert.notEqual(indexroutecontent.indexOf('const express'), -1, 'should use const')
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(NPM_INSTALL_TIMEOUT)
+      npmInstall(ctx.dir, done)
+    })
+
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
+
+      after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.stop(done)
+      })
+
+      it('should start app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.start(done)
+      })
+
+      it('should respond to HTTP request', function (done) {
+        request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+      })
+    })
+  }
+})
+
+function npmInstall(dir, callback) {
   var env = utils.childEnvironment()
 
-  exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
+  exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
     if (err) {
       err.message += stderr
       callback(err)
@@ -1095,7 +1165,7 @@ function npmInstall (dir, callback) {
   })
 }
 
-function run (dir, args, callback) {
+function run(dir, args, callback) {
   runRaw(dir, args, function (err, code, stdout, stderr) {
     if (err) {
       return callback(err)
@@ -1114,7 +1184,7 @@ function run (dir, args, callback) {
   })
 }
 
-function runRaw (dir, args, callback) {
+function runRaw(dir, args, callback) {
   var argv = [BIN_PATH].concat(args)
   var binp = process.argv[0]
   var stderr = ''
@@ -1125,23 +1195,23 @@ function runRaw (dir, args, callback) {
   })
 
   child.stdout.setEncoding('utf8')
-  child.stdout.on('data', function ondata (str) {
+  child.stdout.on('data', function ondata(str) {
     stdout += str
   })
   child.stderr.setEncoding('utf8')
-  child.stderr.on('data', function ondata (str) {
+  child.stderr.on('data', function ondata(str) {
     stderr += str
   })
 
   child.on('close', onclose)
   child.on('error', callback)
 
-  function onclose (code) {
+  function onclose(code) {
     callback(null, code, stdout, stderr)
   }
 }
 
-function setupTestEnvironment (name) {
+function setupTestEnvironment(name) {
   var ctx = {}
 
   before('create environment', function (done) {
