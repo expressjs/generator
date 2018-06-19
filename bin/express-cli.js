@@ -9,7 +9,7 @@ var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
-var args = require('optimist').argv
+var programArgs = require('optimist').argv
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -163,11 +163,11 @@ function createApplication (name, dir) {
   }
 
   if (program.https) {
-    if (args['https-key'] && args['https-cert']) {
+    if (programArgs['https-key'] && programArgs['https-cert']) {
       mkdir(dir, 'https')
       try {
-        copyFile(args['https-key'], path.join(dir, 'https/key.pem'))
-        copyFile(args['https-cert'], path.join(dir, 'https/server.crt'))
+        copyFile(programArgs['https-key'], path.join(dir, 'https/key.pem'))
+        copyFile(programArgs['https-cert'], path.join(dir, 'https/server.crt'))
       } catch (e) {
         console.log('   \x1b[31mError copying the https cert files\x1b[0m')
         _exit(0)
