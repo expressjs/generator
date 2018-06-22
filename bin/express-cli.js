@@ -345,6 +345,8 @@ function createApplication (name, dir) {
 
   console.log()
   console.log('   install dependencies:')
+  
+  //Checking yarn environment variable 
   if((process.env.PATH).search('Yarn') > -1){ //Yarn exist
     console.log('     %s yarn install', prompt)
     console.log()
@@ -370,7 +372,9 @@ function createApplication (name, dir) {
 
     console.log()
   }
-}
+
+    console.log()
+  }   
 
 /**
  * Create an app name from a directory path, fitting npm naming requirements.
