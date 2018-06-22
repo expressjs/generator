@@ -358,11 +358,11 @@ function createApplication (name, dir) {
     }
 
     console.log()
-  }else { // Yarn does not exist
+  } else { // Yarn does not exist
     console.log('     %s npm install', prompt)
     console.log()
     console.log('   run the app:')
-    
+
     if (launchedFromCmd()) {
       console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
     } else {
@@ -372,8 +372,8 @@ function createApplication (name, dir) {
     console.log()
   }
 
-    console.log()
-  }
+  console.log()
+}
 
 /**
  * Create an app name from a directory path, fitting npm naming requirements.
