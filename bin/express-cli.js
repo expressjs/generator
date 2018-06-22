@@ -345,18 +345,31 @@ function createApplication (name, dir) {
 
   console.log()
   console.log('   install dependencies:')
-  console.log('     %s npm install', prompt)
-  console.log('     %s yarn install', prompt)
-  console.log()
-  console.log('   run the app:')
+  if((process.env.PATH).search('Yarn') > -1){ //Yarn exist
+    console.log('     %s yarn install', prompt)
+    console.log()
+    console.log('   run the app:')
 
-  if (launchedFromCmd()) {
-    console.log('     %s SET DEBUG=%s:* & npm start or yarn start', prompt, name)
-  } else {
-    console.log('     %s DEBUG=%s:* npm start or yarn start', prompt, name)
+    if (launchedFromCmd()) {
+      console.log('     %s SET DEBUG=%s:* & yarn start', prompt, name)
+    } else {
+      console.log('     %s DEBUG=%s:* yarn start', prompt, name)
+    }
+  
+    console.log()
+  }else{ //Yarn does not exist
+    console.log('     %s npm install', prompt)
+    console.log()
+    console.log('   run the app:')
+    
+    if (launchedFromCmd()) {
+      console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
+    } else {
+      console.log('     %s DEBUG=%s:* npm start', prompt, name)
+    }
+
+    console.log()
   }
-
-  console.log()
 }
 
 /**
