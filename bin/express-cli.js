@@ -142,7 +142,7 @@ function createApplication (name, dir) {
     version: '0.0.0',
     private: true,
     scripts: {
-      start: 'node ./bin/www'
+      start: './bin/www'
     },
     dependencies: {
       'debug': '~2.6.9',
