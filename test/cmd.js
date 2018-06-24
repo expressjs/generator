@@ -66,7 +66,7 @@ describe('express(1)', function () {
         '  "version": "0.0.0",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
-        '    "start": "node ./bin/www"\n' +
+        '    "start": "./bin/www"\n' +
         '  },\n' +
         '  "dependencies": {\n' +
         '    "cookie-parser": "~1.4.3",\n' +
