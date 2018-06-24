@@ -10,7 +10,7 @@ node_js:
   - "6.12"
   - "7.10"
   - "8.9"
-  - "9.2"
+  - "9.11"
 matrix:
   fast_finish: true
 sudo: false
