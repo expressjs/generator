@@ -1078,6 +1078,106 @@ describe('express(1)', function () {
         })
       })
     })
+
+    describe('--https error', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with https server (wrong cert)', function (done) {
+        setupTestHttps(path.join(__dirname, 'https/key-error.key'), path.join(__dirname, 'https/cert-error.crt'))
+
+        runRaw(ctx.dir, ['--https'], function (err, code, stdout, stderr) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          ctx.stderr = stderr
+          ctx.stdout = stdout
+          assert.equal(ctx.files.length, 19)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have https key and cert files', function () {
+        assert.notEqual(ctx.files.indexOf('https/key.pem'), -1)
+        assert.notEqual(ctx.files.indexOf('https/server.crt'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        it('should fail to start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(function (err) {
+            assert.notEqual(err.toString().indexOf('Unexpected app exit with code 0'), -1)
+            done()
+          })
+        })
+      })
+    })
+
+    describe('--https', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with https server', function (done) {
+        setupTestHttps(path.join(__dirname, 'https/key-ok.key'), path.join(__dirname, 'https/cert-ok.crt'))
+
+        run(ctx.dir, ['--https'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.equal(ctx.files.length, 19)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have https key and cert files', function () {
+        assert.notEqual(ctx.files.indexOf('https/key.pem'), -1)
+        assert.notEqual(ctx.files.indexOf('https/server.crt'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTPS request', function (done) {
+          request(this.app)
+            .get('/')
+            .expect(301, '', done)
+        })
+      })
+    })
   })
 })
 
@@ -1139,6 +1239,11 @@ function runRaw (dir, args, callback) {
   function onclose (code) {
     callback(null, code, stdout, stderr)
   }
+}
+
+function setupTestHttps (key, cert) {
+  process.env.HTTPS_KEY = key
+  process.env.HTTPS_CERT = cert
 }
 
 function setupTestEnvironment (name) {

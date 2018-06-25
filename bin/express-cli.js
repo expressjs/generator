@@ -163,11 +163,14 @@ function createApplication (name, dir) {
   }
 
   if (program.https) {
-    if (programArgs['https-key'] && programArgs['https-cert']) {
+    var httpsKey = programArgs['https-key'] || process.env.HTTPS_KEY
+    var httpsCert = programArgs['https-cert'] || process.env.HTTPS_CERT
+
+    if (httpsKey && httpsCert) {
       mkdir(dir, 'https')
       try {
-        copyFile(programArgs['https-key'], path.join(dir, 'https/key.pem'))
-        copyFile(programArgs['https-cert'], path.join(dir, 'https/server.crt'))
+        copyFile(httpsKey, path.join(dir, 'https/key.pem'))
+        copyFile(httpsCert, path.join(dir, 'https/server.crt'))
       } catch (e) {
         console.log('   \x1b[31mError copying the https cert files\x1b[0m')
         _exit(0)
@@ -271,6 +274,11 @@ function createApplication (name, dir) {
   } else {
     // Copy extra public files
     copyTemplate('js/index.html', path.join(dir, 'public/index.html'))
+  }
+
+  if (program.https) {
+    app.locals.modules.httpolyglot = 'httpolyglot'
+    pkg.dependencies['httpolyglot'] = '^0.1.2'
   }
 
   // CSS Engine support

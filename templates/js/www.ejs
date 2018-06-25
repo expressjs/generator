@@ -8,7 +8,8 @@ var app = require('../app');
 var debug = require('debug')('<%- name %>:server');
 <% if (https) { -%>
 var http = require('https');
-var fs = require('fs')
+var httpolyglot = require('httpolyglot');
+var fs = require('fs');
 var path = require('path');
 var CERT_DIR = path.join(__dirname, '..', 'https');
 <% } else { -%>
@@ -29,12 +30,27 @@ app.set('port', port);
 <% if (https) { -%>
 var serverConfig = {
   key: fs.readFileSync(path.join(CERT_DIR, 'key.pem'), 'utf8'),
-  cert: fs.readFileSync(path.join(CERT_DIR, 'server.crt'), 'utf8'),
+  cert: fs.readFileSync(path.join(CERT_DIR, 'server.crt'), 'utf8')
 };
-var server = http.createServer(serverConfig, app);
+try {
+  var server = httpolyglot.createServer(serverConfig, function(req,res) {
+    if (!req.socket.encrypted) {
+      res.writeHead(301, { 'Location': 'https://' + req.headers['host'] + req.url });
+      res.end();
+    } else {
+      app.apply(app,arguments);
+    }
+  });
+
+  server.listen(port);
+  server.on('error', onError);
+  server.on('listening', onListening);
+} catch (error) {
+  console.error('https server error', error);
+  process.exit(0);
+}
 <% } else { -%>
 var server = http.createServer(app);
-<% } -%>
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -43,6 +59,7 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+<% } -%>
 
 /**
  * Normalize a port into a number, string, or false.
