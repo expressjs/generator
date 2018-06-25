@@ -288,7 +288,7 @@ function createApplication (name, dir) {
       break
     case 'ejs':
       app.locals.view = { engine: 'ejs' }
-      pkg.dependencies.ejs = '~2.5.7'
+      pkg.dependencies.ejs = '~2.6.1'
       break
     case 'hbs':
       app.locals.view = { engine: 'hbs' }
