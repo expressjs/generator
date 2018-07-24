@@ -52,6 +52,13 @@ describe('express(1)', function () {
       assert.notEqual(ctx.files.indexOf('package.json'), -1)
     })
 
+    it('should have events added before server start in bin/www', function () {
+      var file = path.resolve(ctx.dir, 'bin/www')
+      var www = fs.readFileSync(file, 'utf8')
+      var idx = www.indexOf('server.on(\'error\', onError);\nserver.on(\'listening\', onListening);\nserver.listen(port, \'0.0.0.0\');\n')
+      assert.ok(idx >= 0)
+    })
+
     it('should have jade templates', function () {
       assert.notEqual(ctx.files.indexOf('views/error.jade'), -1)
       assert.notEqual(ctx.files.indexOf('views/index.jade'), -1)
