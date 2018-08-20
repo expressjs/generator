@@ -43,7 +43,7 @@
     "eslint-plugin-node": "6.0.1",
     "eslint-plugin-promise": "3.8.0",
     "eslint-plugin-standard": "3.1.0",
-    "mocha": "2.5.3",
+    "mocha": "3.5.3",
     "rimraf": "2.5.4",
     "supertest": "1.2.0",
     "tmp": "0.0.33",
