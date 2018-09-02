@@ -1084,7 +1084,7 @@ describe('express(1)', function () {
 function npmInstall (dir, callback) {
   var env = utils.childEnvironment()
 
-  exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
+  exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
     if (err) {
       err.message += stderr
       callback(err)

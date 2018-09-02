@@ -25,8 +25,8 @@ before_install:
   # Setup Node.js version-specific dependencies
   - |
     # eslint for linting
-    # - remove on Node.js < 4
-    if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 4 ]]; then
+    # - remove on Node.js < 6
+    if [[ "$(cut -d. -f1 <<< "$TRAVIS_NODE_VERSION")" -lt 6 ]]; then
       node -pe 'Object.keys(require("./package").devDependencies).join("\n")' | \
         grep -E '^eslint(-|$)' | \
         xargs npm rm --save-dev
