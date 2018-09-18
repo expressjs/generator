@@ -1,17 +1,17 @@
 <% if (view) { -%>
-var createError = require('http-errors');
+const createError = require('http-errors');
 <% } -%>
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const path = require('path');
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- modules[variable] %>');
+const <%- variable %> = require('<%- modules[variable] %>');
 <% }); -%>
 
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- localModules[variable] %>');
+const <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 
-var app = express();
+const app = express();
 
 <% if (view) { -%>
 // view engine setup
