@@ -1,3 +1,4 @@
+/* eslint-disable */
 
 var assert = require('assert')
 var AppRunner = require('./support/app-runner')
@@ -1084,7 +1085,7 @@ describe('express(1)', function () {
 function npmInstall (dir, callback) {
   var env = utils.childEnvironment()
 
-  exec('npm install', {cwd: dir, env: env}, function (err, stderr) {
+  exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
     if (err) {
       err.message += stderr
       callback(err)
