@@ -312,7 +312,7 @@ function createApplication (name, dir) {
       break
     case 'vash':
       app.locals.view = { engine: 'vash' }
-      pkg.dependencies.vash = '~0.12.4'
+      pkg.dependencies.vash = '~0.12.6'
       break
     default:
       app.locals.view = false
