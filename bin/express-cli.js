@@ -292,7 +292,7 @@ function createApplication (name, dir) {
       break
     case 'hbs':
       app.locals.view = { engine: 'hbs' }
-      pkg.dependencies.hbs = '~4.0.1'
+      pkg.dependencies.hbs = '~4.0.3'
       break
     case 'hjs':
       app.locals.view = { engine: 'hjs' }
