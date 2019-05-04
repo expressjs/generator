@@ -41,10 +41,10 @@ This generator can also be further configured with the following command line fl
 
         --version        output the version number
     -e, --ejs            add ejs engine support
-        --pug            add pug engine support
         --hbs            add handlebars engine support
     -H, --hogan          add hogan.js engine support
-    -v, --view <engine>  add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)
+        --jade           add jade engine support
+    -v, --view <engine>  add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to pug)
         --no-view        use static html instead of view engine
     -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git            add .gitignore
