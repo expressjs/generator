@@ -56,6 +56,7 @@ program
   .option('    --no-view', 'use static html instead of view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
+  .option('    --test', 'add mocha support')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv)
 
@@ -321,6 +322,18 @@ function createApplication (name, dir) {
 
   // Static files
   app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
+
+  // Test framework
+  if (program.test) {
+    mkdir(dir, 'test')
+    copyTemplate('test/test.js', path.join(dir, 'test', 'test.js'))
+
+    pkg.scripts['test'] = 'mocha'
+    pkg.devDependencies = {
+      mocha: '~5.2.0',
+      chai: '~4.2.0'
+    }
+  }
 
   if (program.git) {
     copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
