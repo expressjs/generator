@@ -72,8 +72,8 @@ describe('express(1)', function () {
         '    "debug": "~2.6.9",\n' +
         '    "express": "~4.16.1",\n' +
         '    "http-errors": "~1.6.3",\n' +
-        '    "morgan": "~1.9.1"\n' +
-        '    "pug": "2.0.0-beta11",\n' +
+        '    "morgan": "~1.9.1",\n' +
+        '    "pug": "2.0.0-beta11"\n' +
         '  }\n' +
         '}\n')
     })
