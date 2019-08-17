@@ -73,7 +73,7 @@ describe('express(1)', function () {
         '    "express": "~4.16.1",\n' +
         '    "http-errors": "~1.6.3",\n' +
         '    "morgan": "~1.9.1",\n' +
-        '    "pug": "2.0.0-beta11"\n' +
+        '    "pug": "~2.0.0"\n' +
         '  }\n' +
         '}\n')
     })
