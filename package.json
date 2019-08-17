@@ -1,6 +1,6 @@
 {
   "name": "express-generator",
-  "description": "Express' application generator",
+  "description": "Express' application generator -- I wanna show that your tests does not working correctly",
   "version": "4.16.1",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
