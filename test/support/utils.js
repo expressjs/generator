@@ -1,11 +1,15 @@
 'use strict'
 
+var fs = require('fs')
+var os = require('os')
 var path = require('path')
+var uid = require('uid-safe')
 
 module.exports.childEnvironment = childEnvironment
 module.exports.parseCreatedFiles = parseCreatedFiles
 module.exports.stripColors = stripColors
 module.exports.stripWarnings = stripWarnings
+module.exports.tmpDir = tmpDir
 
 function childEnvironment () {
   var env = Object.create(null)
@@ -49,4 +53,12 @@ function stripColors (str) {
 
 function stripWarnings (str) {
   return str.replace(/\n(?:\x20{2}warning: [^\n]+\n)+\n/g, '')
+}
+
+function tmpDir () {
+  var dirname = path.join(os.tmpdir(), uid.sync(8))
+
+  fs.mkdirSync(dirname, { mode: parseInt('0700', 8) })
+
+  return dirname
 }
