@@ -1149,7 +1149,7 @@ describe('--es6', function () {
     })
   } else {
     it('should create basic app', function (done) {
-      runRaw(ctx.dir, ['--es6'], function (err, stdout) {
+      run(ctx.dir, ['--es6'], function (err, stdout) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
