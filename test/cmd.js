@@ -1142,7 +1142,7 @@ describe('--es6', function () {
   if (semver.lt(process.version, '6.0.0')) {
     it('should exit if Node.js version is < 6.0.0', function (done) {
       run(ctx.dir, ['--es6'], function (err, stdout) {
-        assert.notEqual(err.message.indexOf('unknown option'), -1, 'should show an error with invalid option')
+        assert.notStrictEqual(err.message.indexOf('unknown option'), -1, 'should show an error with invalid option')
         done()
       })
     })
@@ -1151,15 +1151,15 @@ describe('--es6', function () {
       run(ctx.dir, ['--es6'], function (err, stdout) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        assert.equal(ctx.files.length, 16, 'should have 16 files')
+        assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
         done()
       })
     })
 
     it('should have basic files', function () {
-      assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-      assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-      assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
     })
 
     it('should use const instead of var', function () {
@@ -1168,13 +1168,13 @@ describe('--es6', function () {
       var indexroutefile = path.resolve(ctx.dir, 'routes/index.js')
 
       var wwwcontent = fs.readFileSync(wwwfile, 'utf8')
-      assert.notEqual(wwwcontent.indexOf('const http'), -1, 'should use const')
+      assert.notStrictEqual(wwwcontent.indexOf('const http'), -1, 'should use const')
 
       var appcontent = fs.readFileSync(appfile, 'utf8')
-      assert.notEqual(appcontent.indexOf('const express'), -1, 'should use const')
+      assert.notStrictEqual(appcontent.indexOf('const express'), -1, 'should use const')
 
       var indexroutecontent = fs.readFileSync(indexroutefile, 'utf8')
-      assert.notEqual(indexroutecontent.indexOf('const express'), -1, 'should use const')
+      assert.notStrictEqual(indexroutecontent.indexOf('const express'), -1, 'should use const')
     })
 
     it('should have installable dependencies', function (done) {
