@@ -1141,14 +1141,15 @@ describe('--es6', function () {
 
   if (semver.lt(process.version, '6.0.0')) {
     it('should exit if Node.js version is < 6.0.0', function (done) {
-      run(ctx.dir, ['--es6'], function (err, stdout) {
-        assert.notStrictEqual(err.message.indexOf('unknown option'), -1, 'should show an error with invalid option')
+      runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
+        if (err) return done(err)
+        assert.ok(/error: unknown option/.test(stderr))
         done()
       })
     })
   } else {
     it('should create basic app', function (done) {
-      run(ctx.dir, ['--es6'], function (err, stdout) {
+      runRaw(ctx.dir, ['--es6'], function (err, stdout) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
