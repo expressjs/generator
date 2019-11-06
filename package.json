@@ -51,7 +51,7 @@
     "validate-npm-package-name": "3.0.0"
   },
   "engines": {
-    "node": ">= 0.10"
+    "node": ">=6.17.1"
   },
   "files": [
     "LICENSE",
