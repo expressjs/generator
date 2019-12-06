@@ -1,16 +1,9 @@
 environment:
   matrix:
-    - nodejs_version: "0.10"
-    - nodejs_version: "0.12"
-    - nodejs_version: "1.8"
-    - nodejs_version: "2.5"
-    - nodejs_version: "3.3"
-    - nodejs_version: "4.9"
-    - nodejs_version: "5.12"
-    - nodejs_version: "6.16"
-    - nodejs_version: "7.10"
-    - nodejs_version: "8.15"
-    - nodejs_version: "9.11"
+    - nodejs_version: "8"
+    - nodejs_version: "10"
+    - nodejs_version: "12"
+    - nodejs_version: "13"
 cache:
   - node_modules
 install:
@@ -29,24 +22,6 @@ install:
         sls "^eslint(-|$)" | `
         %{ npm rm --silent --save-dev $_ }
   # Setup Node.js version-specific dependencies
-  - ps: |
-      # mocha for testing
-      # - use 3.x for Node.js < 4
-      # - use 5.x for Node.js < 6
-      if ([int]$env:nodejs_version.split(".")[0] -lt 4) {
-        npm install --silent --save-dev mocha@3.5.3
-      } elseif ([int]$env:nodejs_version.split(".")[0] -lt 6) {
-        npm install --silent --save-dev mocha@5.2.0
-      }
-  - ps: |
-      # supertest for http calls
-      # - use 2.0.0 for Node.js < 4
-      # - use 3.4.2 for Node.js < 6
-      if ([int]$env:nodejs_version.split(".")[0] -lt 4) {
-        npm install --silent --save-dev supertest@2.0.0
-      } elseif ([int]$env:nodejs_version.split(".")[0] -lt 6) {
-        npm install --silent --save-dev supertest@3.4.2
-      }
   # Update Node.js modules
   - ps: |
       # Prune & rebuild node_modules
