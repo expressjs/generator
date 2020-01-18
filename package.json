@@ -1,7 +1,7 @@
 {
   "name": "express-generator",
   "description": "Express' application generator",
-  "version": "4.16.0",
+  "version": "4.16.1",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
   "contributors": [
     "Aaron Heckmann <aaron.heckmann+github@gmail.com>",
@@ -25,8 +25,8 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "commander": "2.13.0",
-    "ejs": "2.5.7",
+    "commander": "2.15.1",
+    "ejs": "2.6.1",
     "minimatch": "3.0.4",
     "mkdirp": "0.5.1",
     "sorted-object": "2.0.1"
@@ -37,17 +37,17 @@
     "express": "./bin/express-cli.js"
   },
   "devDependencies": {
-    "eslint": "4.18.2",
-    "eslint-config-standard": "11.0.0",
-    "eslint-plugin-import": "2.9.0",
-    "eslint-plugin-node": "6.0.1",
-    "eslint-plugin-promise": "3.7.0",
-    "eslint-plugin-standard": "3.0.1",
-    "mocha": "2.5.3",
-    "rimraf": "2.5.4",
-    "supertest": "1.2.0",
-    "tmp": "0.0.33",
-    "tree-kill": "1.2.0",
+    "eslint": "5.16.0",
+    "eslint-config-standard": "12.0.0",
+    "eslint-plugin-import": "2.17.2",
+    "eslint-plugin-node": "8.0.1",
+    "eslint-plugin-promise": "4.1.1",
+    "eslint-plugin-standard": "4.0.0",
+    "mocha": "6.1.4",
+    "rimraf": "2.6.3",
+    "supertest": "4.0.2",
+    "tree-kill": "1.2.1",
+    "uid-safe": "2.1.5",
     "validate-npm-package-name": "3.0.0"
   },
   "engines": {
