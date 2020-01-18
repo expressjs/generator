@@ -640,19 +640,19 @@ describe('express(1)', function () {
       run(ctx.dir, ['--api'], function (err, stdout) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        assert.equal(ctx.files.length, 11)
+        assert.strictEqual(ctx.files.length, 11)
         done()
       })
     })
 
     it('should have basic files', function () {
-      assert.notEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notEqual(ctx.files.indexOf('package.json'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
     })
 
     it('should not have views directory', function () {
-      assert.equal(ctx.files.indexOf('views'), -1)
+      assert.strictEqual(ctx.files.indexOf('views'), -1)
     })
 
     it('should have installable dependencies', function (done) {
@@ -708,7 +708,7 @@ describe('express(1)', function () {
       it('should generate a 404', function (done) {
         request(this.app)
           .get('/api/does_not_exist')
-          .expect(404, {'message': 'Not Found'}, done)
+          .expect(404, { 'message': 'Not Found' }, done)
       })
     })
   })
