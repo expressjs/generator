@@ -46,7 +46,7 @@ This generator can also be further configured with the following command line fl
     -H, --hogan          add hogan.js engine support
     -v, --view <engine>  add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)
         --no-view        use static html instead of view engine
-    -a, --api            use web api template
+    -a, --api            use web api template without view engine
     -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git            add .gitignore
     -f, --force          force on non-empty directory

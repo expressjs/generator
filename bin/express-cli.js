@@ -54,7 +54,7 @@ program
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('    --no-view', 'use static html instead of view engine')
-  .option('-a, --api', 'use web api template')
+  .option('-a, --api', 'use web api template without view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
