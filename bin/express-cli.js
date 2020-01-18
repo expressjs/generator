@@ -285,7 +285,7 @@ function createApplication (name, dir) {
     app.locals.localModules.usersRouter = './routes/users'
     app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
   } else {
-    // Value router mounte
+    // Value router mount
     app.locals.localModules.apiRouter = './routes/values'
     app.locals.mounts.push({ path: '/api', code: 'apiRouter' })
   }
