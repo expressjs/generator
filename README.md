@@ -35,6 +35,31 @@ Start your Express.js app at `http://localhost:3000/`:
 $ npm start
 ```
 
+## Project Structure
+
+The generator creates the following project structure by default:
+
+```
+.
+├── app.js
+├── bin
+│   └── www
+├── package-lock.json
+├── package.json
+├── public
+│   ├── images
+│   ├── javascripts
+│   └── stylesheets
+│       └── style.css
+├── routes
+│   ├── index.js
+│   └── users.js
+└── views
+    ├── error.jade
+    ├── index.jade
+    └── layout.jade
+```
+
 ## Command Line Options
 
 This generator can also be further configured with the following command line flags.
