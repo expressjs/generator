@@ -158,7 +158,9 @@ function createApplication (name, dir) {
     pkg.devDependencies['typescript'] = '~3.7.5'
     pkg.devDependencies['@types/node'] = '~13.7.0'
     pkg.devDependencies['@types/debug'] = '~4.1.5'
-    pkg.devDependencies['@types/express'] = '~4.17.2'
+    pkg.devDependencies['@types/express'] = '~4.16.1'
+
+    pkg.dependencies['tslib'] = '~1.10.0'
   }
 
   // JavaScript
