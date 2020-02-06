@@ -31,9 +31,9 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 <% }); -%>
 
 <% if (view) { -%>
-// catch 404 and forward to error handler
+// catch 501 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  next(createError(501));
 });
 
 // error handler
