@@ -74,8 +74,7 @@ describe('express(1)', function () {
         '    "http-errors": "~1.6.3",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.9.1"\n' +
-        '  },\n' +
-        '  "devDependencies": {}\n' +
+        '  }\n' +
         '}\n')
     })
 

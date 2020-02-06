@@ -148,14 +148,13 @@ function createApplication (name, dir) {
     dependencies: {
       'debug': '~2.6.9',
       'express': '~4.16.1'
-    },
-    devDependencies: {
     }
   }
 
   if (program.typescript) {
     pkg.scripts['build'] = 'tsc'
 
+    pkg.devDependencies = {}
     pkg.devDependencies['typescript'] = '~3.7.5'
     pkg.devDependencies['@types/node'] = '~13.7.0'
     pkg.devDependencies['@types/debug'] = '~4.1.5'
@@ -382,6 +381,9 @@ function createApplication (name, dir) {
 
   // sort dependencies like npm(1)
   pkg.dependencies = sortedObject(pkg.dependencies)
+  if (pkg.devDependencies) {
+    pkg.devDependencies = sortedObject(pkg.devDependencies)
+  }
 
   // write files
   var appScriptName
