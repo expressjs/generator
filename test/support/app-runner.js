@@ -70,9 +70,15 @@ AppRunner.prototype.start = function start (callback) {
 }
 
 AppRunner.prototype.stop = function stop (callback) {
-  if (this.child) {
-    kill(this.child.pid, 'SIGTERM', callback)
-  } else {
+  if (!this.child) {
     setImmediate(callback)
+    return
   }
+
+  this.child.stderr.unpipe()
+  this.child.removeAllListeners('exit')
+
+  kill(this.child.pid, 'SIGTERM', callback)
+
+  this.child = null
 }

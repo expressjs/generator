@@ -146,7 +146,7 @@ function createApplication (name, dir) {
     },
     dependencies: {
       'debug': '~2.6.9',
-      'express': '~4.16.0'
+      'express': '~4.16.1'
     }
   }
 
@@ -166,7 +166,7 @@ function createApplication (name, dir) {
   // Request logger
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
-  pkg.dependencies.morgan = '~1.9.0'
+  pkg.dependencies.morgan = '~1.9.1'
 
   // Body parsers
   app.locals.uses.push('express.json()')
@@ -175,7 +175,7 @@ function createApplication (name, dir) {
   // Cookie parser
   app.locals.modules.cookieParser = 'cookie-parser'
   app.locals.uses.push('cookieParser()')
-  pkg.dependencies['cookie-parser'] = '~1.4.3'
+  pkg.dependencies['cookie-parser'] = '~1.4.4'
 
   if (dir !== '.') {
     mkdir(dir, '.')
@@ -212,7 +212,7 @@ function createApplication (name, dir) {
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
-    pkg.dependencies['http-errors'] = '~1.6.2'
+    pkg.dependencies['http-errors'] = '~1.6.3'
     switch (program.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
@@ -288,11 +288,11 @@ function createApplication (name, dir) {
       break
     case 'ejs':
       app.locals.view = { engine: 'ejs' }
-      pkg.dependencies.ejs = '~2.5.7'
+      pkg.dependencies.ejs = '~2.6.1'
       break
     case 'hbs':
       app.locals.view = { engine: 'hbs' }
-      pkg.dependencies.hbs = '~4.0.1'
+      pkg.dependencies.hbs = '~4.0.4'
       break
     case 'hjs':
       app.locals.view = { engine: 'hjs' }
@@ -312,7 +312,7 @@ function createApplication (name, dir) {
       break
     case 'vash':
       app.locals.view = { engine: 'vash' }
-      pkg.dependencies.vash = '~0.12.4'
+      pkg.dependencies.vash = '~0.12.6'
       break
     default:
       app.locals.view = false
