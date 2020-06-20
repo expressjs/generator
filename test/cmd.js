@@ -43,7 +43,8 @@ describe('express(1)', function () {
     })
 
     it('should provide debug instructions', function () {
-      if ((env.Path).search('Yarn') > -1) {
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
         assert.ok(/DEBUG=express-1-no-args:\* (?:& )?yarn start/.test(ctx.stdout))
       } else {
         assert.ok(/DEBUG=express-1-no-args:\* (?:& )?npm start/.test(ctx.stdout))
@@ -214,7 +215,8 @@ describe('express(1)', function () {
     })
 
     it('should provide install instructions', function () {
-      if ((env.Path).search('Yarn') > -1) {
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
         assert.ok(/yarn install/.test(ctx.stdout))
       } else {
         assert.ok(/npm install/.test(ctx.stdout))
@@ -222,7 +224,8 @@ describe('express(1)', function () {
     })
 
     it('should provide debug instructions', function () {
-      if ((env.Path).search('Yarn') > -1) {
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
         assert.ok(/DEBUG=foo:\* (?:& )?yarn start/.test(ctx.stdout))
       } else {
         assert.ok(/DEBUG=foo:\* (?:& )?npm start/.test(ctx.stdout))

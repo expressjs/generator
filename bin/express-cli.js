@@ -346,9 +346,10 @@ function createApplication (name, dir) {
   console.log()
   console.log('   install dependencies:')
 
-  let packageManager
+  var packageManager
+  var pathEnv = process.env.PATH || process.env.Path
   //  Checking yarn environment variable
-  if ((process.env.PATH).search('Yarn') > -1) {
+  if (pathEnv.search('Yarn') > -1) {
     packageManager = 'yarn'
   } else {
     packageManager = 'npm'
