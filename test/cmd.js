@@ -16,6 +16,7 @@ var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
 var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
 var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
 var TEMP_DIR = utils.tmpDir()
+var env = utils.childEnvironment()
 
 describe('express(1)', function () {
   after(function (done) {
@@ -42,7 +43,12 @@ describe('express(1)', function () {
     })
 
     it('should provide debug instructions', function () {
-      assert.ok(/DEBUG=express-1-no-args:\* (?:& )?npm start/.test(ctx.stdout))
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
+        assert.ok(/DEBUG=express-1-no-args:\* (?:& )?yarn start/.test(ctx.stdout))
+      } else {
+        assert.ok(/DEBUG=express-1-no-args:\* (?:& )?npm start/.test(ctx.stdout))
+      }
     })
 
     it('should have basic files', function () {
@@ -209,11 +215,21 @@ describe('express(1)', function () {
     })
 
     it('should provide install instructions', function () {
-      assert.ok(/npm install/.test(ctx.stdout))
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
+        assert.ok(/yarn install/.test(ctx.stdout))
+      } else {
+        assert.ok(/npm install/.test(ctx.stdout))
+      }
     })
 
     it('should provide debug instructions', function () {
-      assert.ok(/DEBUG=foo:\* (?:& )?npm start/.test(ctx.stdout))
+      var pathEnv = env.PATH || env.Path
+      if (pathEnv.search('Yarn') > -1) {
+        assert.ok(/DEBUG=foo:\* (?:& )?yarn start/.test(ctx.stdout))
+      } else {
+        assert.ok(/DEBUG=foo:\* (?:& )?npm start/.test(ctx.stdout))
+      }
     })
 
     it('should have basic files', function () {
@@ -1137,8 +1153,6 @@ describe('express(1)', function () {
 })
 
 function npmInstall (dir, callback) {
-  var env = utils.childEnvironment()
-
   exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
     if (err) {
       err.message += stderr

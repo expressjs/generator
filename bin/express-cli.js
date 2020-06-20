@@ -345,14 +345,24 @@ function createApplication (name, dir) {
 
   console.log()
   console.log('   install dependencies:')
-  console.log('     %s npm install', prompt)
+
+  var packageManager
+  var pathEnv = process.env.PATH || process.env.Path
+  //  Checking yarn environment variable
+  if (pathEnv.search('Yarn') > -1) {
+    packageManager = 'yarn'
+  } else {
+    packageManager = 'npm'
+  }
+
+  console.log('     %s ' + packageManager + ' install', prompt)
   console.log()
   console.log('   run the app:')
 
   if (launchedFromCmd()) {
-    console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
+    console.log('     %s SET DEBUG=%s:* & ' + packageManager + ' start', prompt, name)
   } else {
-    console.log('     %s DEBUG=%s:* npm start', prompt, name)
+    console.log('     %s DEBUG=%s:* ' + packageManager + ' start', prompt, name)
   }
 
   console.log()
