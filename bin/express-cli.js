@@ -355,14 +355,14 @@ function createApplication (name, dir) {
     packageManager = 'npm'
   }
 
-  console.log(`     %s ${packageManager} install`, prompt)
+  console.log('     %s ' + packageManager + ' install', prompt)
   console.log()
   console.log('   run the app:')
 
   if (launchedFromCmd()) {
-    console.log(`     %s SET DEBUG=%s:* & ${packageManager} start`, prompt, name)
+    console.log('     %s SET DEBUG=%s:* & ' + packageManager + ' start', prompt, name)
   } else {
-    console.log(`     %s DEBUG=%s:* ${packageManager} start`, prompt, name)
+    console.log('     %s DEBUG=%s:* ' + packageManager + ' start', prompt, name)
   }
 
   console.log()
