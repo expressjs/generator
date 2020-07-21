@@ -88,3 +88,10 @@ function onListening() {
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
 }
+
+process.on('SIGTERM', () => {
+    debug('SIGTERM signal received: closing server');
+    server.close(() => {
+        debug('Http server closed');
+    });
+});
