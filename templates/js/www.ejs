@@ -89,9 +89,9 @@ function onListening() {
   debug('Listening on ' + bind);
 }
 
-process.on('SIGTERM', () => {
+process.on('SIGTERM', function() {
     debug('SIGTERM signal received: closing server');
-    server.close(() => {
+    server.close( function () {
         debug('Http server closed');
     });
 });
