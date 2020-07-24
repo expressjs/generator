@@ -10,7 +10,7 @@ module.exports = AppRunner
 function AppRunner (dir) {
   this.child = null
   this.dir = dir
-  this.host = '127.0.0.1'
+  this.host = '127.0.0.1' || 'localhost'
   this.port = 3000
 }
 
