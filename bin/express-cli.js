@@ -57,6 +57,7 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .option('    --typescript', 'add TypeScript support')
   .parse(process.argv)
 
 if (!exit.exited) {
@@ -150,9 +151,30 @@ function createApplication (name, dir) {
     }
   }
 
+  if (program.typescript) {
+    pkg.scripts['build'] = 'tsc'
+
+    pkg.devDependencies = {}
+    pkg.devDependencies['typescript'] = '~3.7.5'
+    pkg.devDependencies['@types/node'] = '~13.7.0'
+    pkg.devDependencies['@types/debug'] = '~4.1.5'
+    pkg.devDependencies['@types/express'] = '~4.16.1'
+
+    pkg.dependencies['tslib'] = '~1.10.0'
+  }
+
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var appTemplatePath
+  var wwwTemplatePath
+  if (program.typescript) {
+    appTemplatePath = 'ts/app.ts'
+    wwwTemplatePath = 'ts/www.ts'
+  } else {
+    appTemplatePath = 'js/app.js'
+    wwwTemplatePath = 'js/www'
+  }
+  var app = loadTemplate(appTemplatePath)
+  var www = loadTemplate(wwwTemplatePath)
 
   // App name
   www.locals.name = name
@@ -167,6 +189,9 @@ function createApplication (name, dir) {
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
   pkg.dependencies.morgan = '~1.9.1'
+  if (program.typescript) {
+    pkg.devDependencies['@types/morgan'] = '~1.7.37'
+  }
 
   // Body parsers
   app.locals.uses.push('express.json()')
@@ -176,6 +201,9 @@ function createApplication (name, dir) {
   app.locals.modules.cookieParser = 'cookie-parser'
   app.locals.uses.push('cookieParser()')
   pkg.dependencies['cookie-parser'] = '~1.4.4'
+  if (program.typescript) {
+    pkg.devDependencies['@types/cookie-parser'] = '~1.4.2'
+  }
 
   if (dir !== '.') {
     mkdir(dir, '.')
@@ -206,13 +234,25 @@ function createApplication (name, dir) {
   }
 
   // copy route templates
+  var routeScriptsDir
+  var routeScriptsNameGlob
+  if (program.typescript) {
+    routeScriptsDir = 'ts/routes'
+    routeScriptsNameGlob = '*.ts'
+  } else {
+    routeScriptsDir = 'js/routes'
+    routeScriptsNameGlob = '*.js'
+  }
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  copyTemplateMulti(routeScriptsDir, dir + '/routes', routeScriptsNameGlob)
 
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
     pkg.dependencies['http-errors'] = '~1.6.3'
+    if (program.typescript) {
+      pkg.devDependencies['@types/http-errors'] = '~1.6.3'
+    }
     switch (program.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
@@ -250,21 +290,33 @@ function createApplication (name, dir) {
       app.locals.modules.compass = 'node-compass'
       app.locals.uses.push("compass({ mode: 'expanded' })")
       pkg.dependencies['node-compass'] = '0.2.3'
+      if (program.typescript) {
+        copyTemplate('declarations/node-compass.d.ts', path.join(dir, 'node-compass.d.ts'))
+      }
       break
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
       pkg.dependencies['less-middleware'] = '~2.2.1'
+      if (program.typescript) {
+        pkg.devDependencies['@types/less-middleware'] = '~2.0.31'
+      }
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
       app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
       pkg.dependencies['node-sass-middleware'] = '0.11.0'
+      if (program.typescript) {
+        pkg.devDependencies['@types/node-sass-middleware'] = '0.0.31'
+      }
       break
     case 'stylus':
       app.locals.modules.stylus = 'stylus'
       app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
       pkg.dependencies['stylus'] = '0.54.5'
+      if (program.typescript) {
+        pkg.devDependencies['@types/stylus'] = '0.48.32'
+      }
       break
   }
 
@@ -325,15 +377,30 @@ function createApplication (name, dir) {
   if (program.git) {
     copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
   }
+  if (program.typescript) {
+    copyTemplate('ts/tsconfig.json', path.join(dir, 'tsconfig.json'))
+  }
 
   // sort dependencies like npm(1)
   pkg.dependencies = sortedObject(pkg.dependencies)
+  if (pkg.devDependencies) {
+    pkg.devDependencies = sortedObject(pkg.devDependencies)
+  }
 
   // write files
-  write(path.join(dir, 'app.js'), app.render())
+  var appScriptName
+  var wwwScriptName
+  if (program.typescript) {
+    appScriptName = 'app.ts'
+    wwwScriptName = 'bin/www.ts'
+  } else {
+    appScriptName = 'app.js'
+    wwwScriptName = 'bin/www'
+  }
+  write(path.join(dir, appScriptName), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, wwwScriptName), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 
@@ -346,6 +413,11 @@ function createApplication (name, dir) {
   console.log()
   console.log('   install dependencies:')
   console.log('     %s npm install', prompt)
+  if (program.typescript) {
+    console.log()
+    console.log('   compile code:')
+    console.log('     %s npm run build', prompt)
+  }
   console.log()
   console.log('   run the app:')
 
