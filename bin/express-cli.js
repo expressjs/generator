@@ -299,7 +299,7 @@ function createApplication (name, dir) {
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
       pkg.dependencies['less-middleware'] = '~2.2.1'
       if (program.typescript) {
-        pkg.devDependencies['less-middleware'] = '~2.0.31'
+        pkg.devDependencies['@types/less-middleware'] = '~2.0.31'
       }
       break
     case 'sass':
@@ -307,7 +307,7 @@ function createApplication (name, dir) {
       app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
       pkg.dependencies['node-sass-middleware'] = '0.11.0'
       if (program.typescript) {
-        pkg.devDependencies['node-sass-middleware'] = '0.0.31'
+        pkg.devDependencies['@types/node-sass-middleware'] = '0.0.31'
       }
       break
     case 'stylus':
