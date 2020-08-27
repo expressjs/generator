@@ -15,6 +15,7 @@ var APP_START_STOP_TIMEOUT = 10000
 var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
 var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
 var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
+var STDERR_MAX_BUFFER = 5 * 1024 * 1024 // 5mb
 var TEMP_DIR = utils.tmpDir()
 
 describe('express(1)', function () {
@@ -1139,7 +1140,7 @@ describe('express(1)', function () {
 function npmInstall (dir, callback) {
   var env = utils.childEnvironment()
 
-  exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
+  exec('npm install', { cwd: dir, env: env, maxBuffer: STDERR_MAX_BUFFER }, function (err, stderr) {
     if (err) {
       err.message += stderr
       callback(err)
