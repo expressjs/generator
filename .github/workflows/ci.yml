@@ -53,7 +53,7 @@ jobs:
           npm-i: mocha@5.2.0 supertest@3.4.2
 
         - name: Node.js 6.x
-          node-version: "6.16"
+          node-version: "6.17"
 
         - name: Node.js 7.x
           node-version: "7.10"
