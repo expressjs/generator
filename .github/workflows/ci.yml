@@ -59,7 +59,7 @@ jobs:
           node-version: "7.10"
 
         - name: Node.js 8.x
-          node-version: "8.15"
+          node-version: "8.17"
 
         - name: Node.js 9.x
           node-version: "9.11"
