@@ -1,17 +1,17 @@
 <% if (view) { -%>
-var createError = require('http-errors');
+const createError = require('http-errors');
 <% } -%>
-var express = require('express');
-var path = require('path');
+const express = require('express');
+const path = require('path');
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- modules[variable] %>');
+const <%- variable %> = require('<%- modules[variable] %>');
 <% }); -%>
 
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- localModules[variable] %>');
+const <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 
-var app = express();
+const app = express();
 
 <% if (view) { -%>
 // view engine setup
@@ -32,12 +32,12 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 
 <% if (view) { -%>
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
