@@ -1133,6 +1133,73 @@ describe('express(1)', function () {
         })
       })
     })
+
+    describe('jsx', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with jsx templates', function (done) {
+        run(ctx.dir, ['--view', 'jsx'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.strictEqual(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have express-react-views, react, react-dom in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var dependencies = JSON.parse(contents).dependencies
+        assert.ok(typeof dependencies['express-react-views'] === 'string')
+        assert.ok(typeof dependencies.react === 'string')
+        assert.ok(typeof dependencies['react-dom'] === 'string')
+      })
+
+      it('should have jsx templates', function () {
+        assert.notStrictEqual(ctx.files.indexOf('views/error.jsx'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/index.jsx'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/layout.jsx'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404 (not found)', function (done) {
+          request(this.app)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    })
   })
 })
 

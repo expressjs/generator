@@ -52,7 +52,7 @@ program
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash|jsx) (defaults to jade)')
   .option('    --no-view', 'use static html instead of view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
@@ -238,6 +238,9 @@ function createApplication (name, dir) {
       case 'vash':
         copyTemplateMulti('views', dir + '/views', '*.vash')
         break
+      case 'jsx':
+        copyTemplateMulti('views', dir + '/views', '*.jsx')
+        break
     }
   } else {
     // Copy extra public files
@@ -313,6 +316,15 @@ function createApplication (name, dir) {
     case 'vash':
       app.locals.view = { engine: 'vash' }
       pkg.dependencies.vash = '~0.12.6'
+      break
+    case 'jsx':
+      app.locals.view = {
+        engine: 'jsx',
+        render: "require('express-react-views').createEngine()"
+      }
+      pkg.dependencies['express-react-views'] = '^0.11.0'
+      pkg.dependencies.react = '^16.13.1'
+      pkg.dependencies['react-dom'] = '^16.13.1'
       break
     default:
       app.locals.view = false
