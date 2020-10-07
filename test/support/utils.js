@@ -1,64 +1,64 @@
-'use strict';
+'use strict'
 
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
-const uid = require('uid-safe');
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const uid = require('uid-safe')
 
-module.exports.childEnvironment = childEnvironment;
-module.exports.parseCreatedFiles = parseCreatedFiles;
-module.exports.stripColors = stripColors;
-module.exports.stripWarnings = stripWarnings;
-module.exports.tmpDir = tmpDir;
+module.exports.childEnvironment = childEnvironment
+module.exports.parseCreatedFiles = parseCreatedFiles
+module.exports.stripColors = stripColors
+module.exports.stripWarnings = stripWarnings
+module.exports.tmpDir = tmpDir
 
-function childEnvironment() {
-  const env = Object.create(null);
+function childEnvironment () {
+  const env = Object.create(null)
 
   // copy the environment except for npm veriables
   for (let key in process.env) {
     if (key.substr(0, 4) !== 'npm_') {
-      env[key] = process.env[key];
+      env[key] = process.env[key]
     }
   }
 
-  return env;
+  return env
 }
 
-function parseCreatedFiles(output, dir) {
-  const files = [];
-  const lines = output.split(/[\r\n]+/);
-  let match;
+function parseCreatedFiles (output, dir) {
+  const files = []
+  const lines = output.split(/[\r\n]+/)
+  let match
 
   for (let i = 0; i < lines.length; i++) {
     if ((match = /create.*?: (.*)$/.exec(lines[i]))) {
-      let file = match[1];
+      let file = match[1]
 
       if (dir) {
-        file = path.resolve(dir, file);
-        file = path.relative(dir, file);
+        file = path.resolve(dir, file)
+        file = path.relative(dir, file)
       }
 
-      file = file.replace(/\\/g, '/');
-      files.push(file);
+      file = file.replace(/\\/g, '/')
+      files.push(file)
     }
   }
 
-  return files;
+  return files
 }
 
-function stripColors(str) {
+function stripColors (str) {
   // eslint-disable-next-line no-control-regex
-  return str.replace(/\x1b\[(\d+)m/g, '_color_$1_');
+  return str.replace(/\x1b\[(\d+)m/g, '_color_$1_')
 }
 
-function stripWarnings(str) {
-  return str.replace(/\n(?:\x20{2}warning: [^\n]+\n)+\n/g, '');
+function stripWarnings (str) {
+  return str.replace(/\n(?:\x20{2}warning: [^\n]+\n)+\n/g, '')
 }
 
-function tmpDir() {
-  const dirname = path.join(os.tmpdir(), uid.sync(8));
+function tmpDir () {
+  const dirname = path.join(os.tmpdir(), uid.sync(8))
 
-  fs.mkdirSync(dirname, { mode: parseInt('0700', 8) });
+  fs.mkdirSync(dirname, { mode: parseInt('0700', 8) })
 
-  return dirname;
+  return dirname
 }
