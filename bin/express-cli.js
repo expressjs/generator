@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 
-var ejs = require('ejs')
-var fs = require('fs')
-var minimatch = require('minimatch')
-var mkdirp = require('mkdirp')
-var path = require('path')
-var program = require('commander')
-var readline = require('readline')
-var sortedObject = require('sorted-object')
-var util = require('util')
+const ejs = require('ejs')
+const fs = require('fs')
+const minimatch = require('minimatch')
+const mkdirp = require('mkdirp')
+const path = require('path')
+const program = require('commander')
+const readline = require('readline')
+const sortedObject = require('sorted-object')
+const util = require('util')
 
-var MODE_0666 = parseInt('0666', 8)
-var MODE_0755 = parseInt('0755', 8)
-var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
-var VERSION = require('../package').version
+const MODE_0666 = parseInt('0666', 8)
+const MODE_0755 = parseInt('0755', 8)
+const TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
+const VERSION = require('../package').version
 
-var _exit = process.exit
+const _exit = process.exit
 
 // Re-assign process.exit because of commander
 // TODO: Switch to a different command framework
@@ -48,13 +48,36 @@ program
   .name('express')
   .version(VERSION, '    --version')
   .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
-  .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
-  .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
-  .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option(
+    '-e, --ejs',
+    'add ejs engine support',
+    renamedOption('--ejs', '--view=ejs')
+  )
+  .option('    --es5', 'use ES5 syntax (defaults to ES2015 syntax)')
+  .option(
+    '    --pug',
+    'add pug engine support',
+    renamedOption('--pug', '--view=pug')
+  )
+  .option(
+    '    --hbs',
+    'add handlebars engine support',
+    renamedOption('--hbs', '--view=hbs')
+  )
+  .option(
+    '-H, --hogan',
+    'add hogan.js engine support',
+    renamedOption('--hogan', '--view=hogan')
+  )
+  .option(
+    '-v, --view <engine>',
+    'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)'
+  )
   .option('    --no-view', 'use static html instead of view engine')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
+  .option(
+    '-c, --css <engine>',
+    'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)'
+  )
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv)
@@ -64,25 +87,27 @@ if (!exit.exited) {
 }
 
 /**
- * Install an around function; AOP.
+ * Install an around function AOP.
  */
 
 function around (obj, method, fn) {
-  var old = obj[method]
+  const old = obj[method]
 
   obj[method] = function () {
-    var args = new Array(arguments.length)
-    for (var i = 0; i < args.length; i++) args[i] = arguments[i]
+    const args = new Array(arguments.length)
+    for (let i = 0; i < args.length; i++) {
+      args[i] = arguments[i]
+    }
     return fn.call(this, old, args)
   }
 }
 
 /**
- * Install a before function; AOP.
+ * Install a before function AOP.
  */
 
 function before (obj, method, fn) {
-  var old = obj[method]
+  const old = obj[method]
 
   obj[method] = function () {
     fn.call(this)
@@ -95,12 +120,12 @@ function before (obj, method, fn) {
  */
 
 function confirm (msg, callback) {
-  var rl = readline.createInterface({
+  const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
 
-  rl.question(msg, function (input) {
+  rl.question(msg, (input) => {
     rl.close()
     callback(/^y|yes|ok|true$/i.test(input))
   })
@@ -110,8 +135,8 @@ function confirm (msg, callback) {
  * Copy file from template directory.
  */
 
-function copyTemplate (from, to) {
-  write(to, fs.readFileSync(path.join(TEMPLATE_DIR, from), 'utf-8'))
+function copyTemplate (original, to) {
+  write(to, fs.readFileSync(path.join(TEMPLATE_DIR, original), 'utf-8'))
 }
 
 /**
@@ -121,7 +146,7 @@ function copyTemplate (from, to) {
 function copyTemplateMulti (fromDir, toDir, nameGlob) {
   fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
     .filter(minimatch.filter(nameGlob, { matchBase: true }))
-    .forEach(function (name) {
+    .forEach((name) => {
       copyTemplate(path.join(fromDir, name), path.join(toDir, name))
     })
 }
@@ -137,25 +162,33 @@ function createApplication (name, dir) {
   console.log()
 
   // Package
-  var pkg = {
-    name: name,
+  const pkg = {
+    name,
     version: '0.0.0',
     private: true,
     scripts: {
       start: 'node ./bin/www'
     },
     dependencies: {
-      'debug': '~2.6.9',
-      'express': '~4.16.1'
+      debug: '~2.6.9',
+      express: '~4.16.1'
     }
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  const app = loadTemplate('js/app.js')
+  const www = loadTemplate('js/www')
+  const index = loadTemplate('js/routes/index')
+  const users = loadTemplate('js/routes/users')
 
   // App name
   www.locals.name = name
+
+  // ES2015 Syntax
+  app.locals.es5 = program.es5
+  www.locals.es5 = program.es5
+  index.locals.es5 = program.es5
+  users.locals.es5 = program.es5
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -204,10 +237,6 @@ function createApplication (name, dir) {
       copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
       break
   }
-
-  // copy route templates
-  mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
 
   if (program.view) {
     // Copy view templates
@@ -258,7 +287,9 @@ function createApplication (name, dir) {
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
-      app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
+      app.locals.uses.push(
+        "sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})"
+      )
       pkg.dependencies['node-sass-middleware'] = '0.11.0'
       break
     case 'stylus':
@@ -334,25 +365,29 @@ function createApplication (name, dir) {
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
   write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  mkdir(dir, 'routes')
+  write(path.join(dir, 'routes/index.js'), index.render())
+  write(path.join(dir, 'routes/users.js'), users.render())
 
-  var prompt = launchedFromCmd() ? '>' : '$'
+  const prompt = launchedFromCmd() ? '>' : '$'
 
   if (dir !== '.') {
     console.log()
-    console.log('   change directory:')
-    console.log('     %s cd %s', prompt, dir)
+    console.log(`
+       change directory:
+         ${prompt} cd ${dir}`)
   }
 
-  console.log()
-  console.log('   install dependencies:')
-  console.log('     %s npm install', prompt)
-  console.log()
-  console.log('   run the app:')
+  console.log(`
+   install dependencies:
+     ${prompt} npm install
+
+   run the app:`)
 
   if (launchedFromCmd()) {
-    console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
+    console.log(`     ${prompt} SET DEBUG=${name}:* & npm start'`)
   } else {
-    console.log('     %s DEBUG=%s:* npm start', prompt, name)
+    console.log(`     ${prompt} DEBUG=${name}:* npm start`)
   }
 
   console.log()
@@ -365,7 +400,8 @@ function createApplication (name, dir) {
  */
 
 function createAppName (pathName) {
-  return path.basename(pathName)
+  return path
+    .basename(pathName)
     .replace(/[^A-Za-z0-9.-]+/g, '-')
     .replace(/^[-_.]+|-+$/g, '')
     .toLowerCase()
@@ -379,8 +415,10 @@ function createAppName (pathName) {
  */
 
 function emptyDirectory (dir, fn) {
-  fs.readdir(dir, function (err, files) {
-    if (err && err.code !== 'ENOENT') throw err
+  fs.readdir(dir, (err, files) => {
+    if (err && err.code !== 'ENOENT') {
+      throw err
+    }
     fn(!files || !files.length)
   })
 }
@@ -394,15 +432,17 @@ function exit (code) {
   // https://github.com/joyent/node/issues/6247 is just one bug example
   // https://github.com/visionmedia/mocha/issues/333 has a good discussion
   function done () {
-    if (!(draining--)) _exit(code)
+    if (!draining--) {
+      _exit(code)
+    }
   }
 
-  var draining = 0
-  var streams = [process.stdout, process.stderr]
+  let draining = 0
+  const streams = [process.stdout, process.stderr]
 
   exit.exited = true
 
-  streams.forEach(function (stream) {
+  streams.forEach((stream) => {
     // submit empty write request and wait for completion
     draining += 1
     stream.write('', done)
@@ -416,8 +456,7 @@ function exit (code) {
  */
 
 function launchedFromCmd () {
-  return process.platform === 'win32' &&
-    process.env._ === undefined
+  return process.platform === 'win32' && process.env._ === undefined
 }
 
 /**
@@ -425,8 +464,11 @@ function launchedFromCmd () {
  */
 
 function loadTemplate (name) {
-  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
-  var locals = Object.create(null)
+  const contents = fs.readFileSync(
+    path.join(__dirname, '..', 'templates', name + '.ejs'),
+    'utf-8'
+  )
+  const locals = Object.create(null)
 
   function render () {
     return ejs.render(contents, locals, {
@@ -435,8 +477,8 @@ function loadTemplate (name) {
   }
 
   return {
-    locals: locals,
-    render: render
+    locals,
+    render
   }
 }
 
@@ -446,32 +488,39 @@ function loadTemplate (name) {
 
 function main () {
   // Path
-  var destinationPath = program.args.shift() || '.'
+  const destinationPath = program.args.shift() || '.'
 
   // App name
-  var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
+  const appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
   // View engine
   if (program.view === true) {
-    if (program.ejs) program.view = 'ejs'
-    if (program.hbs) program.view = 'hbs'
-    if (program.hogan) program.view = 'hjs'
-    if (program.pug) program.view = 'pug'
+    if (program.ejs) {
+      program.view = 'ejs'
+    } else if (program.hbs) {
+      program.view = 'hbs'
+    } else if (program.hogan) {
+      program.view = 'hjs'
+    } else if (program.pug) {
+      program.view = 'pug'
+    }
   }
 
   // Default view engine
   if (program.view === true) {
-    warning('the default view engine will not be jade in future releases\n' +
-      "use `--view=jade' or `--help' for additional options")
+    warning(
+      'the default view engine will not be jade in future releases\n' +
+        "use `--view=jade' or `--help' for additional options"
+    )
     program.view = 'jade'
   }
 
   // Generate application
-  emptyDirectory(destinationPath, function (empty) {
+  emptyDirectory(destinationPath, (empty) => {
     if (empty || program.force) {
       createApplication(appName, destinationPath)
     } else {
-      confirm('destination is not empty, continue? [y/N] ', function (ok) {
+      confirm('destination is not empty, continue? [y/N] ', (ok) => {
         if (ok) {
           process.stdin.destroy()
           createApplication(appName, destinationPath)
@@ -492,9 +541,9 @@ function main () {
  */
 
 function mkdir (base, dir) {
-  var loc = path.join(base, dir)
+  const loc = path.join(base, dir)
 
-  console.log('   \x1b[36mcreate\x1b[0m : ' + loc + path.sep)
+  console.log(`   \x1b[36mcreate\x1b[0m : ${loc}${path.sep}`)
   mkdirp.sync(loc, MODE_0755)
 }
 
@@ -506,8 +555,14 @@ function mkdir (base, dir) {
  */
 
 function renamedOption (originalName, newName) {
-  return function (val) {
-    warning(util.format("option `%s' has been renamed to `%s'", originalName, newName))
+  return (val) => {
+    warning(
+      util.format(
+        "option `%s' has been renamed to `%s'",
+        originalName,
+        newName
+      )
+    )
     return val
   }
 }
@@ -520,8 +575,8 @@ function renamedOption (originalName, newName) {
 
 function warning (message) {
   console.error()
-  message.split('\n').forEach(function (line) {
-    console.error('  warning: %s', line)
+  message.split('\n').forEach((line) => {
+    console.error(`  warning: ${line}`)
   })
   console.error()
 }
@@ -535,5 +590,5 @@ function warning (message) {
 
 function write (file, str, mode) {
   fs.writeFileSync(file, str, { mode: mode || MODE_0666 })
-  console.log('   \x1b[36mcreate\x1b[0m : ' + file)
+  console.log(`   \x1b[36mcreate\x1b[0m : ${file}`)
 }

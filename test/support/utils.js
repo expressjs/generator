@@ -1,9 +1,9 @@
 'use strict'
 
-var fs = require('fs')
-var os = require('os')
-var path = require('path')
-var uid = require('uid-safe')
+const fs = require('fs')
+const os = require('os')
+const path = require('path')
+const uid = require('uid-safe')
 
 module.exports.childEnvironment = childEnvironment
 module.exports.parseCreatedFiles = parseCreatedFiles
@@ -12,10 +12,10 @@ module.exports.stripWarnings = stripWarnings
 module.exports.tmpDir = tmpDir
 
 function childEnvironment () {
-  var env = Object.create(null)
+  const env = Object.create(null)
 
   // copy the environment except for npm veriables
-  for (var key in process.env) {
+  for (let key in process.env) {
     if (key.substr(0, 4) !== 'npm_') {
       env[key] = process.env[key]
     }
@@ -25,13 +25,13 @@ function childEnvironment () {
 }
 
 function parseCreatedFiles (output, dir) {
-  var files = []
-  var lines = output.split(/[\r\n]+/)
-  var match
+  const files = []
+  const lines = output.split(/[\r\n]+/)
+  let match
 
-  for (var i = 0; i < lines.length; i++) {
+  for (let i = 0; i < lines.length; i++) {
     if ((match = /create.*?: (.*)$/.exec(lines[i]))) {
-      var file = match[1]
+      let file = match[1]
 
       if (dir) {
         file = path.resolve(dir, file)
@@ -56,7 +56,7 @@ function stripWarnings (str) {
 }
 
 function tmpDir () {
-  var dirname = path.join(os.tmpdir(), uid.sync(8))
+  const dirname = path.join(os.tmpdir(), uid.sync(8))
 
   fs.mkdirSync(dirname, { mode: parseInt('0700', 8) })
 

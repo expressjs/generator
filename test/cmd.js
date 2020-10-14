@@ -1,21 +1,23 @@
+const assert = require('assert')
+const AppRunner = require('./support/app-runner')
+const exec = require('child_process').exec
+const fs = require('fs')
+const mkdirp = require('mkdirp')
+const path = require('path')
+const request = require('supertest')
+const rimraf = require('rimraf')
+const spawn = require('child_process').spawn
+const utils = require('./support/utils')
+const validateNpmName = require('validate-npm-package-name')
 
-var assert = require('assert')
-var AppRunner = require('./support/app-runner')
-var exec = require('child_process').exec
-var fs = require('fs')
-var mkdirp = require('mkdirp')
-var path = require('path')
-var request = require('supertest')
-var rimraf = require('rimraf')
-var spawn = require('child_process').spawn
-var utils = require('./support/utils')
-var validateNpmName = require('validate-npm-package-name')
-
-var APP_START_STOP_TIMEOUT = 10000
-var PKG_PATH = path.resolve(__dirname, '..', 'package.json')
-var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.express)
-var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
-var TEMP_DIR = utils.tmpDir()
+const APP_START_STOP_TIMEOUT = 10000
+const PKG_PATH = path.resolve(__dirname, '..', 'package.json')
+const BIN_PATH = path.resolve(
+  path.dirname(PKG_PATH),
+  require(PKG_PATH).bin.express
+)
+const NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
+const TEMP_DIR = utils.tmpDir()
 
 describe('express(1)', function () {
   after(function (done) {
@@ -24,11 +26,13 @@ describe('express(1)', function () {
   })
 
   describe('(no args)', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app', function (done) {
       runRaw(ctx.dir, [], function (err, code, stdout, stderr) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         ctx.stderr = stderr
         ctx.stdout = stdout
@@ -38,18 +42,17 @@ describe('express(1)', function () {
     })
 
     it('should print jade view warning', function () {
-      assert.strictEqual(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      assert.strictEqual(
+        ctx.stderr,
+        "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n"
+      )
     })
 
     it('should provide debug instructions', function () {
       assert.ok(/DEBUG=express-1-no-args:\* (?:& )?npm start/.test(ctx.stdout))
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
+    checkBasicFiles(ctx)
 
     it('should have jade templates', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
@@ -58,24 +61,27 @@ describe('express(1)', function () {
     })
 
     it('should have a package.json file', function () {
-      var file = path.resolve(ctx.dir, 'package.json')
-      var contents = fs.readFileSync(file, 'utf8')
-      assert.strictEqual(contents, '{\n' +
-        '  "name": "express-1-no-args",\n' +
-        '  "version": "0.0.0",\n' +
-        '  "private": true,\n' +
-        '  "scripts": {\n' +
-        '    "start": "node ./bin/www"\n' +
-        '  },\n' +
-        '  "dependencies": {\n' +
-        '    "cookie-parser": "~1.4.4",\n' +
-        '    "debug": "~2.6.9",\n' +
-        '    "express": "~4.16.1",\n' +
-        '    "http-errors": "~1.6.3",\n' +
-        '    "jade": "~1.11.0",\n' +
-        '    "morgan": "~1.9.1"\n' +
-        '  }\n' +
-        '}\n')
+      const file = path.resolve(ctx.dir, 'package.json')
+      const contents = fs.readFileSync(file, 'utf8')
+      assert.strictEqual(
+        contents,
+        '{\n' +
+          '  "name": "express-1-no-args",\n' +
+          '  "version": "0.0.0",\n' +
+          '  "private": true,\n' +
+          '  "scripts": {\n' +
+          '    "start": "node ./bin/www"\n' +
+          '  },\n' +
+          '  "dependencies": {\n' +
+          '    "cookie-parser": "~1.4.4",\n' +
+          '    "debug": "~2.6.9",\n' +
+          '    "express": "~4.16.1",\n' +
+          '    "http-errors": "~1.6.3",\n' +
+          '    "jade": "~1.11.0",\n' +
+          '    "morgan": "~1.9.1"\n' +
+          '  }\n' +
+          '}\n'
+      )
     })
 
     it('should have installable dependencies', function (done) {
@@ -84,8 +90,8 @@ describe('express(1)', function () {
     })
 
     it('should export an express app from app.js', function () {
-      var file = path.resolve(ctx.dir, 'app.js')
-      var app = require(file)
+      const file = path.resolve(ctx.dir, 'app.js')
+      const app = require(file)
       assert.strictEqual(typeof app, 'function')
       assert.strictEqual(typeof app.handle, 'function')
     })
@@ -119,40 +125,202 @@ describe('express(1)', function () {
     })
 
     describe('when directory contains spaces', function () {
-      var ctx0 = setupTestEnvironment('foo bar (BAZ!)')
+      const ctx0 = setupTestEnvironment('foo bar (BAZ!)')
 
       it('should create basic app', function (done) {
         run(ctx0.dir, [], function (err, output) {
-          if (err) return done(err)
-          assert.strictEqual(utils.parseCreatedFiles(output, ctx0.dir).length, 16)
+          if (err) {
+            return done(err)
+          }
+          assert.strictEqual(
+            utils.parseCreatedFiles(output, ctx0.dir).length,
+            16
+          )
           done()
         })
       })
 
       it('should have a valid npm package name', function () {
-        var file = path.resolve(ctx0.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var name = JSON.parse(contents).name
-        assert.ok(validateNpmName(name).validForNewPackages, 'package name "' + name + '" is valid')
+        const file = path.resolve(ctx0.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const name = JSON.parse(contents).name
+        assert.ok(
+          validateNpmName(name).validForNewPackages,
+          'package name "' + name + '" is valid'
+        )
         assert.strictEqual(name, 'foo-bar-baz')
       })
     })
 
     describe('when directory is not a valid name', function () {
-      var ctx1 = setupTestEnvironment('_')
+      const ctx1 = setupTestEnvironment('_')
 
       it('should create basic app', function (done) {
         run(ctx1.dir, [], function (err, output) {
-          if (err) return done(err)
-          assert.strictEqual(utils.parseCreatedFiles(output, ctx1.dir).length, 16)
+          if (err) {
+            return done(err)
+          }
+          assert.strictEqual(
+            utils.parseCreatedFiles(output, ctx1.dir).length,
+            16
+          )
           done()
         })
       })
 
       it('should default to name "hello-world"', function () {
-        var file = path.resolve(ctx1.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var name = JSON.parse(contents).name
+        const file = path.resolve(ctx1.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const name = JSON.parse(contents).name
+        assert.ok(validateNpmName(name).validForNewPackages)
+        assert.strictEqual(name, 'hello-world')
+      })
+    })
+  })
+
+  describe('--es5', function () {
+    const ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app', function (done) {
+      runRaw(ctx.dir, ['--es5'], function (err, code, stdout, stderr) {
+        if (err) {
+          return done(err)
+        }
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        ctx.stderr = stderr
+        ctx.stdout = stdout
+        assert.strictEqual(ctx.files.length, 16)
+        done()
+      })
+    })
+
+    it('should print jade view warning', function () {
+      assert.strictEqual(
+        ctx.stderr,
+        "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n"
+      )
+    })
+
+    checkBasicFiles(ctx)
+
+    it('should have jade templates', function () {
+      assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    })
+
+    it('should have a package.json file', function () {
+      const file = path.resolve(ctx.dir, 'package.json')
+      const contents = fs.readFileSync(file, 'utf8')
+      assert.strictEqual(
+        contents,
+        '{\n' +
+          '  "name": "express-1---es5",\n' +
+          '  "version": "0.0.0",\n' +
+          '  "private": true,\n' +
+          '  "scripts": {\n' +
+          '    "start": "node ./bin/www"\n' +
+          '  },\n' +
+          '  "dependencies": {\n' +
+          '    "cookie-parser": "~1.4.4",\n' +
+          '    "debug": "~2.6.9",\n' +
+          '    "express": "~4.16.1",\n' +
+          '    "http-errors": "~1.6.3",\n' +
+          '    "jade": "~1.11.0",\n' +
+          '    "morgan": "~1.9.1"\n' +
+          '  }\n' +
+          '}\n'
+      )
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(NPM_INSTALL_TIMEOUT)
+      npmInstall(ctx.dir, done)
+    })
+
+    it('should export an express app from app.js', function () {
+      const file = path.resolve(ctx.dir, 'app.js')
+      const app = require(file)
+      assert.strictEqual(typeof app, 'function')
+      assert.strictEqual(typeof app.handle, 'function')
+    })
+
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
+
+      after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.stop(done)
+      })
+
+      it('should start app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.start(done)
+      })
+
+      it('should respond to HTTP request', function (done) {
+        request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
+    })
+
+    describe('when directory contains spaces', function () {
+      const ctx0 = setupTestEnvironment('foo bar (BAZ!)')
+
+      it('should create basic app', function (done) {
+        run(ctx0.dir, [], function (err, output) {
+          if (err) {
+            return done(err)
+          }
+          assert.strictEqual(
+            utils.parseCreatedFiles(output, ctx0.dir).length,
+            16
+          )
+          done()
+        })
+      })
+
+      it('should have a valid npm package name', function () {
+        const file = path.resolve(ctx0.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const name = JSON.parse(contents).name
+        assert.ok(
+          validateNpmName(name).validForNewPackages,
+          'package name "' + name + '" is valid'
+        )
+        assert.strictEqual(name, 'foo-bar-baz')
+      })
+    })
+
+    describe('when directory is not a valid name', function () {
+      const ctx1 = setupTestEnvironment('_')
+
+      it('should create basic app', function (done) {
+        run(ctx1.dir, [], function (err, output) {
+          if (err) {
+            return done(err)
+          }
+          assert.strictEqual(
+            utils.parseCreatedFiles(output, ctx1.dir).length,
+            16
+          )
+          done()
+        })
+      })
+
+      it('should default to name "hello-world"', function () {
+        const file = path.resolve(ctx1.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const name = JSON.parse(contents).name
         assert.ok(validateNpmName(name).validForNewPackages)
         assert.strictEqual(name, 'hello-world')
       })
@@ -160,30 +328,17 @@ describe('express(1)', function () {
   })
 
   describe('(unknown args)', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
-    it('should exit with code 1', function (done) {
-      runRaw(ctx.dir, ['--foo'], function (err, code, stdout, stderr) {
-        if (err) return done(err)
-        assert.strictEqual(code, 1)
-        done()
-      })
-    })
+    checkAppExits(ctx, '--foo')
 
-    it('should print usage', function (done) {
-      runRaw(ctx.dir, ['--foo'], function (err, code, stdout, stderr) {
-        if (err) return done(err)
-        assert.ok(/Usage: express /.test(stdout))
-        assert.ok(/--help/.test(stdout))
-        assert.ok(/--version/.test(stdout))
-        assert.ok(/error: unknown option/.test(stderr))
-        done()
-      })
-    })
+    checkMessage(ctx, '--foo', { runRaw: true, isUnknownArg: true })
 
     it('should print unknown option', function (done) {
       runRaw(ctx.dir, ['--foo'], function (err, code, stdout, stderr) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         assert.ok(/error: unknown option/.test(stderr))
         done()
       })
@@ -191,11 +346,13 @@ describe('express(1)', function () {
   })
 
   describe('<dir>', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app in directory', function (done) {
       runRaw(ctx.dir, ['foo'], function (err, code, stdout, stderr) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         ctx.stderr = stderr
         ctx.stdout = stdout
@@ -231,29 +388,17 @@ describe('express(1)', function () {
 
   describe('--css <engine>', function () {
     describe('(no engine)', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
-      it('should exit with code 1', function (done) {
-        runRaw(ctx.dir, ['--css'], function (err, code, stdout, stderr) {
-          if (err) return done(err)
-          assert.strictEqual(code, 1)
-          done()
-        })
-      })
+      checkAppExits(ctx, '--css')
 
-      it('should print usage', function (done) {
-        runRaw(ctx.dir, ['--css'], function (err, code, stdout) {
-          if (err) return done(err)
-          assert.ok(/Usage: express /.test(stdout))
-          assert.ok(/--help/.test(stdout))
-          assert.ok(/--version/.test(stdout))
-          done()
-        })
-      })
+      checkMessage(ctx, '--css', { runRaw: true })
 
       it('should print argument missing', function (done) {
         runRaw(ctx.dir, ['--css'], function (err, code, stdout, stderr) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           assert.ok(/error: option .* argument missing/.test(stderr))
           done()
         })
@@ -261,25 +406,27 @@ describe('express(1)', function () {
     })
 
     describe('less', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with less files', function (done) {
         run(ctx.dir, ['--css', 'less'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-      })
+      checkBasicFiles(ctx)
 
       it('should have less files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.less'), -1, 'should have style.less file')
+        assert.notStrictEqual(
+          ctx.files.indexOf('public/stylesheets/style.less'),
+          -1,
+          'should have style.less file'
+        )
       })
 
       it('should have installable dependencies', function (done) {
@@ -317,25 +464,27 @@ describe('express(1)', function () {
     })
 
     describe('sass', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with sass files', function (done) {
         run(ctx.dir, ['--css', 'sass'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-      })
+      checkBasicFiles(ctx)
 
       it('should have sass files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.sass'), -1, 'should have style.sass file')
+        assert.notStrictEqual(
+          ctx.files.indexOf('public/stylesheets/style.sass'),
+          -1,
+          'should have style.sass file'
+        )
       })
 
       it('should have installable dependencies', function (done) {
@@ -373,25 +522,27 @@ describe('express(1)', function () {
     })
 
     describe('stylus', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with stylus files', function (done) {
         run(ctx.dir, ['--css', 'stylus'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-      })
+      checkBasicFiles(ctx)
 
       it('should have stylus files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.styl'), -1, 'should have style.styl file')
+        assert.notStrictEqual(
+          ctx.files.indexOf('public/stylesheets/style.styl'),
+          -1,
+          'should have style.styl file'
+        )
       })
 
       it('should have installable dependencies', function (done) {
@@ -430,49 +581,57 @@ describe('express(1)', function () {
   })
 
   describe('--ejs', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with ejs templates', function (done) {
       run(ctx.dir, ['--ejs'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15, 'should have 15 files')
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-    })
+    checkBasicFiles(ctx)
 
     it('should have ejs templates', function () {
-      assert.notStrictEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
-      assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
+      assert.notStrictEqual(
+        ctx.files.indexOf('views/error.ejs'),
+        -1,
+        'should have views/error.ejs file'
+      )
+      assert.notStrictEqual(
+        ctx.files.indexOf('views/index.ejs'),
+        -1,
+        'should have views/index.ejs file'
+      )
     })
   })
 
   describe('--git', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with git files', function (done) {
       run(ctx.dir, ['--git'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 17, 'should have 17 files')
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-    })
+    checkBasicFiles(ctx)
 
     it('should have .gitignore', function () {
-      assert.notStrictEqual(ctx.files.indexOf('.gitignore'), -1, 'should have .gitignore file')
+      assert.notStrictEqual(
+        ctx.files.indexOf('.gitignore'),
+        -1,
+        'should have .gitignore file'
+      )
     })
 
     it('should have jade templates', function () {
@@ -483,43 +642,31 @@ describe('express(1)', function () {
   })
 
   describe('-h', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
-    it('should print usage', function (done) {
-      run(ctx.dir, ['-h'], function (err, stdout) {
-        if (err) return done(err)
-        var files = utils.parseCreatedFiles(stdout, ctx.dir)
-        assert.strictEqual(files.length, 0)
-        assert.ok(/Usage: express /.test(stdout))
-        assert.ok(/--help/.test(stdout))
-        assert.ok(/--version/.test(stdout))
-        done()
-      })
-    })
+    checkMessage(ctx, '-h', { numFiles: 0 })
   })
 
   describe('--hbs', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hbs templates', function (done) {
       run(ctx.dir, ['--hbs'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
+    checkBasicFiles(ctx)
 
     it('should have hbs in package dependencies', function () {
-      var file = path.resolve(ctx.dir, 'package.json')
-      var contents = fs.readFileSync(file, 'utf8')
-      var dependencies = JSON.parse(contents).dependencies
+      const file = path.resolve(ctx.dir, 'package.json')
+      const contents = fs.readFileSync(file, 'utf8')
+      const dependencies = JSON.parse(contents).dependencies
       assert.ok(typeof dependencies.hbs === 'string')
     })
 
@@ -531,43 +678,31 @@ describe('express(1)', function () {
   })
 
   describe('--help', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
-    it('should print usage', function (done) {
-      run(ctx.dir, ['--help'], function (err, stdout) {
-        if (err) return done(err)
-        var files = utils.parseCreatedFiles(stdout, ctx.dir)
-        assert.strictEqual(files.length, 0)
-        assert.ok(/Usage: express /.test(stdout))
-        assert.ok(/--help/.test(stdout))
-        assert.ok(/--version/.test(stdout))
-        done()
-      })
-    })
+    checkMessage(ctx, '--help', { numFiles: 0 })
   })
 
   describe('--hogan', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hogan templates', function (done) {
       run(ctx.dir, ['--hogan'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15)
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
+    checkBasicFiles(ctx)
 
     it('should have hjs in package dependencies', function () {
-      var file = path.resolve(ctx.dir, 'package.json')
-      var contents = fs.readFileSync(file, 'utf8')
-      var dependencies = JSON.parse(contents).dependencies
+      const file = path.resolve(ctx.dir, 'package.json')
+      const contents = fs.readFileSync(file, 'utf8')
+      const dependencies = JSON.parse(contents).dependencies
       assert.ok(typeof dependencies.hjs === 'string')
     })
 
@@ -578,22 +713,20 @@ describe('express(1)', function () {
   })
 
   describe('--no-view', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app without view engine', function (done) {
       run(ctx.dir, ['--no-view'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 13)
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
+    checkBasicFiles(ctx)
 
     it('should not have views directory', function () {
       assert.strictEqual(ctx.files.indexOf('views'), -1)
@@ -634,27 +767,25 @@ describe('express(1)', function () {
   })
 
   describe('--pug', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+    const ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with pug templates', function (done) {
       run(ctx.dir, ['--pug'], function (err, stdout) {
-        if (err) return done(err)
+        if (err) {
+          return done(err)
+        }
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
     })
 
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
+    checkBasicFiles(ctx)
 
     it('should have pug in package dependencies', function () {
-      var file = path.resolve(ctx.dir, 'package.json')
-      var contents = fs.readFileSync(file, 'utf8')
-      var dependencies = JSON.parse(contents).dependencies
+      const file = path.resolve(ctx.dir, 'package.json')
+      const contents = fs.readFileSync(file, 'utf8')
+      const dependencies = JSON.parse(contents).dependencies
       assert.ok(typeof dependencies.pug === 'string')
     })
 
@@ -667,29 +798,17 @@ describe('express(1)', function () {
 
   describe('--view <engine>', function () {
     describe('(no engine)', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
-      it('should exit with code 1', function (done) {
-        runRaw(ctx.dir, ['--view'], function (err, code, stdout, stderr) {
-          if (err) return done(err)
-          assert.strictEqual(code, 1)
-          done()
-        })
-      })
+      checkAppExits(ctx, '--view')
 
-      it('should print usage', function (done) {
-        runRaw(ctx.dir, ['--view'], function (err, code, stdout) {
-          if (err) return done(err)
-          assert.ok(/Usage: express /.test(stdout))
-          assert.ok(/--help/.test(stdout))
-          assert.ok(/--version/.test(stdout))
-          done()
-        })
-      })
+      checkMessage(ctx, '--view', { runRaw: true })
 
       it('should print argument missing', function (done) {
         runRaw(ctx.dir, ['--view'], function (err, code, stdout, stderr) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           assert.ok(/error: option .* argument missing/.test(stderr))
           done()
         })
@@ -697,26 +816,32 @@ describe('express(1)', function () {
     })
 
     describe('dust', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with dust templates', function (done) {
         run(ctx.dir, ['--view', 'dust'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 15, 'should have 15 files')
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-      })
+      checkBasicFiles(ctx)
 
       it('should have dust templates', function () {
-        assert.notStrictEqual(ctx.files.indexOf('views/error.dust'), -1, 'should have views/error.dust file')
-        assert.notStrictEqual(ctx.files.indexOf('views/index.dust'), -1, 'should have views/index.dust file')
+        assert.notStrictEqual(
+          ctx.files.indexOf('views/error.dust'),
+          -1,
+          'should have views/error.dust file'
+        )
+        assert.notStrictEqual(
+          ctx.files.indexOf('views/index.dust'),
+          -1,
+          'should have views/index.dust file'
+        )
       })
 
       it('should have installable dependencies', function (done) {
@@ -724,56 +849,36 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('ejs', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with ejs templates', function (done) {
         run(ctx.dir, ['--view', 'ejs'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 15, 'should have 15 files')
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
-      })
+      checkBasicFiles(ctx)
 
       it('should have ejs templates', function () {
-        assert.notStrictEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
-        assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
+        assert.notStrictEqual(
+          ctx.files.indexOf('views/error.ejs'),
+          -1,
+          'should have views/error.ejs file'
+        )
+        assert.notStrictEqual(
+          ctx.files.indexOf('views/index.ejs'),
+          -1,
+          'should have views/index.ejs file'
+        )
       })
 
       it('should have installable dependencies', function (done) {
@@ -781,57 +886,29 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('hbs', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with hbs templates', function (done) {
         run(ctx.dir, ['--view', 'hbs'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16)
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-      })
+      checkBasicFiles(ctx)
 
       it('should have hbs in package dependencies', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var dependencies = JSON.parse(contents).dependencies
+        const file = path.resolve(ctx.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const dependencies = JSON.parse(contents).dependencies
         assert.ok(typeof dependencies.hbs === 'string')
       })
 
@@ -846,57 +923,29 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('hjs', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with hogan templates', function (done) {
         run(ctx.dir, ['--view', 'hjs'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 15)
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-      })
+      checkBasicFiles(ctx)
 
       it('should have hjs in package dependencies', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var dependencies = JSON.parse(contents).dependencies
+        const file = path.resolve(ctx.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const dependencies = JSON.parse(contents).dependencies
         assert.ok(typeof dependencies.hjs === 'string')
       })
 
@@ -910,57 +959,29 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('pug', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with pug templates', function (done) {
         run(ctx.dir, ['--view', 'pug'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16)
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-      })
+      checkBasicFiles(ctx)
 
       it('should have pug in package dependencies', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var dependencies = JSON.parse(contents).dependencies
+        const file = path.resolve(ctx.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const dependencies = JSON.parse(contents).dependencies
         assert.ok(typeof dependencies.pug === 'string')
       })
 
@@ -975,57 +996,29 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('twig', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with twig templates', function (done) {
         run(ctx.dir, ['--view', 'twig'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16)
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-      })
+      checkBasicFiles(ctx)
 
       it('should have twig in package dependencies', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var dependencies = JSON.parse(contents).dependencies
+        const file = path.resolve(ctx.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const dependencies = JSON.parse(contents).dependencies
         assert.ok(typeof dependencies.twig === 'string')
       })
 
@@ -1040,57 +1033,29 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
 
     describe('vash', function () {
-      var ctx = setupTestEnvironment(this.fullTitle())
+      const ctx = setupTestEnvironment(this.fullTitle())
 
       it('should create basic app with vash templates', function (done) {
         run(ctx.dir, ['--view', 'vash'], function (err, stdout) {
-          if (err) return done(err)
+          if (err) {
+            return done(err)
+          }
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           assert.strictEqual(ctx.files.length, 16)
           done()
         })
       })
 
-      it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-      })
+      checkBasicFiles(ctx)
 
       it('should have vash in package dependencies', function () {
-        var file = path.resolve(ctx.dir, 'package.json')
-        var contents = fs.readFileSync(file, 'utf8')
-        var dependencies = JSON.parse(contents).dependencies
+        const file = path.resolve(ctx.dir, 'package.json')
+        const contents = fs.readFileSync(file, 'utf8')
+        const dependencies = JSON.parse(contents).dependencies
         assert.ok(typeof dependencies.vash === 'string')
       })
 
@@ -1105,39 +1070,13 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      describe('npm start', function () {
-        before('start app', function () {
-          this.app = new AppRunner(ctx.dir)
-        })
-
-        after('stop app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.stop(done)
-        })
-
-        it('should start app', function (done) {
-          this.timeout(APP_START_STOP_TIMEOUT)
-          this.app.start(done)
-        })
-
-        it('should respond to HTTP request', function (done) {
-          request(this.app)
-            .get('/')
-            .expect(200, /<title>Express<\/title>/, done)
-        })
-
-        it('should generate a 404', function (done) {
-          request(this.app)
-            .get('/does_not_exist')
-            .expect(404, /<h1>Not Found<\/h1>/, done)
-        })
-      })
+      checkAppStart(ctx)
     })
   })
 })
 
 function npmInstall (dir, callback) {
-  var env = utils.childEnvironment()
+  const env = utils.childEnvironment()
 
   exec('npm install', { cwd: dir, env: env }, function (err, stderr) {
     if (err) {
@@ -1170,12 +1109,12 @@ function run (dir, args, callback) {
 }
 
 function runRaw (dir, args, callback) {
-  var argv = [BIN_PATH].concat(args)
-  var binp = process.argv[0]
-  var stderr = ''
-  var stdout = ''
+  const argv = [BIN_PATH].concat(args)
+  const binp = process.argv[0]
+  let stderr = ''
+  let stdout = ''
 
-  var child = spawn(binp, argv, {
+  const child = spawn(binp, argv, {
     cwd: dir
   })
 
@@ -1197,7 +1136,7 @@ function runRaw (dir, args, callback) {
 }
 
 function setupTestEnvironment (name) {
-  var ctx = {}
+  const ctx = {}
 
   before('create environment', function (done) {
     ctx.dir = path.join(TEMP_DIR, name.replace(/[<>]/g, ''))
@@ -1210,4 +1149,90 @@ function setupTestEnvironment (name) {
   })
 
   return ctx
+}
+
+function checkAppExits (ctx, arg) {
+  it('should exit with code 1', function (done) {
+    // eslint-disable-next-line no-unused-vars
+    runRaw(ctx.dir, [arg], function (err, code, stdout, stderr) {
+      if (err) {
+        return done(err)
+      }
+      assert.strictEqual(code, 1)
+      done()
+    })
+  })
+}
+
+function checkMessage (ctx, arg, options = {}) {
+  it('should print usage', function (done) {
+    if (options.runRaw) {
+      runRaw(ctx.dir, [arg], function (err, code, stdout, stderr) {
+        if (err) {
+          return done(err)
+        }
+        checkMessageContent(ctx, { stdout, stderr }, options)
+        done()
+      })
+    } else {
+      run(ctx.dir, [arg], function (err, stdout) {
+        if (err) {
+          return done(err)
+        }
+        checkMessageContent(ctx, { stdout }, options)
+        done()
+      })
+    }
+  })
+}
+
+function checkMessageContent (ctx, { stdout, stderr }, { isUnknownArg = false, expectedFileNum = null }) {
+  if (expectedFileNum) {
+    const files = utils.parseCreatedFiles(stdout, ctx.dir)
+    assert.strictEqual(files.length, expectedFileNum)
+  }
+  assert.ok(/Usage: express /.test(stdout))
+  assert.ok(/--help/.test(stdout))
+  assert.ok(/--version/.test(stdout))
+  if (isUnknownArg) {
+    assert.ok(/error: unknown option/.test(stderr))
+  }
+}
+
+function checkBasicFiles (ctx) {
+  it('should have basic files', function () {
+    assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
+    assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+    assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+  })
+}
+
+function checkAppStart (ctx) {
+  describe('npm start', function () {
+    before('start app', function () {
+      this.app = new AppRunner(ctx.dir)
+    })
+
+    after('stop app', function (done) {
+      this.timeout(APP_START_STOP_TIMEOUT)
+      this.app.stop(done)
+    })
+
+    it('should start app', function (done) {
+      this.timeout(APP_START_STOP_TIMEOUT)
+      this.app.start(done)
+    })
+
+    it('should respond to HTTP request', function (done) {
+      request(this.app)
+        .get('/')
+        .expect(200, /<title>Express<\/title>/, done)
+    })
+
+    it('should generate a 404', function (done) {
+      request(this.app)
+        .get('/does_not_exist')
+        .expect(404, /<h1>Not Found<\/h1>/, done)
+    })
+  })
 }

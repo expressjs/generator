@@ -3,3 +3,4 @@ extends: standard
 rules:
   no-param-reassign: error
   no-shadow: error
+  no-console: off
