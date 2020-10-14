@@ -53,6 +53,7 @@ program
     'add ejs engine support',
     renamedOption('--ejs', '--view=ejs')
   )
+  .option('    --es5', 'use ES5 syntax (defaults to ES2015 syntax)')
   .option(
     '    --pug',
     'add pug engine support',
@@ -177,9 +178,17 @@ function createApplication (name, dir) {
   // JavaScript
   const app = loadTemplate('js/app.js')
   const www = loadTemplate('js/www')
+  const index = loadTemplate('js/routes/index')
+  const users = loadTemplate('js/routes/users')
 
   // App name
   www.locals.name = name
+
+  // ES2015 Syntax
+  app.locals.es5 = program.es5
+  www.locals.es5 = program.es5
+  index.locals.es5 = program.es5
+  users.locals.es5 = program.es5
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -228,10 +237,6 @@ function createApplication (name, dir) {
       copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
       break
   }
-
-  // copy route templates
-  mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
 
   if (program.view) {
     // Copy view templates
@@ -360,6 +365,9 @@ function createApplication (name, dir) {
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
   write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  mkdir(dir, 'routes')
+  write(path.join(dir, 'routes/index.js'), index.render())
+  write(path.join(dir, 'routes/users.js'), users.render())
 
   const prompt = launchedFromCmd() ? '>' : '$'
 

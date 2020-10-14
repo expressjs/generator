@@ -1,17 +1,37 @@
-<% if (view) { -%>
+<% if (view && es5) { -%>
+var createError = require('http-errors');
+<% } else if (view) { -%>
 const createError = require('http-errors');
 <% } -%>
+
+<% if (es5) { -%>
+var express = require('express');
+var path = require('path');
+<% } else { -%>
 const express = require('express');
 const path = require('path');
+<% } -%>
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
+<% if (es5) { -%>
+var <%- variable %> = require('<%- modules[variable] %>');
+<% } else { -%>
 const <%- variable %> = require('<%- modules[variable] %>');
+<% } -%>
 <% }); -%>
 
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
+<% if (es5) { -%>
+var <%- variable %> = require('<%- localModules[variable] %>');
+<% } else { -%>
 const <%- variable %> = require('<%- localModules[variable] %>');
+<% } -%>
 <% }); -%>
 
+<% if (es5) { -%>
+var app = express();
+<% } else { -%>
 const app = express();
+<% } -%>
 
 <% if (view) { -%>
 // view engine setup
@@ -30,7 +50,24 @@ app.use(<%- use %>);
 app.use(<%= mount.path %>, <%- mount.code %>);
 <% }); -%>
 
-<% if (view) { -%>
+<% if (view && es5) { -%>
+// catch 404 and forward to error handler
+app.use(function (req, res, next) {
+  next(createError(404));
+});
+
+// error handler
+app.use(function (err, req, res, next) {
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+  // render the error page
+  res.status(err.status || 500);
+  res.render('error');
+});
+
+<% } else if (view) { -%>
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
