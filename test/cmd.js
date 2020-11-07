@@ -229,6 +229,48 @@ describe('express(1)', function () {
     })
   })
 
+  describe('--typescript', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app in directory', function (done) {
+      runRaw(ctx.dir, ['--typescript'], function (err, code, stdout, stderr) {
+        if (err) return done(err)
+        console.log({ ctx })
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        //assert.strictEqual(ctx.files.length, 16)
+        done()
+      })
+    })
+
+    it('should have a package.json file', function () {
+      var file = path.resolve(ctx.dir, 'package.json')
+      var contents = fs.readFileSync(file, 'utf8')
+      console.log({contents})
+      assert.strictEqual(contents, '{\n' +
+        '  "name": "express-1---typescript",\n' +
+        '  "version": "0.0.0",\n' +
+        '  "private": true,\n' +
+        '  "scripts": {\n' +
+        '    "start": "node ./bin/www"\n' +
+        '  },\n' +
+        '  "dependencies": {\n' +
+        '    "cookie-parser": "~1.4.4",\n' +
+        '    "debug": "~2.6.9",\n' +
+        '    "express": "~4.16.1",\n' +
+        '    "http-errors": "~1.6.3",\n' +
+        '    "jade": "~1.11.0",\n' +
+        '    "morgan": "~1.9.1"\n' +
+        '  },\n' +
+        '  "devDependencies": {\n' +
+        '    "@types/express": "~4.16.1",\n' +
+        '    "@types/node": "14.0.13",\n' +
+        '    "ts-node": "8.10.2",\n' +
+        '    "typescript": "3.9.5"\n' +
+        '  }\n' +
+        '}\n')
+    })
+  })
+
   describe('--css <engine>', function () {
     describe('(no engine)', function () {
       var ctx = setupTestEnvironment(this.fullTitle())

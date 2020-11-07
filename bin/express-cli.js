@@ -150,6 +150,14 @@ function createApplication (name, dir) {
       'express': '~4.16.1'
     }
   }
+  if (program.typescript) {
+    pkg.devDependencies = {
+      "@types/express": "~4.16.1",
+      "@types/node": "14.0.13",
+      "ts-node": "8.10.2",
+      "typescript": "3.9.5",
+    };
+  }
 
   // JavaScript
   var app = loadTemplate('js/app.js')
