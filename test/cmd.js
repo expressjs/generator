@@ -37,8 +37,8 @@ describe('express(1)', function () {
       })
     })
 
-    it('should print jade view warning', function () {
-      assert.strictEqual(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+    it('should print pug view warning', function () {
+      assert.strictEqual(ctx.stderr, "\n  warning: the default view engine is pug now\n  warning: use `--view=jade' if you want to use jade or `--help' for additional options\n\n")
     })
 
     it('should provide debug instructions', function () {
@@ -51,10 +51,10 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
     })
 
-    it('should have jade templates', function () {
-      assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    it('should have pug templates', function () {
+      assert.notStrictEqual(ctx.files.indexOf('views/error.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/index.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/layout.pug'), -1)
     })
 
     it('should have a package.json file', function () {
@@ -72,8 +72,8 @@ describe('express(1)', function () {
         '    "debug": "~2.6.9",\n' +
         '    "express": "~4.16.1",\n' +
         '    "http-errors": "~1.6.3",\n' +
-        '    "jade": "~1.11.0",\n' +
-        '    "morgan": "~1.9.1"\n' +
+        '    "morgan": "~1.9.1",\n' +
+        '    "pug": "~2.0.4"\n' +
         '  }\n' +
         '}\n')
     })
@@ -222,10 +222,10 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('foo/package.json'), -1)
     })
 
-    it('should have jade templates', function () {
-      assert.notStrictEqual(ctx.files.indexOf('foo/views/error.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('foo/views/index.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('foo/views/layout.jade'), -1)
+    it('should have pug templates', function () {
+      assert.notStrictEqual(ctx.files.indexOf('foo/views/error.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('foo/views/index.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('foo/views/layout.pug'), -1)
     })
   })
 
@@ -475,10 +475,10 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('.gitignore'), -1, 'should have .gitignore file')
     })
 
-    it('should have jade templates', function () {
-      assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    it('should have pug templates', function () {
+      assert.notStrictEqual(ctx.files.indexOf('views/error.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/index.pug'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/layout.pug'), -1)
     })
   })
 
@@ -968,6 +968,71 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/error.pug'), -1)
         assert.notStrictEqual(ctx.files.indexOf('views/index.pug'), -1)
         assert.notStrictEqual(ctx.files.indexOf('views/layout.pug'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    })
+
+    describe('jade', function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
+
+      it('should create basic app with jade templates', function (done) {
+        run(ctx.dir, ['--view', 'jade'], function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          assert.strictEqual(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have jade in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var dependencies = JSON.parse(contents).dependencies
+        assert.ok(typeof dependencies.jade === 'string')
+      })
+
+      it('should have jade templates', function () {
+        assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
       })
 
       it('should have installable dependencies', function (done) {
