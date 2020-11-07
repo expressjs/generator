@@ -57,6 +57,7 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .option('    --typescript', 'generate project using typescript')
   .parse(process.argv)
 
 if (!exit.exited) {
