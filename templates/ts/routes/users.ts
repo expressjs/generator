@@ -6,4 +6,4 @@ router.get('/', function(_req: Request, res: Response, _next:NextFunction) {
   res.send('respond with a resource');
 });
 
-module.exports = router ;
+export default router
