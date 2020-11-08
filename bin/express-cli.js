@@ -163,6 +163,9 @@ function createApplication (name, dir) {
     }
   }
   if (program.typescript) {
+    pkg.scripts = {
+      start: 'ts-node ./bin/www'
+    }
     pkg.devDependencies = {
       "@types/express": "~4.16.1",
       "@types/node": "14.0.13",
@@ -172,8 +175,8 @@ function createApplication (name, dir) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate(program.typescript?'ts/app.ts':'js/app.js')
+  var www = loadTemplate(program.typescript?'ts/www':'js/www')
 
   // App name
   www.locals.name = name
@@ -228,7 +231,11 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  if(program.typescript){
+    copyTemplateMulti('ts/routes', dir + '/routes', '*.ts')
+  }else{
+    copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  }
 
   if (program.view) {
     // Copy view templates
@@ -351,12 +358,12 @@ function createApplication (name, dir) {
   pkg.dependencies = sortedObject(pkg.dependencies)
 
   // write files
-  write(path.join(dir, 'app.js'), app.render())
+  write(path.join(dir, program.typescript?'app.ts':'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   if(program.typescript)
     write(path.join(dir, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, program.typescript ? 'bin/www.ts':'bin/www'), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 

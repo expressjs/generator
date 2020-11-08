@@ -1,12 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/env tsc
 
 /**
  * Module dependencies.
  */
 
-const app = require("../app");
+import { AddressInfo } from 'net'
+import app from "../app";
 const debug = require("debug")("<%- name %>:server");
-const http = require("http");
+import {createServer} from "http";
 
 /**
  * Get port from environment and store in Express.
@@ -19,7 +20,7 @@ app.set("port", port);
  * Create HTTP server.
  */
 
-const server = http.createServer(app);
+const server = createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -33,7 +34,7 @@ server.on("listening", onListening);
  * Normalize a port into a number, string, or false.
  */
 
-function normalizePort(val) {
+function normalizePort(val:string) {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
@@ -53,7 +54,7 @@ function normalizePort(val) {
  * Event listener for HTTP server "error" event.
  */
 
-function onError(error) {
+function onError(error:any) {
   if (error.syscall !== "listen") {
     throw error;
   }
@@ -78,7 +79,7 @@ function onError(error) {
  */
 
 function onListening() {
-  const addr = server.address();
+  const addr = server.address() as AddressInfo;
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
   debug("Listening on " + bind);
 }

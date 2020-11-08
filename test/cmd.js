@@ -267,7 +267,7 @@ describe('express(1)', function () {
         '  "version": "0.0.0",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
-        '    "start": "node ./bin/www"\n' +
+        '    "start": "ts-node ./bin/www"\n' +
         '  },\n' +
         '  "dependencies": {\n' +
         '    "cookie-parser": "~1.4.4",\n' +
@@ -635,61 +635,67 @@ describe('express(1)', function () {
     })
   })
 
-  describe('--no-view', function () {
-    var ctx = setupTestEnvironment(this.fullTitle())
+  for (const ts of [true, false]){
+    describe(`--no-view ts=${ts}`, function () {
+      var ctx = setupTestEnvironment(this.fullTitle())
 
-    it('should create basic app without view engine', function (done) {
-      run(ctx.dir, ['--no-view'], function (err, stdout) {
-        if (err) return done(err)
-        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        assert.strictEqual(ctx.files.length, 13)
-        done()
+      it('should create basic app without view engine', function (done) {
+        const params = ts?['--no-view', '--typescript' ]:['--no-view']
+        run(ctx.dir, params, function (err, stdout) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          const size = ts ? 14 : 13
+          assert.strictEqual(ctx.files.length, size)
+          done()
+        })
+      })
+
+      it('should have basic files', function () {
+        const wwwPath = ts ? 'bin/www.ts': 'bin/www'
+        const appPath = ts ? 'app.ts' : 'app.js'
+        assert.notStrictEqual(ctx.files.indexOf(wwwPath), -1)
+        assert.notStrictEqual(ctx.files.indexOf(appPath), -1)
+        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should not have views directory', function () {
+        assert.strictEqual(ctx.files.indexOf('views'), -1)
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+            .get('/does_not_exist')
+            .expect(404, /Cannot GET \/does_not_exist/, done)
+        })
       })
     })
-
-    it('should have basic files', function () {
-      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
-      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
-    })
-
-    it('should not have views directory', function () {
-      assert.strictEqual(ctx.files.indexOf('views'), -1)
-    })
-
-    it('should have installable dependencies', function (done) {
-      this.timeout(NPM_INSTALL_TIMEOUT)
-      npmInstall(ctx.dir, done)
-    })
-
-    describe('npm start', function () {
-      before('start app', function () {
-        this.app = new AppRunner(ctx.dir)
-      })
-
-      after('stop app', function (done) {
-        this.timeout(APP_START_STOP_TIMEOUT)
-        this.app.stop(done)
-      })
-
-      it('should start app', function (done) {
-        this.timeout(APP_START_STOP_TIMEOUT)
-        this.app.start(done)
-      })
-
-      it('should respond to HTTP request', function (done) {
-        request(this.app)
-          .get('/')
-          .expect(200, /<title>Express<\/title>/, done)
-      })
-
-      it('should generate a 404', function (done) {
-        request(this.app)
-          .get('/does_not_exist')
-          .expect(404, /Cannot GET \/does_not_exist/, done)
-      })
-    })
-  })
+  }
 
   describe('--pug', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
