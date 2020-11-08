@@ -137,6 +137,18 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 function createApplication (name, dir) {
   console.log()
 
+  // tsconfig.json
+  var tsconfig = {
+    "compilerOptions": {
+      "target": "es6",
+      "module": "commonjs",
+      "rootDir": "./",
+      "outDir": "./dist",
+      "esModuleInterop": true,
+      "strict": true
+    }
+  }
+
   // Package
   var pkg = {
     name: name,
@@ -341,6 +353,8 @@ function createApplication (name, dir) {
   // write files
   write(path.join(dir, 'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
+  if(program.typescript)
+    write(path.join(dir, 'tsconfig.json'), JSON.stringify(tsconfig, null, 2) + '\n')
   mkdir(dir, 'bin')
   write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
 

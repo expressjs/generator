@@ -242,6 +242,22 @@ describe('express(1)', function () {
       })
     })
 
+    it('should have a tsconfig.json file', function () {
+      var file = path.resolve(ctx.dir, 'tsconfig.json')
+      var contents = fs.readFileSync(file, 'utf8')
+      console.log({contents})
+      assert.strictEqual(contents, '{\n' +
+        '  "compilerOptions": {\n' +
+        '    "target": "es6",\n' +
+        '    "module": "commonjs",\n' +
+        '    "rootDir": "./",\n' +
+        '    "outDir": "./dist",\n' +
+        '    "esModuleInterop": true,\n' +
+        '    "strict": true\n' +
+        '  }\n' +
+        '}\n')
+    })
+
     it('should have a package.json file', function () {
       var file = path.resolve(ctx.dir, 'package.json')
       var contents = fs.readFileSync(file, 'utf8')
