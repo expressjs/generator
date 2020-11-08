@@ -237,7 +237,7 @@ describe('express(1)', function () {
         if (err) return done(err)
         console.log({ ctx })
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        //assert.strictEqual(ctx.files.length, 16)
+        assert.strictEqual(ctx.files.length, 17)
         done()
       })
     })
