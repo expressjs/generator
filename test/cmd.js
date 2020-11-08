@@ -278,7 +278,10 @@ describe('express(1)', function () {
         '    "morgan": "~1.9.1"\n' +
         '  },\n' +
         '  "devDependencies": {\n' +
+        '    "@types/cookie-parser": "~1.4.2",\n' +
         '    "@types/express": "~4.16.1",\n' +
+        '    "@types/http-errors": "~1.8.0",\n' +
+        '    "@types/morgan": "~1.9.2",\n' +
         '    "@types/node": "14.0.13",\n' +
         '    "ts-node": "8.10.2",\n' +
         '    "typescript": "3.9.5"\n' +

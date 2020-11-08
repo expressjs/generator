@@ -167,7 +167,10 @@ function createApplication (name, dir) {
       start: 'ts-node ./bin/www'
     }
     pkg.devDependencies = {
+      "@types/cookie-parser": "~1.4.2",
       "@types/express": "~4.16.1",
+      "@types/http-errors": "~1.8.0",
+      "@types/morgan": "~1.9.2",
       "@types/node": "14.0.13",
       "ts-node": "8.10.2",
       "typescript": "3.9.5",
