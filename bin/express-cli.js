@@ -254,7 +254,7 @@ function createApplication (name, dir) {
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['less-middleware'] = '~2.2.1'
+      pkg.dependencies['less-middleware'] = '~3.1.0'
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
@@ -292,7 +292,7 @@ function createApplication (name, dir) {
       break
     case 'hbs':
       app.locals.view = { engine: 'hbs' }
-      pkg.dependencies.hbs = '~4.0.4'
+      pkg.dependencies.hbs = '~4.1.1'
       break
     case 'hjs':
       app.locals.view = { engine: 'hjs' }
@@ -304,7 +304,7 @@ function createApplication (name, dir) {
       break
     case 'pug':
       app.locals.view = { engine: 'pug' }
-      pkg.dependencies.pug = '2.0.0-beta11'
+      pkg.dependencies.pug = '3.0.0'
       break
     case 'twig':
       app.locals.view = { engine: 'twig' }
