@@ -74,7 +74,7 @@ describe('express(1)', function () {
         '    "express": "~4.16.4",\n' +
         '    "http-errors": "~1.6.3",\n' +
         '    "jade": "~1.11.0",\n' +
-        '    "morgan": "~1.9.1"\n' +
+        '    "morgan": "~1.10.0"\n' +
         '  }\n' +
         '}\n')
     })
