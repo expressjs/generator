@@ -146,7 +146,7 @@ function createApplication (name, dir) {
     },
     dependencies: {
       'debug': '~2.6.9',
-      'express': '~4.16.1'
+      'express': '~4.16.4'
     }
   }
 
