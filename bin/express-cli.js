@@ -145,8 +145,8 @@ function createApplication (name, dir) {
       start: 'node ./bin/www'
     },
     dependencies: {
-      'debug': '~2.6.9',
-      'express': '~4.16.4'
+      debug: '~2.6.9',
+      express: '~4.16.4'
     }
   }
 
