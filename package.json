@@ -46,7 +46,7 @@
     "mocha": "6.2.3",
     "rimraf": "2.7.1",
     "supertest": "4.0.2",
-    "tree-kill": "1.2.1",
+    "tree-kill": "1.2.2",
     "uid-safe": "2.1.5",
     "validate-npm-package-name": "3.0.0"
   },
