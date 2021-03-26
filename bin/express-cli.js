@@ -182,9 +182,9 @@ function createApplication (name, dir) {
   }
 
   mkdir(dir, 'public')
-  mkdir(dir, 'public/javascripts')
+  mkdir(dir, 'public/scripts')
   mkdir(dir, 'public/images')
-  mkdir(dir, 'public/stylesheets')
+  mkdir(dir, 'public/styles')
 
   // copy css templates
   switch (program.css) {
