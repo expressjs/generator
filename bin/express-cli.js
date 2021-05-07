@@ -175,7 +175,7 @@ function createApplication (name, dir) {
   // Cookie parser
   app.locals.modules.cookieParser = 'cookie-parser'
   app.locals.uses.push('cookieParser()')
-  pkg.dependencies['cookie-parser'] = '~1.4.4'
+  pkg.dependencies['cookie-parser'] = '~1.4.5'
 
   if (dir !== '.') {
     mkdir(dir, '.')
