@@ -43,7 +43,7 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "4.3.1",
     "eslint-plugin-standard": "4.1.0",
-    "mocha": "7.2.0",
+    "mocha": "8.4.0",
     "rimraf": "2.7.1",
     "supertest": "4.0.2",
     "tree-kill": "1.2.2",
