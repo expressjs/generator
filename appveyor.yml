@@ -51,6 +51,12 @@ install:
         npm install --silent --save-dev mocha@7.2.0
       }
   - ps: |
+      # rimraf for testing cleanup
+      # - use 2.7.1 for Node.js < 6
+      if ([int]$env:nodejs_version.split(".")[0] -lt 6) {
+        npm install --silent --save-dev rimraf@2.7.1
+      }
+  - ps: |
       # supertest for http calls
       # - use 2.0.0 for Node.js < 4
       # - use 3.4.2 for Node.js < 6
