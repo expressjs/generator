@@ -212,7 +212,7 @@ function createApplication (name, dir) {
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
-    pkg.dependencies['http-errors'] = '~1.6.3'
+    pkg.dependencies['http-errors'] = '~1.7.2'
     switch (program.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
