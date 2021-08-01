@@ -283,6 +283,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.less'), -1, 'should have style.less file')
       })
 
+      it('should have less-middleware in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies['less-middleware'], 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
@@ -339,6 +346,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.sass'), -1, 'should have style.sass file')
       })
 
+      it('should have node-sass-middleware in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies['node-sass-middleware'], 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
@@ -393,6 +407,13 @@ describe('express(1)', function () {
 
       it('should have stylus files', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.styl'), -1, 'should have style.styl file')
+      })
+
+      it('should have stylus in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.stylus, 'string')
       })
 
       it('should have installable dependencies', function (done) {
