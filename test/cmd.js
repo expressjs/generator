@@ -805,6 +805,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
       })
 
+      it('should have ejs in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.ejs, 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
