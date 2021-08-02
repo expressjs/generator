@@ -741,6 +741,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/index.dust'), -1, 'should have views/index.dust file')
       })
 
+      it('should have adaro in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.adaro, 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
