@@ -1,5 +1,14 @@
 {
-  "extends": [
-    "config:base"
+  "extends": ["config:base"],
+  "regexManagers": [
+    {
+      "fileMatch": ["^bin/[^\\.]+\\.js$"],
+      "matchStrings": [
+        "pkg\\.dependencies\\[[\"|'](?<depName>.*?)[\"|']\\]\\s*=\\s*[\"|'](?<currentValue>.*?)[\"|']",
+        "pkg\\.dependencies\\.(?<depName>.*?)\\s*=\\s*[\"|'](?<currentValue>.*?)[\"|']"
+
+      ],
+      "datasourceTemplate": "npm"
+    }
   ]
 }
