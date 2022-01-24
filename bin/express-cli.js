@@ -52,7 +52,7 @@ program
   .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
   .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to pug)')
   .option('    --no-view', 'use static html instead of view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
@@ -304,7 +304,7 @@ function createApplication (name, dir) {
       break
     case 'pug':
       app.locals.view = { engine: 'pug' }
-      pkg.dependencies.pug = '2.0.0-beta11'
+      pkg.dependencies.pug = '~2.0.0'
       break
     case 'twig':
       app.locals.view = { engine: 'twig' }
@@ -461,9 +461,9 @@ function main () {
 
   // Default view engine
   if (program.view === true) {
-    warning('the default view engine will not be jade in future releases\n' +
-      "use `--view=jade' or `--help' for additional options")
-    program.view = 'jade'
+    warning('the default view engine is pug now\n' +
+      "use `--view=jade' if you want to use jade or `--help' for additional options")
+    program.view = 'pug'
   }
 
   // Generate application
