@@ -16,7 +16,7 @@ function childEnvironment () {
 
   // copy the environment except for npm veriables
   for (var key in process.env) {
-    if (key.substr(0, 4) !== 'npm_') {
+    if (key.slice(0, 4) !== 'npm_') {
       env[key] = process.env[key]
     }
   }
