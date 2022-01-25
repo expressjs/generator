@@ -687,6 +687,20 @@ describe('express(1)', function () {
     })
   })
 
+  describe('--version', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should print version', function (done) {
+      var pkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
+      var ver = JSON.parse(pkg).version
+      run(ctx.dir, ['--version'], function (err, stdout) {
+        if (err) return done(err)
+        assert.strictEqual(stdout.replace(/[\r\n]+/, '\n'), ver + '\n')
+        done()
+      })
+    })
+  })
+
   describe('--view <engine>', function () {
     describe('(no engine)', function () {
       var ctx = setupTestEnvironment(this.fullTitle())
