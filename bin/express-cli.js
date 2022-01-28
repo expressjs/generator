@@ -145,8 +145,8 @@ function createApplication (name, dir) {
       start: 'node ./bin/www'
     },
     dependencies: {
-      'debug': '~2.6.9',
-      'express': '~4.16.1'
+      'debug': '~4.1.1',
+      'express': '~4.17.1'
     }
   }
 
@@ -166,7 +166,7 @@ function createApplication (name, dir) {
   // Request logger
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
-  pkg.dependencies.morgan = '~1.9.1'
+  pkg.dependencies.morgan = '~1.10.0'
 
   // Body parsers
   app.locals.uses.push('express.json()')
@@ -212,7 +212,7 @@ function createApplication (name, dir) {
   if (program.view) {
     // Copy view templates
     mkdir(dir, 'views')
-    pkg.dependencies['http-errors'] = '~1.6.3'
+    pkg.dependencies['http-errors'] = '~1.7.3'
     switch (program.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
