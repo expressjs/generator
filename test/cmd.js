@@ -28,18 +28,20 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app', function (done) {
-      runRaw(ctx.dir, [], function (err, code, stdout, stderr) {
+      run(ctx.dir, [], function (err, stdout, warnings) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        ctx.stderr = stderr
         ctx.stdout = stdout
+        ctx.warnings = warnings
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
     })
 
     it('should print jade view warning', function () {
-      assert.strictEqual(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'the default view engine will not be jade in future releases\nuse `--view=jade\' or `--help\' for additional options'
+      }))
     })
 
     it('should provide debug instructions', function () {
@@ -455,12 +457,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with ejs templates', function (done) {
-      run(ctx.dir, ['--ejs'], function (err, stdout) {
+      run(ctx.dir, ['--ejs'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15, 'should have 15 files')
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--ejs\' has been renamed to `--view=ejs\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -524,12 +533,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hbs templates', function (done) {
-      run(ctx.dir, ['--hbs'], function (err, stdout) {
+      run(ctx.dir, ['--hbs'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--hbs\' has been renamed to `--view=hbs\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -572,12 +588,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hogan templates', function (done) {
-      run(ctx.dir, ['--hogan'], function (err, stdout) {
+      run(ctx.dir, ['--hogan'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--hogan\' has been renamed to `--view=hogan\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -659,12 +682,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with pug templates', function (done) {
-      run(ctx.dir, ['--pug'], function (err, stdout) {
+      run(ctx.dir, ['--pug'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--pug\' has been renamed to `--view=pug\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -1215,7 +1245,7 @@ function run (dir, args, callback) {
       return callback(e)
     }
 
-    callback(null, utils.stripColors(stdout))
+    callback(null, utils.stripColors(stdout), utils.parseWarnings(stderr))
   })
 }
 
