@@ -599,7 +599,7 @@ describe('express(1)', function () {
 
     it('should warn about argument rename', function () {
       assert.ok(ctx.warnings.some(function (warn) {
-        return warn === 'option `--hogan\' has been renamed to `--view=hogan\''
+        return warn === 'option `--hogan\' has been renamed to `--view=hjs\''
       }))
     })
 
