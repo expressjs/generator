@@ -264,7 +264,9 @@ function createApplication (name, dir) {
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['less-middleware'] = '~2.2.1'
+      pkg.dependencies['less-middleware'] = semver.satisfies(semver.minVersion(target), '>=4')
+        ? '~3.1.0'
+        : '~2.2.1'
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
