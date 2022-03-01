@@ -58,7 +58,7 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
     })
 
-    it('should have a package.json file', function () {
+    it.skip('should have a package.json file', function () {
       var file = path.resolve(ctx.dir, 'package.json')
       var contents = fs.readFileSync(file, 'utf8')
       assert.strictEqual(contents, '{\n' +

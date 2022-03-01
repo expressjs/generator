@@ -7,6 +7,7 @@ var mkdirp = require('mkdirp')
 var path = require('path')
 var program = require('commander')
 var readline = require('readline')
+var semver = require('semver')
 var sortedObject = require('sorted-object')
 var util = require('util')
 
@@ -56,6 +57,7 @@ program
   .option('    --no-view', 'use static html instead of view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
+  .option('    --target', 'node.js version to target (defaults to auto)')
   .option('-f, --force', 'force on non-empty directory')
   .parse(process.argv)
 
@@ -136,6 +138,11 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 function createApplication (name, dir) {
   console.log()
 
+  // Target
+  var target = program.target === 'auto'
+    ? '^' + semver.major(process.versions.node)
+    : program.target
+
   // Package
   var pkg = {
     name: name,
@@ -143,6 +150,9 @@ function createApplication (name, dir) {
     private: true,
     scripts: {
       start: 'node ./bin/www'
+    },
+    engine: {
+      node: target
     },
     dependencies: {
       debug: '~2.6.9',
@@ -450,6 +460,11 @@ function main () {
 
   // App name
   var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
+
+  // Node target
+  if (typeof program.target !== 'string') {
+    program.target = 'auto'
+  }
 
   // View engine
   if (program.view === true) {
