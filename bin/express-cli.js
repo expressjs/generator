@@ -281,7 +281,10 @@ function createApplication (name, dir) {
     case 'stylus':
       app.locals.modules.stylus = 'stylus'
       app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
-      pkg.dependencies.stylus = '0.57.0'
+      pkg.dependencies.stylus = vary(version, {
+        '>=10': '0.57.0',
+        '*': '0.54.7'
+      })
       break
   }
 
