@@ -142,6 +142,7 @@ function createApplication (name, dir) {
   var target = program.target === 'auto'
     ? '^' + semver.major(process.versions.node)
     : program.target
+  var version = semver.minVersion(target)
 
   // Package
   var pkg = {
@@ -264,9 +265,10 @@ function createApplication (name, dir) {
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['less-middleware'] = semver.satisfies(semver.minVersion(target), '>=4')
-        ? '~3.1.0'
-        : '~2.2.1'
+      pkg.dependencies['less-middleware'] = vary(version, {
+        '>=4': '~3.1.0',
+        '*': '~2.2.1'
+      })
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
@@ -526,6 +528,16 @@ function renamedOption (originalName, newName) {
   return function (val) {
     warning(util.format("option `%s' has been renamed to `%s'", originalName, newName))
     return val
+  }
+}
+
+function vary (version, options) {
+  var ranges = Object.keys(options)
+
+  for (var i = 0; i < ranges.length; i++) {
+    if (semver.satisfies(version, ranges[i])) {
+      return options[ranges[i]]
+    }
   }
 }
 
