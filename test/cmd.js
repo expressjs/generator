@@ -272,6 +272,7 @@ describe('express(1)', function () {
         run(ctx.dir, ['--css', 'compass'], function (err, stdout) {
           if (err) return done(err)
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          ctx.stdout = stdout
           assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
           done()
         })
@@ -285,6 +286,10 @@ describe('express(1)', function () {
 
       it('should have compass files', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.scss'), -1, 'should have style.less file')
+      })
+
+      it('should provide compass install instructions', function () {
+        assert.ok(/gem install compass/.test(ctx.stdout))
       })
 
       it('should have node-compass in package dependencies', function () {

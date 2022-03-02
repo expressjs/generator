@@ -365,6 +365,9 @@ function createApplication (name, dir) {
 
   console.log()
   console.log('   install dependencies:')
+  if (program.css === 'compass') {
+    console.log('     %s gem install compass', prompt)
+  }
   console.log('     %s npm install', prompt)
   console.log()
   console.log('   run the app:')
