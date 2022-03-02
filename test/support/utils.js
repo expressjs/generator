@@ -4,8 +4,10 @@ var fs = require('fs')
 var os = require('os')
 var path = require('path')
 var uid = require('uid-safe')
+var which = require('which')
 
 module.exports.childEnvironment = childEnvironment
+module.exports.hasProgram = hasProgram
 module.exports.parseCreatedFiles = parseCreatedFiles
 module.exports.stripColors = stripColors
 module.exports.stripWarnings = stripWarnings
@@ -22,6 +24,18 @@ function childEnvironment () {
   }
 
   return env
+}
+
+function hasProgram (prog) {
+  try {
+    return Boolean(which.sync(prog))
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      return false
+    } else {
+      throw e // rethrow
+    }
+  }
 }
 
 function parseCreatedFiles (output, dir) {

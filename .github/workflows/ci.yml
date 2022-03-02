@@ -32,39 +32,39 @@ jobs:
         include:
         - name: Node.js 0.10
           node-version: "0.10"
-          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0
+          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0 which@1.3.1
 
         - name: Node.js 0.12
           node-version: "0.12"
-          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0
+          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0 which@1.3.1
 
         - name: io.js 1.x
           node-version: "1.8"
-          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0
+          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0 which@1.3.1
 
         - name: io.js 2.x
           node-version: "2.5"
-          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0
+          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0 which@1.3.1
 
         - name: io.js 3.x
           node-version: "3.3"
-          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0
+          npm-i: mocha@3.5.3 rimraf@2.7.1 supertest@2.0.0 which@1.3.1
 
         - name: Node.js 4.x
           node-version: "4.9"
-          npm-i: mocha@5.2.0 rimraf@2.7.1 supertest@3.4.2
+          npm-i: mocha@5.2.0 rimraf@2.7.1 supertest@3.4.2 which@1.3.1
 
         - name: Node.js 5.x
           node-version: "5.12"
-          npm-i: mocha@5.2.0 rimraf@2.7.1 supertest@3.4.2
+          npm-i: mocha@5.2.0 rimraf@2.7.1 supertest@3.4.2 which@1.3.1
 
         - name: Node.js 6.x
           node-version: "6.17"
-          npm-i: mocha@6.2.3
+          npm-i: mocha@6.2.3 which@1.3.1
 
         - name: Node.js 7.x
           node-version: "7.10"
-          npm-i: mocha@6.2.3
+          npm-i: mocha@6.2.3 which@1.3.1
 
         - name: Node.js 8.x
           node-version: "8.17"
@@ -124,6 +124,9 @@ jobs:
 
     - name: Install Node.js dependencies
       run: npm install
+
+    - name: Install Ruby gems
+      run: sudo gem install compass
 
     - name: List environment
       id: list_env
