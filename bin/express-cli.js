@@ -166,7 +166,7 @@ function createApplication (name, dir) {
   // Request logger
   app.locals.modules.logger = 'morgan'
   app.locals.uses.push("logger('dev')")
-  pkg.dependencies.morgan = '~1.9.1'
+  pkg.dependencies.morgan = '~1.10.0'
 
   // Body parsers
   app.locals.uses.push('express.json()')
