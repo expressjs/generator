@@ -304,7 +304,7 @@ function createApplication (name, dir) {
       break
     case 'pug':
       app.locals.view = { engine: 'pug' }
-      pkg.dependencies.pug = '~2.0.4'
+      pkg.dependencies.pug = '~3.0.2'
       break
     case 'twig':
       app.locals.view = { engine: 'twig' }
