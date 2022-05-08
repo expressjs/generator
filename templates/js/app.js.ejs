@@ -1,4 +1,4 @@
-<% if (view) { -%>
+<% if (view || api) { -%>
 var createError = require('http-errors');
 <% } -%>
 var express = require('express');
@@ -30,7 +30,7 @@ app.use(<%- use %>);
 app.use(<%= mount.path %>, <%- mount.code %>);
 <% }); -%>
 
-<% if (view) { -%>
+<% if (view || api) { -%>
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -44,7 +44,12 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
+  <% if (view) { -%>
   res.render('error');
+  <% } -%>
+  <% if (api) { -%>
+  res.json({ 'message' : err.message });
+  <% } -%>
 });
 
 <% } -%>

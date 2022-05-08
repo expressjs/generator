@@ -54,6 +54,7 @@ program
   .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hjs'))
   .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
   .option('    --no-view', 'use static html instead of view engine')
+  .option('-a, --api', 'use web api template without view engine')
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
@@ -207,7 +208,11 @@ function createApplication (name, dir) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  if (!program.api) {
+    copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  } else {
+    copyTemplateMulti('js/routes/api', dir + '/routes', '*.js')
+  }
 
   if (program.view) {
     // Copy view templates
@@ -239,6 +244,9 @@ function createApplication (name, dir) {
         copyTemplateMulti('views', dir + '/views', '*.vash')
         break
     }
+  } else if (program.api) {
+    // Add http-errors dependencies
+    pkg.dependencies['http-errors'] = '~1.6.2'
   } else {
     // Copy extra public files
     copyTemplate('js/index.html', path.join(dir, 'public/index.html'))
@@ -268,13 +276,19 @@ function createApplication (name, dir) {
       break
   }
 
-  // Index router mount
-  app.locals.localModules.indexRouter = './routes/index'
-  app.locals.mounts.push({ path: '/', code: 'indexRouter' })
+  if (!program.api) {
+    // Index router mount
+    app.locals.localModules.indexRouter = './routes/index'
+    app.locals.mounts.push({ path: '/', code: 'indexRouter' })
 
-  // User router mount
-  app.locals.localModules.usersRouter = './routes/users'
-  app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
+    // User router mount
+    app.locals.localModules.usersRouter = './routes/users'
+    app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
+  } else {
+    // Value router mount
+    app.locals.localModules.apiRouter = './routes/values'
+    app.locals.mounts.push({ path: '/api', code: 'apiRouter' })
+  }
 
   // Template support
   switch (program.view) {
@@ -318,6 +332,8 @@ function createApplication (name, dir) {
       app.locals.view = false
       break
   }
+
+  app.locals.api = program.api
 
   // Static files
   app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
@@ -460,10 +476,12 @@ function main () {
   }
 
   // Default view engine
-  if (program.view === true) {
+  if (program.view === true && !program.api) {
     warning('the default view engine will not be jade in future releases\n' +
       "use `--view=jade' or `--help' for additional options")
     program.view = 'jade'
+  } else if (program.api) {
+    program.view = false
   }
 
   // Generate application
