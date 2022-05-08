@@ -1,9 +1,9 @@
-
 var assert = require('assert')
 var AppRunner = require('./support/app-runner')
 var exec = require('child_process').exec
 var fs = require('fs')
 var mkdirp = require('mkdirp')
+var semver = require('semver')
 var path = require('path')
 var request = require('supertest')
 var rimraf = require('rimraf')
@@ -1214,6 +1214,77 @@ describe('express(1)', function () {
       })
     })
   })
+})
+
+describe('--es6', function () {
+  var ctx = setupTestEnvironment(this.fullTitle())
+
+  if (semver.lt(process.version, '6.0.0')) {
+    it('should exit if Node.js version is < 6.0.0', function (done) {
+      runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
+        if (err) return done(err)
+        assert.ok(/error: unknown option/.test(stderr))
+        done()
+      })
+    })
+  } else {
+    it('should create basic app', function (done) {
+      run(ctx.dir, ['--es6'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        assert.strictEqual(ctx.files.length, 16, 'should have 16 files')
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notStrictEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+    })
+
+    it('should use const instead of var', function () {
+      var wwwfile = path.resolve(ctx.dir, 'bin/www')
+      var appfile = path.resolve(ctx.dir, 'app.js')
+      var indexroutefile = path.resolve(ctx.dir, 'routes/index.js')
+
+      var wwwcontent = fs.readFileSync(wwwfile, 'utf8')
+      assert.notStrictEqual(wwwcontent.indexOf('const http'), -1, 'should use const')
+
+      var appcontent = fs.readFileSync(appfile, 'utf8')
+      assert.notStrictEqual(appcontent.indexOf('const express'), -1, 'should use const')
+
+      var indexroutecontent = fs.readFileSync(indexroutefile, 'utf8')
+      assert.notStrictEqual(indexroutecontent.indexOf('const express'), -1, 'should use const')
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(NPM_INSTALL_TIMEOUT)
+      npmInstall(ctx.dir, done)
+    })
+
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
+
+      after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.stop(done)
+      })
+
+      it('should start app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.start(done)
+      })
+
+      it('should respond to HTTP request', function (done) {
+        request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+      })
+    })
+  }
 })
 
 function npmInstall (dir, callback) {
