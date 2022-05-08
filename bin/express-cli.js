@@ -9,6 +9,7 @@ var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
+var programArgs = require('optimist').argv
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -57,6 +58,9 @@ program
   .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   .option('    --git', 'add .gitignore')
   .option('-f, --force', 'force on non-empty directory')
+  .option('    --https', 'start the server in https instead of http (requires https-key and https-cert)')
+  .option('    --https-key=PATH_TO_KEY', 'path of the https key file')
+  .option('    --https-cert=PATH_TO_CERT', 'path of the https cert file')
   .parse(process.argv)
 
 if (!exit.exited) {
@@ -107,6 +111,14 @@ function confirm (msg, callback) {
 }
 
 /**
+ * Copy file from any directory.
+ */
+
+function copyFile (from, to) {
+  write(to, fs.readFileSync(from, 'utf-8'))
+}
+
+/**
  * Copy file from template directory.
  */
 
@@ -150,12 +162,32 @@ function createApplication (name, dir) {
     }
   }
 
+  if (program.https) {
+    var httpsKey = programArgs['https-key'] || process.env.HTTPS_KEY
+    var httpsCert = programArgs['https-cert'] || process.env.HTTPS_CERT
+
+    if (httpsKey && httpsCert) {
+      mkdir(dir, 'https')
+      try {
+        copyFile(httpsKey, path.join(dir, 'https/key.pem'))
+        copyFile(httpsCert, path.join(dir, 'https/server.crt'))
+      } catch (e) {
+        console.log('   \x1b[31mError copying the https cert files\x1b[0m')
+        _exit(0)
+      }
+    } else {
+      console.log('   \x1b[31m--https-key and --https-cert are required for https mode!\x1b[0m')
+      _exit(0)
+    }
+  }
+
   // JavaScript
   var app = loadTemplate('js/app.js')
   var www = loadTemplate('js/www')
 
   // App name
   www.locals.name = name
+  www.locals.https = program.https
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -242,6 +274,11 @@ function createApplication (name, dir) {
   } else {
     // Copy extra public files
     copyTemplate('js/index.html', path.join(dir, 'public/index.html'))
+  }
+
+  if (program.https) {
+    app.locals.modules.httpolyglot = 'httpolyglot'
+    pkg.dependencies['httpolyglot'] = '^0.1.2'
   }
 
   // CSS Engine support
