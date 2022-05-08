@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-var ejs = require('ejs')
 var fs = require('fs')
 var minimatch = require('minimatch')
 var mkdirp = require('mkdirp')
@@ -394,13 +393,32 @@ function launchedFromCmd () {
  */
 
 function loadTemplate (name) {
-  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
+  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', name), 'utf-8')
   var locals = Object.create(null)
 
+  var index = 0
+  var match = null
+  var output = 'var output = "";\n'
+  var regex = /(\r?\n|)(\$|'|)\/\*\*\* (.+?) \*\*\*\/(?:\2|)(\r?\n|)/g
+
+  while ((match = regex.exec(contents))) {
+    output += 'output += ' + JSON.stringify(contents.slice(index, match.index) + match[1]) + ';\n'
+    output += match[2] === "'"
+      ? 'output += util.inspect(' + match[3] + ');\n'
+      : match[2] === '$'
+        ? 'output += ' + match[3] + ';\n'
+        : match[3] + '\n'
+    index = match.index + match[0].length
+  }
+  output += 'output += ' + JSON.stringify(contents.slice(index)) + ';\n'
+  output += 'return output;\n'
+
   function render () {
-    return ejs.render(contents, locals, {
-      escape: util.inspect
-    })
+    var keys = Object.keys(locals)
+    var func = Function.apply(null, ['util'].concat(keys, output))
+    var vals = keys.map(function (k) { return locals[k] })
+
+    return func.apply(null, [util].concat(vals))
   }
 
   return {
