@@ -513,6 +513,35 @@ describe('express(1)', function () {
     })
   })
 
+  describe('--test', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app with test files', function (done) {
+      run(ctx.dir, ['--test'], function (err, stdout) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        assert.equal(ctx.files.length, 18, 'should have 18 files')
+        done()
+      })
+    })
+
+    it('should have basic files', function () {
+      assert.notEqual(ctx.files.indexOf('bin/www'), -1, 'should have bin/www file')
+      assert.notEqual(ctx.files.indexOf('app.js'), -1, 'should have app.js file')
+      assert.notEqual(ctx.files.indexOf('package.json'), -1, 'should have package.json file')
+    })
+
+    it('should have test.js', function () {
+      assert.notEqual(ctx.files.indexOf('test/test.js'), -1, 'should have test.js file')
+    })
+
+    it('should have jade templates', function () {
+      assert.notEqual(ctx.files.indexOf('views/error.jade'), -1)
+      assert.notEqual(ctx.files.indexOf('views/index.jade'), -1)
+      assert.notEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    })
+  })
+
   describe('-h', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
