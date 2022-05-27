@@ -85,4 +85,4 @@ test_script:
       npm --version
   # Run test script
   - npm run test-ci
-version: "{build}"
+version: '{build}'

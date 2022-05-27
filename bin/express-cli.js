@@ -1,23 +1,23 @@
 #!/usr/bin/env node
 
-var ejs = require('ejs')
-var fs = require('fs')
-var minimatch = require('minimatch')
-var mkdirp = require('mkdirp')
-var parseArgs = require('minimist')
-var path = require('path')
-var readline = require('readline')
-var sortedObject = require('sorted-object')
-var util = require('util')
+const ejs = require('ejs')
+const fs = require('fs')
+const minimatch = require('minimatch')
+const mkdirp = require('mkdirp')
+const parseArgs = require('minimist')
+const path = require('path')
+const readline = require('readline')
+const sortedObject = require('sorted-object')
+const util = require('util')
 
-var MODE_0666 = parseInt('0666', 8)
-var MODE_0755 = parseInt('0755', 8)
-var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
-var VERSION = require('../package').version
+const MODE_0666 = parseInt('0666', 8)
+const MODE_0755 = parseInt('0755', 8)
+const TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
+const VERSION = require('../package').version
 
 // parse args
-var unknown = []
-var args = parseArgs(process.argv.slice(2), {
+const unknown = []
+const args = parseArgs(process.argv.slice(2), {
   alias: {
     c: 'css',
     e: 'ejs',
@@ -26,10 +26,10 @@ var args = parseArgs(process.argv.slice(2), {
     H: 'hogan',
     v: 'view'
   },
-  boolean: ['ejs', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
+  boolean: ['ejs', 'es5', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
   default: { css: true, view: true },
   string: ['css', 'view'],
-  unknown: function (s) {
+  unknown: s => {
     if (s.charAt(0) === '-') {
       unknown.push(s)
     }
@@ -46,12 +46,12 @@ main(args, exit)
  */
 
 function confirm (msg, callback) {
-  var rl = readline.createInterface({
+  const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
   })
 
-  rl.question(msg, function (input) {
+  rl.question(msg, input => {
     rl.close()
     callback(/^y|yes|ok|true$/i.test(input))
   })
@@ -72,7 +72,7 @@ function copyTemplate (from, to) {
 function copyTemplateMulti (fromDir, toDir, nameGlob) {
   fs.readdirSync(path.join(TEMPLATE_DIR, fromDir))
     .filter(minimatch.filter(nameGlob, { matchBase: true }))
-    .forEach(function (name) {
+    .forEach((name) => {
       copyTemplate(path.join(fromDir, name), path.join(toDir, name))
     })
 }
@@ -90,7 +90,7 @@ function createApplication (name, dir, options, done) {
   console.log()
 
   // Package
-  var pkg = {
+  const pkg = {
     name: name,
     version: '0.0.0',
     private: true,
@@ -104,8 +104,8 @@ function createApplication (name, dir, options, done) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  const app = loadTemplate('js/app.js')
+  const www = loadTemplate('js/www')
 
   // App name
   www.locals.name = name
@@ -288,24 +288,24 @@ function createApplication (name, dir, options, done) {
   mkdir(dir, 'bin')
   write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
 
-  var prompt = launchedFromCmd() ? '>' : '$'
+  const prompt = launchedFromCmd() ? '>' : '$'
 
   if (dir !== '.') {
     console.log()
     console.log('   change directory:')
-    console.log('     %s cd %s', prompt, dir)
+    console.log(`     ${prompt} cd ${dir}`)
   }
 
   console.log()
   console.log('   install dependencies:')
-  console.log('     %s npm install', prompt)
+  console.log(`     ${prompt} npm install`)
   console.log()
   console.log('   run the app:')
 
   if (launchedFromCmd()) {
-    console.log('     %s SET DEBUG=%s:* & npm start', prompt, name)
+    console.log(`     ${prompt} SET DEBUG=${name}:* & npm start`)
   } else {
-    console.log('     %s DEBUG=%s:* npm start', prompt, name)
+    console.log(`     ${prompt} DEBUG=${name}:* npm start`)
   }
 
   console.log()
@@ -334,7 +334,7 @@ function createAppName (pathName) {
  */
 
 function emptyDirectory (dir, fn) {
-  fs.readdir(dir, function (err, files) {
+  fs.readdir(dir, (err, files) => {
     if (err && err.code !== 'ENOENT') throw err
     fn(!files || !files.length)
   })
@@ -348,8 +348,8 @@ function emptyDirectory (dir, fn) {
 
 function error (message) {
   console.error()
-  message.split('\n').forEach(function (line) {
-    console.error('  error: %s', line)
+  message.split('\n').forEach(line => {
+    console.error(`  error: ${line}`)
   })
   console.error()
 }
@@ -366,12 +366,12 @@ function exit (code) {
     if (!(draining--)) process.exit(code)
   }
 
-  var draining = 0
-  var streams = [process.stdout, process.stderr]
+  let draining = 0
+  const streams = [process.stdout, process.stderr]
 
   exit.exited = true
 
-  streams.forEach(function (stream) {
+  streams.forEach(stream => {
     // submit empty write request and wait for completion
     draining += 1
     stream.write('', done)
@@ -394,8 +394,8 @@ function launchedFromCmd () {
  */
 
 function loadTemplate (name) {
-  var contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
-  var locals = Object.create(null)
+  const contents = fs.readFileSync(path.join(__dirname, '..', 'templates', (name + '.ejs')), 'utf-8')
+  const locals = Object.create(null)
 
   function render () {
     return ejs.render(contents, locals, {
@@ -435,10 +435,10 @@ function main (options, done) {
     done(1)
   } else {
     // Path
-    var destinationPath = options._[0] || '.'
+    const destinationPath = options._[0] || '.'
 
     // App name
-    var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
+    const appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
     // View engine
     if (options.view === true) {
@@ -471,11 +471,11 @@ function main (options, done) {
     }
 
     // Generate application
-    emptyDirectory(destinationPath, function (empty) {
+    emptyDirectory(destinationPath, empty => {
       if (empty || options.force) {
         createApplication(appName, destinationPath, options, done)
       } else {
-        confirm('destination is not empty, continue? [y/N] ', function (ok) {
+        confirm('destination is not empty, continue? [y/N] ', ok => {
           if (ok) {
             process.stdin.destroy()
             createApplication(appName, destinationPath, options, done)
@@ -497,9 +497,9 @@ function main (options, done) {
  */
 
 function mkdir (base, dir) {
-  var loc = path.join(base, dir)
+  const loc = path.join(base, dir)
 
-  console.log('   \x1b[36mcreate\x1b[0m : ' + loc + path.sep)
+  console.log(`   \x1b[36mcreate\x1b[0m : ${loc} ${path.sep}`)
   mkdirp.sync(loc, MODE_0755)
 }
 
@@ -514,6 +514,7 @@ function usage () {
   console.log('  Options:')
   console.log('')
   console.log('    -e, --ejs            add ejs engine support')
+  console.log('        --es5            use ES5 syntax (defaults to ES2015 syntax)')
   console.log('        --pug            add pug engine support')
   console.log('        --hbs            add handlebars engine support')
   console.log('    -H, --hogan          add hogan.js engine support')
@@ -542,8 +543,8 @@ function version () {
 
 function warning (message) {
   console.error()
-  message.split('\n').forEach(function (line) {
-    console.error('  warning: %s', line)
+  message.split('\n').forEach(line => {
+    console.error(`  warning: ${line}`)
   })
   console.error()
 }
@@ -557,5 +558,5 @@ function warning (message) {
 
 function write (file, str, mode) {
   fs.writeFileSync(file, str, { mode: mode || MODE_0666 })
-  console.log('   \x1b[36mcreate\x1b[0m : ' + file)
+  console.log(`   \x1b[36mcreate\x1b[0m : ${file}`)
 }

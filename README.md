@@ -41,6 +41,7 @@ This generator can also be further configured with the following command line fl
 
         --version        output the version number
     -e, --ejs            add ejs engine support
+        --es5            use ES5 syntax (defaults to ES2015 syntax)
         --pug            add pug engine support
         --hbs            add handlebars engine support
     -H, --hogan          add hogan.js engine support

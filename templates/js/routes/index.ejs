@@ -1,8 +1,17 @@
+<% if (es5) { -%>
 var express = require('express');
 var router = express.Router();
+<% } else { -%>
+const express = require('express');
+const router = express.Router();
+<% } -%>
 
 /* GET home page. */
+<% if (es5) { -%>
 router.get('/', function(req, res, next) {
+<% } else { -%>
+router.get('/', (req, res, next) => {
+<% } -%>
   res.render('index', { title: 'Express' });
 });
 
