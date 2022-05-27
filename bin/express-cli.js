@@ -91,7 +91,7 @@ function createApplication (name, dir, options, done) {
 
   // Package
   const pkg = {
-    name: name,
+    name,
     version: '0.0.0',
     private: true,
     scripts: {
@@ -404,8 +404,8 @@ function loadTemplate (name) {
   }
 
   return {
-    locals: locals,
-    render: render
+    locals,
+    render
   }
 }
 

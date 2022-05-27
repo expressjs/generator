@@ -1,9 +1,9 @@
 'use strict'
 
-var exec = require('child_process').exec
-var kill = require('tree-kill')
-var net = require('net')
-var utils = require('./utils')
+const exec = require('child_process').exec
+const kill = require('tree-kill')
+const net = require('net')
+const utils = require('./utils')
 
 module.exports = AppRunner
 
@@ -19,15 +19,15 @@ AppRunner.prototype.address = function address () {
 }
 
 AppRunner.prototype.start = function start (callback) {
-  var app = this
-  var done = false
-  var env = utils.childEnvironment()
+  const app = this
+  let done = false
+  const env = utils.childEnvironment()
 
   env.PORT = String(app.port)
 
   this.child = exec('npm start', {
     cwd: this.dir,
-    env: env
+    env
   })
 
   this.child.stderr.pipe(process.stderr, { end: false })
@@ -44,7 +44,7 @@ AppRunner.prototype.start = function start (callback) {
   function tryConnect () {
     if (done || !app.child) return
 
-    var socket = net.connect(app.port, app.host)
+    const socket = net.connect(app.port, app.host)
 
     socket.on('connect', function onConnect () {
       socket.end()
