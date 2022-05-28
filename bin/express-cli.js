@@ -78,6 +78,16 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
 }
 
 /**
+ * Get Node version.
+ * @returns {number} Node Major Version
+ */
+
+function getNodeMajorVersion () {
+  var nodeVersion = process.versions.node.split('.')
+  return parseInt(nodeVersion[0], 10)
+}
+
+/**
  * Create application at the given directory.
  *
  * @param {string} name
@@ -212,7 +222,15 @@ function createApplication (name, dir, options, done) {
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
       app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
-      pkg.dependencies['node-sass-middleware'] = '1.0.1'
+      try {
+        if (getNodeMajorVersion() >= 10) {
+          pkg.dependencies['node-sass-middleware'] = '1.0.1'
+        } else {
+          throw new Error('node-sass-middleware version >=1.0 requires Node.js 10 or higher. Using Node.js 9 or lower.')
+        }
+      } catch (e) {
+        pkg.dependencies['node-sass-middleware'] = '0.11.0'
+      }
       break
     case 'stylus':
       app.locals.modules.stylus = 'stylus'
