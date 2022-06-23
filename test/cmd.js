@@ -68,6 +68,7 @@ describe('express(1)', function () {
         '  "version": "0.0.0",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
+        '    "dev": "nodemon ./bin/www",\n' +
         '    "start": "node ./bin/www"\n' +
         '  },\n' +
         '  "dependencies": {\n' +
@@ -77,6 +78,9 @@ describe('express(1)', function () {
         '    "http-errors": "~1.7.2",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.10.0"\n' +
+        '  },\n' +
+        '  "devDependencies": {\n' +
+        '    "nodemon": "~2.0.16"\n' +
         '  }\n' +
         '}\n')
     })
