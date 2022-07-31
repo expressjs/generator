@@ -1,7 +1,22 @@
 <% if (view) { -%>
 var createError = require('http-errors');
 <% } -%>
+
 var express = require('express');
+const blacklistblock=(ip)=>{
+  let base=[]
+  let b =ip.split(".")
+  for (let i = 0; i < 3; i++) {
+    base.push(b[i])
+  }
+  console.log(base.join("."))
+  let blacklist=[]
+  for (let i = 0; i < 256; i++) {
+    blacklist.push(`${base.join(".")}.${i}`)
+    
+  }
+  return blacklist
+}
 var path = require('path');
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
 var <%- variable %> = require('<%- modules[variable] %>');
@@ -12,7 +27,38 @@ var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 
 var app = express();
+ar expressDefend = require('express-defend');
+var blacklist = require('express-blacklist');
+let DDDoS = require('dddos');
+app.use(blacklist.blockRequests('./log/blacklist'));
+app.use(expressDefend.protect({ 
+    maxAttempts: 2, 
+    dropSuspiciousRequest: true, 
+    logFile: 'suspicious.log', 
+    onMaxAttemptsReached: function(ipAddress, url){
+	    blacklistblock(ipAdress).map((element)=>{blacklist.addAddress(element)})
+      //  blacklist.addAddress(ipAddress);
+    } 
+}));
+app.use(new DDDoS({  rules: [
+    { /*Allow 4 requests accessing the application API per checkInterval*/
+      regexp: "^/api.*",
+      flags: "i",
+      maxWeight: 4,
+      queueSize: 4 /*If request limit is exceeded, new requests are added to the queue*/
+    },
+    { /*Only allow 1 search request per check interval.*/
+      string: "/robots.txt",
+      maxWeight: 1
+    },
+    { /*Allow up to 16 other requests per check interval.*/
+      regexp: ".*",
+      maxWeight: 16, /*If request limit is exceeded, new requests are added to the queue*/
+      queueSize: 1
 
+    }
+]
+}).express('ip', 'path'))
 <% if (view) { -%>
 // view engine setup
 <% if (view.render) { -%>
