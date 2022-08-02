@@ -1,5 +1,5 @@
 {
-  "name": "express-generator",
+  "name": "express-security-generator",
   "description": "Express' application generator",
   "version": "4.16.1",
   "author": "TJ Holowaychuk <tj@vision-media.ca>",
@@ -34,7 +34,7 @@
   "main": "bin/express-cli.js",
   "preferGlobal": true,
   "bin": {
-    "express": "./bin/express-cli.js"
+    "express-security": "./bin/express-cli.js"
   },
   "devDependencies": {
     "eslint": "7.32.0",
