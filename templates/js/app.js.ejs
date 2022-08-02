@@ -27,7 +27,7 @@ var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 
 var app = express();
-ar expressDefend = require('express-defend');
+var expressDefend = require('express-defend');
 var blacklist = require('express-blacklist');
 let DDDoS = require('dddos');
 app.use(blacklist.blockRequests('./log/blacklist'));
