@@ -1,6 +1,6 @@
 {
   "name": "express-initializr",
-  "description": "Express' application initializer",
+  "description": "Express' application initializer.",
   "version": "1.0.0",
   "author": "Chijioke Ugwuanyi <cj@ugwuanyi@gmail.com>",
   "contributors": [],
@@ -18,7 +18,8 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "commander": "^12.0.0"
+    "commander": "^12.0.0",
+    "yargs": "^17.7.2"
   },
   "main": "bin/initializr-cli.js",
   "preferGlobal": true,
