@@ -1,20 +1,13 @@
 {
-  "name": "express-generator",
-  "description": "Express' application generator",
-  "version": "4.16.1",
-  "author": "TJ Holowaychuk <tj@vision-media.ca>",
-  "contributors": [
-    "Aaron Heckmann <aaron.heckmann+github@gmail.com>",
-    "Ciaran Jessup <ciaranj@gmail.com>",
-    "Douglas Christopher Wilson <doug@somethingdoug.com>",
-    "Guillermo Rauch <rauchg@gmail.com>",
-    "Jonathan Ong <me@jongleberry.com>",
-    "Roman Shtylman <shtylman+expressjs@gmail.com>"
-  ],
+  "name": "express-initializr",
+  "description": "Express' application initializer",
+  "version": "1.0.0",
+  "author": "Chijioke Ugwuanyi <cj@ugwuanyi@gmail.com>",
+  "contributors": [],
   "keywords": [
     "express",
     "framework",
-    "sinatra",
+    "generator",
     "web",
     "rest",
     "restful",
@@ -25,16 +18,12 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "ejs": "2.6.2",
-    "minimatch": "3.0.4",
-    "minimist": "1.2.5",
-    "mkdirp": "0.5.1",
-    "sorted-object": "2.0.1"
+    "commander": "^12.0.0"
   },
-  "main": "bin/express-cli.js",
+  "main": "bin/initializr-cli.js",
   "preferGlobal": true,
   "bin": {
-    "express": "./bin/express-cli.js"
+    "express-i": "./bin/initializr-cli.js"
   },
   "devDependencies": {
     "eslint": "7.32.0",
