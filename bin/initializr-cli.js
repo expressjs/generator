@@ -6,7 +6,7 @@ let TEMPLATE_DIR = path.join(__dirname, '..', 'templates');
 let VERSION = require('../package').version;
 let services = require('./services');
 
-let APP_NAME = "express-i"; //If you change this in the future, remember to go change it in the package.json file as well.
+let default_app_name = "hello_world"; //If you change this in the future, remember to go change it in the package.json file as well.
 
 program
 	.command('basic')
@@ -14,5 +14,9 @@ program
 	.action(() => {
 		services.handleBasicApp();
 	});
-  
-program.parse();
+
+if(process.argv.length < 3) {
+	services.handleBasicApp(default_app_name);
+}
+
+program.parse(process.argv);
