@@ -4,7 +4,9 @@ let express = require('express');
 let path = require('path');
 let cookie_parser = require('cookie-parser');
 let logger = require('morgan');
-let general_config = require("./configs/general_config");
+let general_config = require("./general_config");
+
+let api_version = "1.0.0";
 
 let app = express();
 
@@ -34,7 +36,7 @@ app.use(function(req, res, next) {
 
 //API start
 app.get("/", function (req, res) {
-	res.status(200).send({ message: "Welcome to the API - v" + general_config.api_version, status: "LIVE" });
+	res.status(200).send({ message: "Welcome to the API - v" + api_version, status: "LIVE" });
 });
 
 // catch 404 and forward to error handler

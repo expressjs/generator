@@ -12,11 +12,11 @@ program
 	.command('basic')
 	.description('Generates a basic express application.')
 	.action(() => {
-		services.handleBasicApp();
+		services.createApp(default_app_name);
 	});
 
 if(process.argv.length < 3) {
-	services.handleBasicApp(default_app_name);
+	services.createApp(default_app_name);
 }
 
 program.parse(process.argv);
