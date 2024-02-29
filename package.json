@@ -19,6 +19,7 @@
   "license": "MIT",
   "dependencies": {
     "commander": "^12.0.0",
+    "figlet": "^1.7.0",
     "fs-extra": "^11.2.0",
     "yargs": "^17.7.2"
   },

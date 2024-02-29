@@ -1,9 +1,9 @@
 let path = require('path');
 let fs = require('fs-extra');
-let target_path = path.join(process.cwd(), app_name);
 
 let createApp = (app_name) => {
     //Create json file with default dependencies.
+    let target_path = path.join(process.cwd(), app_name);
     handlePackageJsonFile(app_name);
 
     let template_path = path.join(__dirname, '..', 'templates');
@@ -20,6 +20,10 @@ let createApp = (app_name) => {
 };
 
 let handlePackageJsonFile = (app_name) => {
+    let target_path = path.join(process.cwd(), app_name);
+
+    console.log("target_patH: " + target_path);
+
     let package_defaults = {
         "name": app_name,
         "description": "Node.Js application.",
