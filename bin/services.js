@@ -8,6 +8,10 @@ let createApp = (app_name, options) => {
     let target_path = path.join(process.cwd(), app_name);
     let template_path = path.join(__dirname, '..', 'templates');
 
+    if(fs.existsSync(target_path) ) {
+        //Do some work if folder exists.
+    }
+
     try {
 
         fs.copySync(template_path, target_path);

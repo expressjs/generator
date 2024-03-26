@@ -18,25 +18,9 @@ program
 	.option('-d, --dependencies <dependencies...>', 'Generates a basic express application with the given app name and the space delimted list of dependencies.')
 	.description('Generates a basic express application with the given app name.')
 	.action((app_name, options) => {
-		console.log("dependencies: ", options);
-
 		services.createApp(app_name, options);
 	});
 
-program
-	.command('basic1')
-	.description('Generates a basic express application1.')
-	.action(() => {
-		console.log("Some action2")
-		//services.createApp(default_app_name);
-	});
-
-// if(process.argv.length < 3) {
-// 	//services.createApp(default_app_name);
-// 	//Display the help description.
-// 	console.log("Creating hello world project!");
-// } else {
-// 	program.parse(process.argv);
-// }
+//Check if app_name exists in the current directory.
 
 program.parse(process.argv);
