@@ -1,16 +1,31 @@
 let path = require('path');
 let fs = require('fs-extra');
 let child_process = require('child_process');
+let utilities = require("./utilities");
 
-let createApp = (app_name, options) => {
-    console.log("Scafolding a express.js app named: ", app_name, "...\n\n");
+let startCreateApp = (app_name, options) => {
+    console.log("Scafolding a express.js app named: ", app_name, "...\n");
 
     let target_path = path.join(process.cwd(), app_name);
-    let template_path = path.join(__dirname, '..', 'templates');
 
     if(fs.existsSync(target_path) ) {
-        //Do some work if folder exists.
+        utilities.confirmAction("There is a folder with the name `" + app_name + "` in this location. Okay to delete and continue? [y/n] ", (confirmation_status) => {
+            if(confirmation_status) {
+                fs.removeSync(target_path);
+                createApp(app_name, options);
+            } else {
+                console.log("Aborting...");
+            }
+        });
+    } else {
+        createApp(app_name, options);
     }
+}
+
+let createApp = (app_name, options) => {
+    
+    let target_path = path.join(process.cwd(), app_name);
+    let template_path = path.join(__dirname, '..', 'templates');
 
     try {
 
@@ -50,5 +65,6 @@ let handlePackageJsonFile = (app_name, options) => {
 }
 
 module.exports = {
+    startCreateApp: startCreateApp,
     createApp: createApp
 }

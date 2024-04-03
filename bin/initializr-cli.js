@@ -18,7 +18,7 @@ program
 	.option('-d, --dependencies <dependencies...>', 'Generates a basic express application with the given app name and the space delimted list of dependencies.')
 	.description('Generates a basic express application with the given app name.')
 	.action((app_name, options) => {
-		services.createApp(app_name, options);
+		services.startCreateApp(app_name, options);
 	});
 
 //Check if app_name exists in the current directory.
