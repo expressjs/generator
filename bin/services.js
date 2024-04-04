@@ -50,7 +50,7 @@ let handlePackageJsonFile = (app_name, options) => {
         }
     };
 
-    let dependencies = ["dotenv", "cookie-parser", "morgan", "express", "cors", "helmet"];
+    let dependencies = ["dotenv", "cookie-parser", "morgan", "express", "cors", "helmet", "winston"];
     let json_data = JSON.stringify(package_defaults);
 
     try {

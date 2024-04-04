@@ -33,10 +33,8 @@ app.use(function(req, res, next) {
 	next();
 });
 
-//API start
-app.get("/", function (req, res) {
-	res.status(200).send({ message: "Welcome to the API - v" + general_config.api_version, status: "LIVE" });
-});
+let index = require('./src/routes/index');
+app.use('/', index);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
