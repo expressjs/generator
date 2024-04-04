@@ -1,5 +1,4 @@
 <% if (esm) { -%>
-
 <% if (view) { -%>
 import createError from 'http-errors';
 <% } -%>
@@ -16,7 +15,6 @@ import <%- variable %> from '<%- localModules[variable] %>.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 <% } else { -%>
-
 <% if (view) { -%>
 var createError = require('http-errors');
 <% } -%>
@@ -29,7 +27,6 @@ var <%- variable %> = require('<%- modules[variable] %>');
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
 var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
-
 <% } -%>
 
 var app = express();
@@ -69,7 +66,6 @@ app.use(function(err, req, res, next) {
 });
 
 <% } -%>
-
 <% if (esm) { -%>
 export default app;
 <% } else { -%>
