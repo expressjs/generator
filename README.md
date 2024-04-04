@@ -13,7 +13,7 @@
 $ npm install -g express-generator
 ```
 
-You can also run the application generator with the npx command (available in Node.js 8.2.0).
+You can also run the application generator with the `npx` command (available since Node.js 8.2.0).
 
 ```sh
 $ npx express-generator
