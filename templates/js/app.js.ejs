@@ -1,3 +1,22 @@
+<% if (esm) { -%>
+
+<% if (view) { -%>
+import createError from 'http-errors';
+<% } -%>
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+<% Object.keys(modules).sort().forEach(function (variable) { -%>
+import <%- variable %> from '<%- modules[variable] %>';
+<% }); -%>
+
+<% Object.keys(localModules).sort().forEach(function (variable) { -%>
+import <%- variable %> from '<%- localModules[variable] %>.js';
+<% }); -%>
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+<% } else { -%>
+
 <% if (view) { -%>
 var createError = require('http-errors');
 <% } -%>
@@ -10,6 +29,8 @@ var <%- variable %> = require('<%- modules[variable] %>');
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
 var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
+
+<% } -%>
 
 var app = express();
 
@@ -48,4 +69,9 @@ app.use(function(err, req, res, next) {
 });
 
 <% } -%>
+
+<% if (esm) { -%>
+export default app;
+<% } else { -%>
 module.exports = app;
+<% } -%>

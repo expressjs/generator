@@ -105,14 +105,15 @@ function createApplication (name, dir, options, done) {
   }
 
   // JavaScript
-  var app = loadTemplate(options.esm ? 'mjs/app.js' : 'js/app.js')
-  var www = loadTemplate(options.esm ? 'mjs/www' : 'js/www')
+  var app = loadTemplate('js/app.js')
+  var www = loadTemplate('js/www')
 
   // App name
   www.locals.name = name
 
   // App module type
   app.locals.esm = options.esm
+  www.locals.esm = options.esm
 
   // App modules
   app.locals.localModules = Object.create(null)

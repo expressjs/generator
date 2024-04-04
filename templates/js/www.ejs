@@ -4,9 +4,16 @@
  * Module dependencies.
  */
 
+<% if (esm) { -%>
+import app from '../app.js';
+import http from 'node:http';
+import debugFunction from 'debug';
+const debug = debugFunction('<%- name %>:server');  
+<% } else { -%>
 var app = require('../app');
 var debug = require('debug')('<%- name %>:server');
 var http = require('http');
+<% } -%>
 
 /**
  * Get port from environment and store in Express.
