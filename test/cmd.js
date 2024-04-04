@@ -556,11 +556,6 @@ describe('express(1)', function () {
           assert.strictEqual(typeof app, 'function')
           assert.strictEqual(typeof app.handle, 'function')
         })
-      /*
-      var app = require(file)
-      assert.strictEqual(typeof app, 'function')
-      assert.strictEqual(typeof app.handle, 'function')
-      */
     })
 
     describe('npm start', function () {
