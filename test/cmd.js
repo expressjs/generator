@@ -66,6 +66,7 @@ describe('express(1)', function () {
       assert.strictEqual(contents, '{\n' +
         '  "name": "express-1-no-args",\n' +
         '  "version": "0.0.0",\n' +
+        '  "type": "commonjs",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
         '    "start": "node ./bin/www"\n' +
@@ -481,6 +482,119 @@ describe('express(1)', function () {
     it('should have ejs templates', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
       assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
+    })
+  })
+
+  describe('--esm', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should create basic app', function (done) {
+      run(ctx.dir, ['--esm'], function (err, stdout, warnings) {
+        if (err) return done(err)
+        ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+        ctx.stdout = stdout
+        ctx.warnings = warnings
+        assert.strictEqual(ctx.files.length, 16)
+        done()
+      })
+    })
+
+    it('should print jade view warning', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'the default view engine will not be jade in future releases\nuse `--view=jade\' or `--help\' for additional options'
+      }))
+    })
+
+    it('should provide debug instructions', function () {
+      assert.ok(/DEBUG=express-1---esm:\* (?:& )?npm start/.test(ctx.stdout))
+    })
+
+    it('should have basic files', function () {
+      assert.notStrictEqual(ctx.files.indexOf('bin/www.js'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+    })
+
+    it('should have jade templates', function () {
+      assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
+      assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
+    })
+
+    it('should have a package.json file with type "module"', function () {
+      var file = path.resolve(ctx.dir, 'package.json')
+      var contents = fs.readFileSync(file, 'utf8')
+      assert.strictEqual(contents, '{\n' +
+        '  "name": "express-1---esm",\n' +
+        '  "version": "0.0.0",\n' +
+        '  "type": "module",\n' +
+        '  "private": true,\n' +
+        '  "scripts": {\n' +
+        '    "start": "node ./bin/www.js"\n' +
+        '  },\n' +
+        '  "dependencies": {\n' +
+        '    "cookie-parser": "~1.4.5",\n' +
+        '    "debug": "~2.6.9",\n' +
+        '    "express": "~4.17.1",\n' +
+        '    "http-errors": "~1.7.2",\n' +
+        '    "jade": "~1.11.0",\n' +
+        '    "morgan": "~1.10.0"\n' +
+        '  }\n' +
+        '}\n')
+    })
+
+    it('should have installable dependencies', function (done) {
+      this.timeout(NPM_INSTALL_TIMEOUT)
+      npmInstall(ctx.dir, done)
+    })
+
+    it('should export an express app from app.js', function () {
+      var file = path.resolve(ctx.dir, 'app.js')
+      import(file)
+        .then(module => {
+          const app = module.default
+          assert.strictEqual(typeof app, 'function')
+          assert.strictEqual(typeof app.handle, 'function')
+        })
+      /*
+      var app = require(file)
+      assert.strictEqual(typeof app, 'function')
+      assert.strictEqual(typeof app.handle, 'function')
+      */
+    })
+
+    describe('npm start', function () {
+      before('start app', function () {
+        this.app = new AppRunner(ctx.dir)
+      })
+
+      after('stop app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.stop(done)
+      })
+
+      it('should start app', function (done) {
+        this.timeout(APP_START_STOP_TIMEOUT)
+        this.app.start(done)
+      })
+
+      it('should respond to HTTP request', function (done) {
+        request(this.app)
+          .get('/')
+          .expect(200, /<title>Express<\/title>/, done)
+      })
+
+      it('should respond to /users HTTP request', function (done) {
+        request(this.app)
+          .get('/users')
+          .expect(200, /respond with a resource/, done)
+      })
+
+      it('should generate a 404', function (done) {
+        request(this.app)
+          .get('/does_not_exist')
+          .expect(404, /<h1>Not Found<\/h1>/, done)
+      })
     })
   })
 

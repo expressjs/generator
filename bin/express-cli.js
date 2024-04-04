@@ -96,7 +96,7 @@ function createApplication (name, dir, options, done) {
     type: options.esm ? 'module' : 'commonjs',
     private: true,
     scripts: {
-      start: 'node ./bin/www'
+      start: options.esm ? 'node ./bin/www.js' : 'node ./bin/www'
     },
     dependencies: {
       debug: '~2.6.9',
@@ -293,7 +293,7 @@ function createApplication (name, dir, options, done) {
   write(path.join(dir, 'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, options.esm ? 'bin/www.js' : 'bin/www'), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 
