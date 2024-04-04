@@ -4,8 +4,8 @@ var ejs = require('ejs')
 var fs = require('fs')
 var minimatch = require('minimatch')
 var mkdirp = require('mkdirp')
+var parseArgs = require('minimist')
 var path = require('path')
-var program = require('commander')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
@@ -15,80 +15,31 @@ var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 var VERSION = require('../package').version
 
-var _exit = process.exit
-
-// Re-assign process.exit because of commander
-// TODO: Switch to a different command framework
-process.exit = exit
-
-// CLI
-
-around(program, 'optionMissingArgument', function (fn, args) {
-  program.outputHelp()
-  fn.apply(this, args)
-  return { args: [], unknown: [] }
-})
-
-before(program, 'outputHelp', function () {
-  // track if help was shown for unknown option
-  this._helpShown = true
-})
-
-before(program, 'unknownOption', function () {
-  // allow unknown options if help was shown, to prevent trailing error
-  this._allowUnknownOption = this._helpShown
-
-  // show help if not yet shown
-  if (!this._helpShown) {
-    program.outputHelp()
+// parse args
+var unknown = []
+var args = parseArgs(process.argv.slice(2), {
+  alias: {
+    c: 'css',
+    e: 'ejs',
+    f: 'force',
+    h: 'help',
+    H: 'hogan',
+    v: 'view'
+  },
+  boolean: ['ejs', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
+  default: { css: true, view: true },
+  string: ['css', 'view'],
+  unknown: function (s) {
+    if (s.charAt(0) === '-') {
+      unknown.push(s)
+    }
   }
 })
 
-program
-  .name('express')
-  .version(VERSION, '    --version')
-  .usage('[options] [dir]')
-  .option('-e, --ejs', 'add ejs engine support', renamedOption('--ejs', '--view=ejs'))
-  .option('    --pug', 'add pug engine support', renamedOption('--pug', '--view=pug'))
-  .option('    --hbs', 'add handlebars engine support', renamedOption('--hbs', '--view=hbs'))
-  .option('-H, --hogan', 'add hogan.js engine support', renamedOption('--hogan', '--view=hogan'))
-  .option('-v, --view <engine>', 'add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
-  .option('    --no-view', 'use static html instead of view engine')
-  .option('-c, --css <engine>', 'add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
-  .option('    --git', 'add .gitignore')
-  .option('-f, --force', 'force on non-empty directory')
-  .parse(process.argv)
+args['!'] = unknown
 
-if (!exit.exited) {
-  main()
-}
-
-/**
- * Install an around function; AOP.
- */
-
-function around (obj, method, fn) {
-  var old = obj[method]
-
-  obj[method] = function () {
-    var args = new Array(arguments.length)
-    for (var i = 0; i < args.length; i++) args[i] = arguments[i]
-    return fn.call(this, old, args)
-  }
-}
-
-/**
- * Install a before function; AOP.
- */
-
-function before (obj, method, fn) {
-  var old = obj[method]
-
-  obj[method] = function () {
-    fn.call(this)
-    old.apply(this, arguments)
-  }
-}
+// run
+main(args, exit)
 
 /**
  * Prompt for confirmation on STDOUT/STDIN
@@ -131,9 +82,11 @@ function copyTemplateMulti (fromDir, toDir, nameGlob) {
  *
  * @param {string} name
  * @param {string} dir
+ * @param {object} options
+ * @param {function} done
  */
 
-function createApplication (name, dir) {
+function createApplication (name, dir, options, done) {
   console.log()
 
   // Package
@@ -146,7 +99,7 @@ function createApplication (name, dir) {
     },
     dependencies: {
       debug: '~2.6.9',
-      express: '~4.16.4'
+      express: '~4.17.1'
     }
   }
 
@@ -175,7 +128,7 @@ function createApplication (name, dir) {
   // Cookie parser
   app.locals.modules.cookieParser = 'cookie-parser'
   app.locals.uses.push('cookieParser()')
-  pkg.dependencies['cookie-parser'] = '~1.4.4'
+  pkg.dependencies['cookie-parser'] = '~1.4.5'
 
   if (dir !== '.') {
     mkdir(dir, '.')
@@ -187,7 +140,7 @@ function createApplication (name, dir) {
   mkdir(dir, 'public/stylesheets')
 
   // copy css templates
-  switch (program.css) {
+  switch (options.css) {
     case 'less':
       copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
       break
@@ -209,11 +162,11 @@ function createApplication (name, dir) {
   mkdir(dir, 'routes')
   copyTemplateMulti('js/routes', dir + '/routes', '*.js')
 
-  if (program.view) {
+  if (options.view) {
     // Copy view templates
     mkdir(dir, 'views')
-    pkg.dependencies['http-errors'] = '~1.6.3'
-    switch (program.view) {
+    pkg.dependencies['http-errors'] = '~1.7.2'
+    switch (options.view) {
       case 'dust':
         copyTemplateMulti('views', dir + '/views', '*.dust')
         break
@@ -245,7 +198,7 @@ function createApplication (name, dir) {
   }
 
   // CSS Engine support
-  switch (program.css) {
+  switch (options.css) {
     case 'compass':
       app.locals.modules.compass = 'node-compass'
       app.locals.uses.push("compass({ mode: 'expanded' })")
@@ -264,7 +217,7 @@ function createApplication (name, dir) {
     case 'stylus':
       app.locals.modules.stylus = 'stylus'
       app.locals.uses.push("stylus.middleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['stylus'] = '0.54.5'
+      pkg.dependencies.stylus = '0.54.5'
       break
   }
 
@@ -277,7 +230,7 @@ function createApplication (name, dir) {
   app.locals.mounts.push({ path: '/users', code: 'usersRouter' })
 
   // Template support
-  switch (program.view) {
+  switch (options.view) {
     case 'dust':
       app.locals.modules.adaro = 'adaro'
       app.locals.view = {
@@ -322,7 +275,7 @@ function createApplication (name, dir) {
   // Static files
   app.locals.uses.push("express.static(path.join(__dirname, 'public'))")
 
-  if (program.git) {
+  if (options.git) {
     copyTemplate('js/gitignore', path.join(dir, '.gitignore'))
   }
 
@@ -356,6 +309,8 @@ function createApplication (name, dir) {
   }
 
   console.log()
+
+  done(0)
 }
 
 /**
@@ -386,6 +341,20 @@ function emptyDirectory (dir, fn) {
 }
 
 /**
+ * Display an error.
+ *
+ * @param {String} message
+ */
+
+function error (message) {
+  console.error()
+  message.split('\n').forEach(function (line) {
+    console.error('  error: %s', line)
+  })
+  console.error()
+}
+
+/**
  * Graceful exit for async STDIO
  */
 
@@ -394,7 +363,7 @@ function exit (code) {
   // https://github.com/joyent/node/issues/6247 is just one bug example
   // https://github.com/visionmedia/mocha/issues/333 has a good discussion
   function done () {
-    if (!(draining--)) _exit(code)
+    if (!(draining--)) process.exit(code)
   }
 
   var draining = 0
@@ -444,44 +413,80 @@ function loadTemplate (name) {
  * Main program.
  */
 
-function main () {
-  // Path
-  var destinationPath = program.args.shift() || '.'
+function main (options, done) {
+  // top-level argument direction
+  if (options['!'].length > 0) {
+    usage()
+    error('unknown option `' + options['!'][0] + "'")
+    done(1)
+  } else if (args.help) {
+    usage()
+    done(0)
+  } else if (args.version) {
+    version()
+    done(0)
+  } else if (options.css === '') {
+    usage()
+    error('option `-c, --css <engine>\' argument missing')
+    done(1)
+  } else if (options.view === '') {
+    usage()
+    error('option `-v, --view <engine>\' argument missing')
+    done(1)
+  } else {
+    // Path
+    var destinationPath = options._[0] || '.'
 
-  // App name
-  var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
+    // App name
+    var appName = createAppName(path.resolve(destinationPath)) || 'hello-world'
 
-  // View engine
-  if (program.view === true) {
-    if (program.ejs) program.view = 'ejs'
-    if (program.hbs) program.view = 'hbs'
-    if (program.hogan) program.view = 'hjs'
-    if (program.pug) program.view = 'pug'
-  }
+    // View engine
+    if (options.view === true) {
+      if (options.ejs) {
+        options.view = 'ejs'
+        warning("option `--ejs' has been renamed to `--view=ejs'")
+      }
 
-  // Default view engine
-  if (program.view === true) {
-    warning('the default view engine will not be jade in future releases\n' +
-      "use `--view=jade' or `--help' for additional options")
-    program.view = 'jade'
-  }
+      if (options.hbs) {
+        options.view = 'hbs'
+        warning("option `--hbs' has been renamed to `--view=hbs'")
+      }
 
-  // Generate application
-  emptyDirectory(destinationPath, function (empty) {
-    if (empty || program.force) {
-      createApplication(appName, destinationPath)
-    } else {
-      confirm('destination is not empty, continue? [y/N] ', function (ok) {
-        if (ok) {
-          process.stdin.destroy()
-          createApplication(appName, destinationPath)
-        } else {
-          console.error('aborting')
-          exit(1)
-        }
-      })
+      if (options.hogan) {
+        options.view = 'hjs'
+        warning("option `--hogan' has been renamed to `--view=hjs'")
+      }
+
+      if (options.pug) {
+        options.view = 'pug'
+        warning("option `--pug' has been renamed to `--view=pug'")
+      }
     }
-  })
+
+    // Default view engine
+    if (options.view === true) {
+      warning('the default view engine will not be jade in future releases\n' +
+        "use `--view=jade' or `--help' for additional options")
+      options.view = 'jade'
+    }
+
+    // Generate application
+    emptyDirectory(destinationPath, function (empty) {
+      if (empty || options.force) {
+        createApplication(appName, destinationPath, options, done)
+      } else {
+        confirm('destination is not empty, continue? [y/N] ', function (ok) {
+          if (ok) {
+            process.stdin.destroy()
+            createApplication(appName, destinationPath, options, done)
+          } else {
+            console.error('aborting')
+            done(1)
+          }
+        })
+      }
+    })
+  }
 }
 
 /**
@@ -499,21 +504,38 @@ function mkdir (base, dir) {
 }
 
 /**
- * Generate a callback function for commander to warn about renamed option.
- *
- * @param {String} originalName
- * @param {String} newName
+ * Display the usage.
  */
 
-function renamedOption (originalName, newName) {
-  return function (val) {
-    warning(util.format("option `%s' has been renamed to `%s'", originalName, newName))
-    return val
-  }
+function usage () {
+  console.log('')
+  console.log('  Usage: express [options] [dir]')
+  console.log('')
+  console.log('  Options:')
+  console.log('')
+  console.log('    -e, --ejs            add ejs engine support')
+  console.log('        --pug            add pug engine support')
+  console.log('        --hbs            add handlebars engine support')
+  console.log('    -H, --hogan          add hogan.js engine support')
+  console.log('    -v, --view <engine>  add view <engine> support (dust|ejs|hbs|hjs|jade|pug|twig|vash) (defaults to jade)')
+  console.log('        --no-view        use static html instead of view engine')
+  console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
+  console.log('        --git            add .gitignore')
+  console.log('    -f, --force          force on non-empty directory')
+  console.log('    --version            output the version number')
+  console.log('    -h, --help           output usage information')
 }
 
 /**
- * Display a warning similar to how errors are displayed by commander.
+ * Display the version.
+ */
+
+function version () {
+  console.log(VERSION)
+}
+
+/**
+ * Display a warning.
  *
  * @param {String} message
  */

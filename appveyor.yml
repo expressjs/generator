@@ -13,9 +13,10 @@ environment:
     - nodejs_version: "9.11"
     - nodejs_version: "10.24"
     - nodejs_version: "11.15"
-    - nodejs_version: "12.21"
+    - nodejs_version: "12.22"
     - nodejs_version: "13.14"
-    - nodejs_version: "14.16"
+    - nodejs_version: "14.18"
+    - nodejs_version: "15.14"
     - nodejs_version: "16.13"
 cache:
   - node_modules
@@ -39,13 +40,25 @@ install:
       # mocha for testing
       # - use 3.x for Node.js < 4
       # - use 5.x for Node.js < 6
-      # - use 6.x for Node.js < 7
+      # - use 6.x for Node.js < 8
+      # - use 7.x for Node.js < 10
+      # - use 8.x for Node.js < 12
       if ([int]$env:nodejs_version.split(".")[0] -lt 4) {
         npm install --silent --save-dev mocha@3.5.3
       } elseif ([int]$env:nodejs_version.split(".")[0] -lt 6) {
         npm install --silent --save-dev mocha@5.2.0
       } elseif ([int]$env:nodejs_version.split(".")[0] -lt 8) {
         npm install --silent --save-dev mocha@6.2.3
+      } elseif ([int]$env:nodejs_version.split(".")[0] -lt 10) {
+        npm install --silent --save-dev mocha@7.2.0
+      } elseif ([int]$env:nodejs_version.split(".")[0] -lt 12) {
+        npm install --silent --save-dev mocha@8.4.0
+      }
+  - ps: |
+      # rimraf for testing cleanup
+      # - use 2.7.1 for Node.js < 6
+      if ([int]$env:nodejs_version.split(".")[0] -lt 6) {
+        npm install --silent --save-dev rimraf@2.7.1
       }
   - ps: |
       # supertest for http calls

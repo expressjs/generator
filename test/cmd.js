@@ -28,18 +28,20 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app', function (done) {
-      runRaw(ctx.dir, [], function (err, code, stdout, stderr) {
+      run(ctx.dir, [], function (err, stdout, warnings) {
         if (err) return done(err)
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
-        ctx.stderr = stderr
         ctx.stdout = stdout
+        ctx.warnings = warnings
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
     })
 
     it('should print jade view warning', function () {
-      assert.strictEqual(ctx.stderr, "\n  warning: the default view engine will not be jade in future releases\n  warning: use `--view=jade' or `--help' for additional options\n\n")
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'the default view engine will not be jade in future releases\nuse `--view=jade\' or `--help\' for additional options'
+      }))
     })
 
     it('should provide debug instructions', function () {
@@ -69,10 +71,10 @@ describe('express(1)', function () {
         '    "start": "node ./bin/www"\n' +
         '  },\n' +
         '  "dependencies": {\n' +
-        '    "cookie-parser": "~1.4.4",\n' +
+        '    "cookie-parser": "~1.4.5",\n' +
         '    "debug": "~2.6.9",\n' +
-        '    "express": "~4.16.4",\n' +
-        '    "http-errors": "~1.6.3",\n' +
+        '    "express": "~4.17.1",\n' +
+        '    "http-errors": "~1.7.2",\n' +
         '    "jade": "~1.11.0",\n' +
         '    "morgan": "~1.10.0"\n' +
         '  }\n' +
@@ -283,6 +285,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.less'), -1, 'should have style.less file')
       })
 
+      it('should have less-middleware in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies['less-middleware'], 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
@@ -337,6 +346,13 @@ describe('express(1)', function () {
 
       it('should have sass files', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.sass'), -1, 'should have style.sass file')
+      })
+
+      it('should have node-sass-middleware in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies['node-sass-middleware'], 'string')
       })
 
       it('should have installable dependencies', function (done) {
@@ -395,6 +411,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('public/stylesheets/style.styl'), -1, 'should have style.styl file')
       })
 
+      it('should have stylus in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.stylus, 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
@@ -434,12 +457,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with ejs templates', function (done) {
-      run(ctx.dir, ['--ejs'], function (err, stdout) {
+      run(ctx.dir, ['--ejs'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15, 'should have 15 files')
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--ejs\' has been renamed to `--view=ejs\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -503,12 +533,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hbs templates', function (done) {
-      run(ctx.dir, ['--hbs'], function (err, stdout) {
+      run(ctx.dir, ['--hbs'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--hbs\' has been renamed to `--view=hbs\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -551,12 +588,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with hogan templates', function (done) {
-      run(ctx.dir, ['--hogan'], function (err, stdout) {
+      run(ctx.dir, ['--hogan'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 15)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--hogan\' has been renamed to `--view=hjs\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -638,12 +682,19 @@ describe('express(1)', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
     it('should create basic app with pug templates', function (done) {
-      run(ctx.dir, ['--pug'], function (err, stdout) {
+      run(ctx.dir, ['--pug'], function (err, stdout, warnings) {
         if (err) return done(err)
+        ctx.warnings = warnings
         ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
         assert.strictEqual(ctx.files.length, 16)
         done()
       })
+    })
+
+    it('should warn about argument rename', function () {
+      assert.ok(ctx.warnings.some(function (warn) {
+        return warn === 'option `--pug\' has been renamed to `--view=pug\''
+      }))
     })
 
     it('should have basic files', function () {
@@ -663,6 +714,20 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/error.pug'), -1)
       assert.notStrictEqual(ctx.files.indexOf('views/index.pug'), -1)
       assert.notStrictEqual(ctx.files.indexOf('views/layout.pug'), -1)
+    })
+  })
+
+  describe('--version', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    it('should print version', function (done) {
+      var pkg = fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8')
+      var ver = JSON.parse(pkg).version
+      run(ctx.dir, ['--version'], function (err, stdout) {
+        if (err) return done(err)
+        assert.strictEqual(stdout.replace(/[\r\n]+/, '\n'), ver + '\n')
+        done()
+      })
     })
   })
 
@@ -720,6 +785,13 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/index.dust'), -1, 'should have views/index.dust file')
       })
 
+      it('should have adaro in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.adaro, 'string')
+      })
+
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
         npmInstall(ctx.dir, done)
@@ -775,6 +847,13 @@ describe('express(1)', function () {
       it('should have ejs templates', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
         assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
+      })
+
+      it('should have ejs in package dependencies', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        var pkg = JSON.parse(contents)
+        assert.strictEqual(typeof pkg.dependencies.ejs, 'string')
       })
 
       it('should have installable dependencies', function (done) {
@@ -1166,7 +1245,7 @@ function run (dir, args, callback) {
       return callback(e)
     }
 
-    callback(null, utils.stripColors(stdout))
+    callback(null, utils.stripColors(stdout), utils.parseWarnings(stderr))
   })
 }
 
