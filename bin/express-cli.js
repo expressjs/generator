@@ -26,7 +26,7 @@ var args = parseArgs(process.argv.slice(2), {
     H: 'hogan',
     v: 'view'
   },
-  boolean: ['ejs', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
+  boolean: ['ejs', 'esm', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
   default: { css: true, view: true },
   string: ['css', 'view'],
   unknown: function (s) {
@@ -93,6 +93,7 @@ function createApplication (name, dir, options, done) {
   var pkg = {
     name: name,
     version: '0.0.0',
+    type: options.esm ? 'module' : 'commonjs',
     private: true,
     scripts: {
       start: 'node ./bin/www'
@@ -104,11 +105,14 @@ function createApplication (name, dir, options, done) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate(options.esm ? 'mjs/app.js' : 'js/app.js')
+  var www = loadTemplate(options.esm ? 'mjs/www' : 'js/www')
 
   // App name
   www.locals.name = name
+
+  // App module type
+  app.locals.esm = options.esm
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -160,7 +164,9 @@ function createApplication (name, dir, options, done) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  copyTemplateMulti(
+    options.esm ? 'mjs/routes' : 'js/routes',
+    dir + '/routes', '*.js')
 
   if (options.view) {
     // Copy view templates
@@ -521,6 +527,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
+  console.log('        --esm            use ECMAScript modules')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')
