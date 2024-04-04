@@ -4,7 +4,7 @@ let child_process = require('child_process');
 let utilities = require("./utilities");
 
 let startCreateApp = (app_name, options) => {
-    console.log("Scafolding a express.js app named: ", app_name, "...\n");
+    console.log("Scafolding a express.js app named:", app_name, "...\n");
 
     let target_path = path.join(process.cwd(), app_name);
 
@@ -50,14 +50,16 @@ let handlePackageJsonFile = (app_name, options) => {
         }
     };
 
+    let dependencies = ["dotenv", "cookie-parser", "morgan", "express", "cors"];
     let json_data = JSON.stringify(package_defaults);
 
     try {
         
         fs.writeFileSync(target_path + "/package.json", json_data, { spaces: '\t' });
         if(options.dependencies) {
-            //child_process.execSync(`cd ${target_path} && npm install ${options.dependencies.join(' ')}`, { stdio: 'inherit' });
+            dependencies = dependencies.filter( element => !options.dependencies.includes( element ) );
         }
+        child_process.execSync(`cd ${target_path} && npm install ${dependencies.join(' ')}`, { stdio: 'inherit' });
 
     } catch (error) {
         console.error(`Error creating package json file: ${error}`);

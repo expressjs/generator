@@ -3,14 +3,13 @@ require("dotenv").config();
 let express = require('express');
 let path = require('path');
 let cookie_parser = require('cookie-parser');
-let logger = require('morgan');
 let general_config = require("./configs/general_config");
+let cors = require('cors');
 
 let app = express();
 
 app.use(cors());
 
-app.use(logger('dev'));
 app.use(express.json({limit: '5mb'}));
 app.use(express.urlencoded({ extended: false, limit: "5mb" }));
 app.use(cookie_parser());

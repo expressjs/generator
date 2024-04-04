@@ -20,7 +20,5 @@ program
 	.action((app_name, options) => {
 		services.startCreateApp(app_name, options);
 	});
-
-//Check if app_name exists in the current directory.
-
+	
 program.parse(process.argv);
