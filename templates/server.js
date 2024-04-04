@@ -5,8 +5,10 @@ let path = require('path');
 let cookie_parser = require('cookie-parser');
 let general_config = require("./configs/general_config");
 let cors = require('cors');
+let helmet = require('helmet');
 
 let app = express();
+app.use(helmet({contentSecurityPolicy: false, xDownloadOptions: false}));
 
 app.use(cors());
 
