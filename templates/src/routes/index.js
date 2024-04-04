@@ -9,12 +9,12 @@ router.use(function (req, res, next) {
 	next();
 });
 
-let UserRoutes = require("./user_routes");
+let user_routes = require("./user_routes");
 
 router.get('/', (req, res, next) => {
 	return res.status(200).json({message: "Welcome! Don't fret! You are in the right place.", status: true }); 
 });
-router.use("/user", UserRoutes);
+router.use("/user", user_routes);
 
 router.get('/health', (req, res) => {
 	// Check if the application is healthy
