@@ -14,6 +14,7 @@ var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 var VERSION = require('../package').version
+var MIN_ESM_VERSION = 14
 
 // parse args
 var unknown = []
@@ -440,6 +441,10 @@ function main (options, done) {
     usage()
     error('option `-v, --view <engine>\' argument missing')
     done(1)
+  } else if (options.esm && process.versions.node.split('.')[0] < MIN_ESM_VERSION) {
+    usage()
+    error('option `--esm\' requires Node version ' + MIN_ESM_VERSION + '.x or higher')
+    done(1)
   } else {
     // Path
     var destinationPath = options._[0] || '.'
@@ -528,7 +533,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
-  console.log('        --esm            use ECMAScript modules')
+  console.log('        --esm            use ECMAScript modules (requires Node 14.x or higher)')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')
