@@ -8,10 +8,14 @@ let confirmAction = (msg, callback) => {
   
     confirm.question(msg, function (input) {
         confirm.close();
+        input = input.trim();
         callback(/^y|yes|ok|true$/i.test(input));
     })
 }
 
+let SUPPORT_DBS = [`mongo`, `postgres`, `mysql`, `mssql`, `sqlite`, `maria`];
+
 module.exports = {
-    confirmAction: confirmAction
+    confirmAction: confirmAction,
+    SUPPORT_DBS: SUPPORT_DBS
 }
