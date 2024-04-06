@@ -29,7 +29,7 @@ var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 <% } -%>
 
-var app = express();
+<%- esm ? 'const' : 'var' %> app = express();
 
 <% if (view) { -%>
 // view engine setup
@@ -50,12 +50,12 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 
 <% if (view) { -%>
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(<%- esm ? '' : 'function' %>(req, res, next)<%- esm ? ' =>' : '' %> {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(<%- esm ? '' : 'function' %>(err, req, res, next)<%- esm ? ' =>' : '' %> {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

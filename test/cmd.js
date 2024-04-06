@@ -570,14 +570,21 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function () {
-        var file = path.resolve(ctx.dir, 'app.js')
-        import(file)
-          .then(module => {
-            const app = module.default
-            assert.strictEqual(typeof app, 'function')
-            assert.strictEqual(typeof app.handle, 'function')
-          })
+      it('should export an express app from app.js', function (done) {
+        // Use eval since otherwise early Nodes choke on import reserved word
+        // eslint-disable-next-line no-eval
+        eval(
+          'const { pathToFileURL } = require("node:url");' +
+          'const file = path.resolve(ctx.dir, "app.js");' +
+          'import(pathToFileURL(file).href)' +
+          '.then(moduleNamespaceObject => {' +
+            'const app = moduleNamespaceObject.default;' +
+            'assert.strictEqual(typeof app, "function");' +
+            'assert.strictEqual(typeof app.handle, "function");' +
+            'done();' +
+          '})' +
+          '.catch(reason => done(reason))'
+        )
       })
 
       describe('npm start', function () {
