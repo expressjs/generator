@@ -1,6 +1,6 @@
 let express = require('express');
 let router = express.Router();
-let healthChecker = require("../utilities/general_util");
+let health_checker = require("../utilities/general_util");
 
 let logger = require("../utilities/logger");
 
@@ -19,7 +19,7 @@ router.use("/user", user_routes);
 
 router.get('/health', (req, res) => {
 	
-	let is_healthy = healthChecker.checkAppHealth(); 
+	let is_healthy = health_checker.checkAppHealth(); 
   
 	if (is_healthy) {
 		return res.status(200).json({message: "The application is ready to battle a horde of Uruk-Hai orcs.", status: true }); 
