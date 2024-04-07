@@ -1,4 +1,4 @@
-<% if (esm) { -%>
+<% if (es6) { -%>
 <% if (view) { -%>
 import createError from 'http-errors';
 <% } -%>
@@ -29,7 +29,7 @@ var <%- variable %> = require('<%- localModules[variable] %>');
 <% }); -%>
 <% } -%>
 
-<%- esm ? 'const' : 'var' %> app = express();
+<%- es6 ? 'const' : 'var' %> app = express();
 
 <% if (view) { -%>
 // view engine setup
@@ -50,12 +50,12 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 
 <% if (view) { -%>
 // catch 404 and forward to error handler
-app.use(<%- esm ? '' : 'function' %>(req, res, next)<%- esm ? ' =>' : '' %> {
+app.use(<%- es6 ? '' : 'function' %>(req, res, next)<%- es6 ? ' =>' : '' %> {
   next(createError(404));
 });
 
 // error handler
-app.use(<%- esm ? '' : 'function' %>(err, req, res, next)<%- esm ? ' =>' : '' %> {
+app.use(<%- es6 ? '' : 'function' %>(err, req, res, next)<%- es6 ? ' =>' : '' %> {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -66,7 +66,7 @@ app.use(<%- esm ? '' : 'function' %>(err, req, res, next)<%- esm ? ' =>' : '' %>
 });
 
 <% } -%>
-<% if (esm) { -%>
+<% if (es6) { -%>
 export default app;
 <% } else { -%>
 module.exports = app;

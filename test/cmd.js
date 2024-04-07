@@ -17,7 +17,7 @@ var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.expres
 var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
 var STDERR_MAX_BUFFER = 5 * 1024 * 1024 // 5mb
 var TEMP_DIR = utils.tmpDir()
-var MIN_ESM_VERSION = 14
+var MIN_ES6_VERSION = 14
 
 describe('express(1)', function () {
   after(function (done) {
@@ -486,12 +486,12 @@ describe('express(1)', function () {
     })
   })
 
-  describe('--esm', function () {
+  describe('--es6', function () {
     var ctx = setupTestEnvironment(this.fullTitle())
 
-    if (process.versions.node.split('.')[0] < MIN_ESM_VERSION) {
+    if (process.versions.node.split('.')[0] < MIN_ES6_VERSION) {
       it('should exit with code 1', function (done) {
-        runRaw(ctx.dir, ['--esm'], function (err, code, stdout, stderr) {
+        runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
           if (err) return done(err)
           assert.strictEqual(code, 1)
           done()
@@ -499,19 +499,19 @@ describe('express(1)', function () {
       })
 
       it('should print usage and error message', function (done) {
-        runRaw(ctx.dir, ['--esm'], function (err, code, stdout, stderr) {
+        runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
           if (err) return done(err)
           assert.ok(/Usage: express /.test(stdout))
           assert.ok(/--help/.test(stdout))
           assert.ok(/--version/.test(stdout))
-          var reg = RegExp('error: option `--esm\' requires Node version ' + MIN_ESM_VERSION)
+          var reg = RegExp('error: option `--es6\' requires Node version ' + MIN_ES6_VERSION)
           assert.ok(reg.test(stderr))
           done()
         })
       })
     } else {
       it('should create basic app', function (done) {
-        run(ctx.dir, ['--esm'], function (err, stdout, warnings) {
+        run(ctx.dir, ['--es6'], function (err, stdout, warnings) {
           if (err) return done(err)
           ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
           ctx.stdout = stdout
@@ -528,7 +528,7 @@ describe('express(1)', function () {
       })
 
       it('should provide debug instructions', function () {
-        assert.ok(/DEBUG=express-1---esm:\* (?:& )?npm start/.test(ctx.stdout))
+        assert.ok(/DEBUG=express-1---es6:\* (?:& )?npm start/.test(ctx.stdout))
       })
 
       it('should have basic files', function () {
@@ -547,7 +547,7 @@ describe('express(1)', function () {
         var file = path.resolve(ctx.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         assert.strictEqual(contents, '{\n' +
-          '  "name": "express-1---esm",\n' +
+          '  "name": "express-1---es6",\n' +
           '  "version": "0.0.0",\n' +
           '  "type": "module",\n' +
           '  "private": true,\n' +

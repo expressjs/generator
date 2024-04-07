@@ -14,7 +14,7 @@ var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 var VERSION = require('../package').version
-var MIN_ESM_VERSION = 14
+var MIN_ES6_VERSION = 14
 
 // parse args
 var unknown = []
@@ -27,7 +27,7 @@ var args = parseArgs(process.argv.slice(2), {
     H: 'hogan',
     v: 'view'
   },
-  boolean: ['ejs', 'esm', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
+  boolean: ['ejs', 'es6', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
   default: { css: true, view: true },
   string: ['css', 'view'],
   unknown: function (s) {
@@ -94,10 +94,10 @@ function createApplication (name, dir, options, done) {
   var pkg = {
     name: name,
     version: '0.0.0',
-    type: options.esm ? 'module' : 'commonjs',
+    type: options.es6 ? 'module' : 'commonjs',
     private: true,
     scripts: {
-      start: options.esm ? 'node ./bin/www.js' : 'node ./bin/www'
+      start: options.es6 ? 'node ./bin/www.js' : 'node ./bin/www'
     },
     dependencies: {
       debug: '~2.6.9',
@@ -113,8 +113,8 @@ function createApplication (name, dir, options, done) {
   www.locals.name = name
 
   // App module type
-  app.locals.esm = options.esm
-  www.locals.esm = options.esm
+  app.locals.es6 = options.es6
+  www.locals.es6 = options.es6
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -167,7 +167,7 @@ function createApplication (name, dir, options, done) {
   // copy route templates
   mkdir(dir, 'routes')
   copyTemplateMulti(
-    options.esm ? 'mjs/routes' : 'js/routes',
+    options.es6 ? 'mjs/routes' : 'js/routes',
     dir + '/routes', '*.js')
 
   if (options.view) {
@@ -294,7 +294,7 @@ function createApplication (name, dir, options, done) {
   write(path.join(dir, 'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, options.esm ? 'bin/www.js' : 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, options.es6 ? 'bin/www.js' : 'bin/www'), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 
@@ -441,9 +441,9 @@ function main (options, done) {
     usage()
     error('option `-v, --view <engine>\' argument missing')
     done(1)
-  } else if (options.esm && process.versions.node.split('.')[0] < MIN_ESM_VERSION) {
+  } else if (options.es6 && process.versions.node.split('.')[0] < MIN_ES6_VERSION) {
     usage()
-    error('option `--esm\' requires Node version ' + MIN_ESM_VERSION + '.x or higher')
+    error('option `--es6\' requires Node version ' + MIN_ES6_VERSION + '.x or higher')
     done(1)
   } else {
     // Path
@@ -533,7 +533,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
-  console.log('        --esm            use ECMAScript modules (requires Node 14.x or higher)')
+  console.log('        --es6            generate ES6 code and module-type project (requires Node 14.x or higher)')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')

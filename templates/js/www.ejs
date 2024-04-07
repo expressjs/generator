@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-<% if (esm) { -%>
+<% if (es6) { -%>
 import app from '../app.js';
 import http from 'node:http';
 import debugFunction from 'debug';
@@ -19,14 +19,14 @@ var http = require('http');
  * Get port from environment and store in Express.
  */
 
-<%- esm ? 'const' : 'var' %> port = normalizePort(process.env.PORT || '3000');
+<%- es6 ? 'const' : 'var' %> port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
 /**
  * Create HTTP server.
  */
 
-<%- esm ? 'const' : 'var' %> server = http.createServer(app);
+<%- es6 ? 'const' : 'var' %> server = http.createServer(app);
 
 /**
  * Listen on provided port, on all network interfaces.
@@ -41,7 +41,7 @@ server.on('listening', onListening);
  */
 
 function normalizePort(val) {
-  <%- esm ? 'const' : 'var' %> port = parseInt(val, 10);
+  <%- es6 ? 'const' : 'var' %> port = parseInt(val, 10);
 
   if (isNaN(port)) {
     // named pipe
@@ -65,7 +65,7 @@ function onError(error) {
     throw error;
   }
 
-  <%- esm ? 'const' : 'var' %> bind = typeof port === 'string'
+  <%- es6 ? 'const' : 'var' %> bind = typeof port === 'string'
     ? 'Pipe ' + port
     : 'Port ' + port;
 
@@ -89,8 +89,8 @@ function onError(error) {
  */
 
 function onListening() {
-  <%- esm ? 'const' : 'var' %> addr = server.address();
-  <%- esm ? 'const' : 'var' %> bind = typeof addr === 'string'
+  <%- es6 ? 'const' : 'var' %> addr = server.address();
+  <%- es6 ? 'const' : 'var' %> bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
