@@ -1,17 +1,20 @@
 <% if (view) { -%>
-var createError = require('http-errors');
+import createError from 'http-errors';
 <% } -%>
-var express = require('express');
-var path = require('path');
+import express from 'express';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- modules[variable] %>');
+import <%- variable %> from '<%- modules[variable] %>';
 <% }); -%>
 
 <% Object.keys(localModules).sort().forEach(function (variable) { -%>
-var <%- variable %> = require('<%- localModules[variable] %>');
+import <%- variable %> from '<%- localModules[variable] %>.mjs';
 <% }); -%>
 
-var app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const app = express();
 
 <% if (view) { -%>
 // view engine setup
@@ -32,12 +35,12 @@ app.use(<%= mount.path %>, <%- mount.code %>);
 
 <% if (view) { -%>
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
@@ -48,4 +51,4 @@ app.use(function(err, req, res, next) {
 });
 
 <% } -%>
-module.exports = app;
+export default app;

@@ -97,7 +97,7 @@ function createApplication (name, dir, options, done) {
     type: options.es6 ? 'module' : 'commonjs',
     private: true,
     scripts: {
-      start: options.es6 ? 'node ./bin/www.js' : 'node ./bin/www'
+      start: options.es6 ? 'node ./bin/www.mjs' : 'node ./bin/www'
     },
     dependencies: {
       debug: '~2.6.9',
@@ -106,15 +106,11 @@ function createApplication (name, dir, options, done) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate(options.es6 ? 'mjs/app.js' : 'js/app.js')
+  var www = loadTemplate(options.es6 ? 'mjs/www' : 'js/www')
 
   // App name
   www.locals.name = name
-
-  // App module type
-  app.locals.es6 = options.es6
-  www.locals.es6 = options.es6
 
   // App modules
   app.locals.localModules = Object.create(null)
@@ -168,7 +164,7 @@ function createApplication (name, dir, options, done) {
   mkdir(dir, 'routes')
   copyTemplateMulti(
     options.es6 ? 'mjs/routes' : 'js/routes',
-    dir + '/routes', '*.js')
+    dir + '/routes', options.es6 ? '*.mjs' : '*.js')
 
   if (options.view) {
     // Copy view templates
@@ -291,10 +287,10 @@ function createApplication (name, dir, options, done) {
   pkg.dependencies = sortedObject(pkg.dependencies)
 
   // write files
-  write(path.join(dir, 'app.js'), app.render())
+  write(path.join(dir, options.es6 ? 'app.mjs' : 'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, options.es6 ? 'bin/www.js' : 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, options.es6 ? 'bin/www.mjs' : 'bin/www'), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 

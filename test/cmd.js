@@ -532,8 +532,8 @@ describe('express(1)', function () {
       })
 
       it('should have basic files', function () {
-        assert.notStrictEqual(ctx.files.indexOf('bin/www.js'), -1)
-        assert.notStrictEqual(ctx.files.indexOf('app.js'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('bin/www.mjs'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('app.mjs'), -1)
         assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
       })
 
@@ -552,7 +552,7 @@ describe('express(1)', function () {
           '  "type": "module",\n' +
           '  "private": true,\n' +
           '  "scripts": {\n' +
-          '    "start": "node ./bin/www.js"\n' +
+          '    "start": "node ./bin/www.mjs"\n' +
           '  },\n' +
           '  "dependencies": {\n' +
           '    "cookie-parser": "~1.4.5",\n' +
@@ -570,12 +570,12 @@ describe('express(1)', function () {
         npmInstall(ctx.dir, done)
       })
 
-      it('should export an express app from app.js', function (done) {
+      it('should export an express app from app.mjs', function (done) {
         // Use eval since otherwise early Nodes choke on import reserved word
         // eslint-disable-next-line no-eval
         eval(
-          'const { pathToFileURL } = require("node:url");' +
-          'const file = path.resolve(ctx.dir, "app.js");' +
+          'const { pathToFileURL } = require("url");' +
+          'const file = path.resolve(ctx.dir, "app.mjs");' +
           'import(pathToFileURL(file).href)' +
           '.then(moduleNamespaceObject => {' +
             'const app = moduleNamespaceObject.default;' +
