@@ -94,7 +94,6 @@ function createApplication (name, dir, options, done) {
   var pkg = {
     name: name,
     version: '0.0.0',
-    type: options.es6 ? 'module' : 'commonjs',
     private: true,
     scripts: {
       start: options.es6 ? 'node ./bin/www.mjs' : 'node ./bin/www'
@@ -103,6 +102,9 @@ function createApplication (name, dir, options, done) {
       debug: '~2.6.9',
       express: '~4.17.1'
     }
+  }
+  if (options.es6) {
+    pkg.type = 'module'
   }
 
   // JavaScript

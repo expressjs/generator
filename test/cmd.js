@@ -67,7 +67,6 @@ describe('express(1)', function () {
       assert.strictEqual(contents, '{\n' +
         '  "name": "express-1-no-args",\n' +
         '  "version": "0.0.0",\n' +
-        '  "type": "commonjs",\n' +
         '  "private": true,\n' +
         '  "scripts": {\n' +
         '    "start": "node ./bin/www"\n' +
@@ -549,7 +548,6 @@ describe('express(1)', function () {
         assert.strictEqual(contents, '{\n' +
           '  "name": "express-1---es6",\n' +
           '  "version": "0.0.0",\n' +
-          '  "type": "module",\n' +
           '  "private": true,\n' +
           '  "scripts": {\n' +
           '    "start": "node ./bin/www.mjs"\n' +
@@ -561,7 +559,8 @@ describe('express(1)', function () {
           '    "http-errors": "~1.7.2",\n' +
           '    "jade": "~1.11.0",\n' +
           '    "morgan": "~1.10.0"\n' +
-          '  }\n' +
+          '  },\n' +
+          '  "type": "module"\n' +
           '}\n')
       })
 
