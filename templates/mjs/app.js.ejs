@@ -2,8 +2,8 @@
 import createError from 'http-errors';
 <% } -%>
 import express from 'express';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'path';
+import { fileURLToPath } from 'url';
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
 import <%- variable %> from '<%- modules[variable] %>';
 <% }); -%>
