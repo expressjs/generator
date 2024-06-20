@@ -95,11 +95,15 @@ function createApplication (name, dir, options, done) {
     version: '0.0.0',
     private: true,
     scripts: {
+      dev: 'nodemon ./bin/www',
       start: 'node ./bin/www'
     },
     dependencies: {
       debug: '~2.6.9',
       express: '~4.17.1'
+    },
+    devDependencies: {
+      nodemon: '~2.0.16'
     }
   }
 
