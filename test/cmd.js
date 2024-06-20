@@ -1,6 +1,7 @@
 
 var assert = require('assert')
 var AppRunner = require('./support/app-runner')
+var CLIEngine = require('eslint').CLIEngine
 var exec = require('child_process').exec
 var fs = require('fs')
 var mkdirp = require('mkdirp')
@@ -79,6 +80,12 @@ describe('express(1)', function () {
         '    "morgan": "~1.10.0"\n' +
         '  }\n' +
         '}\n')
+    })
+
+    it('should be standard', function () {
+      var cli = new CLIEngine()
+      var report = cli.executeOnFiles([ctx.dir])
+      assert.equal(report.results.length, 0, 'should not have warnings or errors')
     })
 
     it('should have installable dependencies', function (done) {
