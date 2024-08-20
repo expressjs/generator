@@ -1,9 +1,10 @@
 <% if (view) { -%>
 import createError from 'http-errors';
 <% } -%>
-import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+import express from 'express';
 <% Object.keys(modules).sort().forEach(function (variable) { -%>
 import <%- variable %> from '<%- modules[variable] %>';
 <% }); -%>
