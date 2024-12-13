@@ -467,7 +467,7 @@ function main (options, done) {
     if (options.view === true) {
       warning('the default view engine will not be jade in future releases\n' +
         "use `--view=jade' or `--help' for additional options")
-      options.view = 'jade'
+      options.view = 'pug'
     }
 
     // Generate application
