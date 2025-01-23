@@ -528,7 +528,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
-  console.log('        --es6            generate ES6 code and module-type project (requires Node ' + MIN_ES6_VERSION + '.x or higher)')
+  console.log('        --es6            generate ES6 code (requires Node ' + MIN_ES6_VERSION + '.x or higher)')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')
