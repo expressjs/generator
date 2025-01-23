@@ -103,9 +103,6 @@ function createApplication (name, dir, options, done) {
       express: '~4.17.1'
     }
   }
-  if (options.es6) {
-    pkg.type = 'module'
-  }
 
   // JavaScript
   var app = loadTemplate(options.es6 ? 'mjs/app.js' : 'js/app.js')
