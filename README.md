@@ -54,7 +54,7 @@ This generator can also be further configured with the following command line fl
         --no-view        use static html instead of view engine
     -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)
         --git            add .gitignore
-        --es6            generate ES6 code and module-type project (requires Node 14.x or higher)
+        --es6            generate ES6 code and module-type project (requires Node 12.x or higher)
     -f, --force          force on non-empty directory
     -h, --help           output usage information
 
