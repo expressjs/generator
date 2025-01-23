@@ -542,7 +542,7 @@ describe('express(1)', function () {
         assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
       })
 
-      it('should have a package.json file with type "module"', function () {
+      it('should have a package.json file with es6 in the name', function () {
         var file = path.resolve(ctx.dir, 'package.json')
         var contents = fs.readFileSync(file, 'utf8')
         assert.strictEqual(contents, '{\n' +
@@ -560,7 +560,6 @@ describe('express(1)', function () {
           '    "jade": "~1.11.0",\n' +
           '    "morgan": "~1.10.0"\n' +
           '  },\n' +
-          '  "type": "module"\n' +
           '}\n')
       })
 
