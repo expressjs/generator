@@ -14,7 +14,7 @@ var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 var VERSION = require('../package').version
-var MIN_ES6_VERSION = 14
+var MIN_ES6_VERSION = 12
 
 // parse args
 var unknown = []
@@ -528,7 +528,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
-  console.log('        --es6            generate ES6 code and module-type project (requires Node 14.x or higher)')
+  console.log('        --es6            generate ES6 code and module-type project (requires Node ' + MIN_ES6_VERSION + '.x or higher)')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')
