@@ -17,7 +17,7 @@ var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.expres
 var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
 var STDERR_MAX_BUFFER = 5 * 1024 * 1024 // 5mb
 var TEMP_DIR = utils.tmpDir()
-var MIN_ES6_VERSION = 14
+var MIN_ES6_VERSION = 12
 
 describe('express(1)', function () {
   after(function (done) {
