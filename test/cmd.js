@@ -357,8 +357,6 @@ describe('express(1)', function () {
 
       it('should have installable dependencies', function (done) {
         this.timeout(NPM_INSTALL_TIMEOUT)
-        console.log('Installing dependencies...')
-        console.log('dir:', ctx.dir)
         npmInstall(ctx.dir, done)
       })
 
