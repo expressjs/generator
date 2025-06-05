@@ -9,6 +9,7 @@ var path = require('path')
 var readline = require('readline')
 var sortedObject = require('sorted-object')
 var util = require('util')
+var semver = require('semver')
 
 var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
@@ -212,7 +213,15 @@ function createApplication (name, dir, options, done) {
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
       app.locals.uses.push("sassMiddleware({\n  src: path.join(__dirname, 'public'),\n  dest: path.join(__dirname, 'public'),\n  indentedSyntax: true, // true = .sass and false = .scss\n  sourceMap: true\n})")
-      pkg.dependencies['node-sass-middleware'] = '0.11.0'
+      try {
+        if (semver.satisfies(process.version, '>=10.0.0')) {
+          pkg.dependencies['node-sass-middleware'] = '1.0.1'
+        } else {
+          throw new Error('node-sass-middleware version >=1.0 requires Node.js 10 or higher. Using Node.js 9 or lower.')
+        }
+      } catch (e) {
+        pkg.dependencies['node-sass-middleware'] = '0.11.0'
+      }
       break
     case 'stylus':
       app.locals.modules.stylus = 'stylus'
