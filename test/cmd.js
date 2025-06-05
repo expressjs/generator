@@ -75,7 +75,9 @@ describe('express(1)', function () {
         '    "debug": "~2.6.9",\n' +
         '    "express": "~4.17.1",\n' +
         '    "http-errors": "~1.7.2",\n' +
-        '    "jade": "~1.11.0",\n' +
+        // replace default jade with pug
+        // '    "jade": "~1.11.0",\n' +
+        '    "pug": "~3.0.3",\n' +
         '    "morgan": "~1.10.0"\n' +
         '  }\n' +
         '}\n')
