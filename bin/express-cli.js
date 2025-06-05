@@ -14,6 +14,7 @@ var MODE_0666 = parseInt('0666', 8)
 var MODE_0755 = parseInt('0755', 8)
 var TEMPLATE_DIR = path.join(__dirname, '..', 'templates')
 var VERSION = require('../package').version
+var MIN_ES6_VERSION = 12
 
 // parse args
 var unknown = []
@@ -26,7 +27,7 @@ var args = parseArgs(process.argv.slice(2), {
     H: 'hogan',
     v: 'view'
   },
-  boolean: ['ejs', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
+  boolean: ['ejs', 'es6', 'force', 'git', 'hbs', 'help', 'hogan', 'pug', 'version'],
   default: { css: true, view: true },
   string: ['css', 'view'],
   unknown: function (s) {
@@ -95,7 +96,7 @@ function createApplication (name, dir, options, done) {
     version: '0.0.0',
     private: true,
     scripts: {
-      start: 'node ./bin/www'
+      start: options.es6 ? 'node ./bin/www.mjs' : 'node ./bin/www'
     },
     dependencies: {
       debug: '~2.6.9',
@@ -104,8 +105,8 @@ function createApplication (name, dir, options, done) {
   }
 
   // JavaScript
-  var app = loadTemplate('js/app.js')
-  var www = loadTemplate('js/www')
+  var app = loadTemplate(options.es6 ? 'mjs/app.js' : 'js/app.js')
+  var www = loadTemplate(options.es6 ? 'mjs/www' : 'js/www')
 
   // App name
   www.locals.name = name
@@ -160,7 +161,9 @@ function createApplication (name, dir, options, done) {
 
   // copy route templates
   mkdir(dir, 'routes')
-  copyTemplateMulti('js/routes', dir + '/routes', '*.js')
+  copyTemplateMulti(
+    options.es6 ? 'mjs/routes' : 'js/routes',
+    dir + '/routes', options.es6 ? '*.mjs' : '*.js')
 
   if (options.view) {
     // Copy view templates
@@ -283,10 +286,10 @@ function createApplication (name, dir, options, done) {
   pkg.dependencies = sortedObject(pkg.dependencies)
 
   // write files
-  write(path.join(dir, 'app.js'), app.render())
+  write(path.join(dir, options.es6 ? 'app.mjs' : 'app.js'), app.render())
   write(path.join(dir, 'package.json'), JSON.stringify(pkg, null, 2) + '\n')
   mkdir(dir, 'bin')
-  write(path.join(dir, 'bin/www'), www.render(), MODE_0755)
+  write(path.join(dir, options.es6 ? 'bin/www.mjs' : 'bin/www'), www.render(), MODE_0755)
 
   var prompt = launchedFromCmd() ? '>' : '$'
 
@@ -433,6 +436,10 @@ function main (options, done) {
     usage()
     error('option `-v, --view <engine>\' argument missing')
     done(1)
+  } else if (options.es6 && process.versions.node.split('.')[0] < MIN_ES6_VERSION) {
+    usage()
+    error('option `--es6\' requires Node version ' + MIN_ES6_VERSION + '.x or higher')
+    done(1)
   } else {
     // Path
     var destinationPath = options._[0] || '.'
@@ -521,6 +528,7 @@ function usage () {
   console.log('        --no-view        use static html instead of view engine')
   console.log('    -c, --css <engine>   add stylesheet <engine> support (less|stylus|compass|sass) (defaults to plain css)')
   console.log('        --git            add .gitignore')
+  console.log('        --es6            generate ES6 code (requires Node ' + MIN_ES6_VERSION + '.x or higher)')
   console.log('    -f, --force          force on non-empty directory')
   console.log('    --version            output the version number')
   console.log('    -h, --help           output usage information')
