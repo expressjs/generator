@@ -141,24 +141,26 @@ function createApplication (name, dir, options, done) {
   mkdir(dir, 'public')
   mkdir(dir, 'public/javascripts')
   mkdir(dir, 'public/images')
-  mkdir(dir, 'public/stylesheets')
+  if (options.css) {
+    mkdir(dir, 'public/css')
+  }
 
   // copy css templates
   switch (options.css) {
     case 'less':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.less')
+      copyTemplateMulti('css', dir + '/public/css', '*.less')
       break
     case 'stylus':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.styl')
+      copyTemplateMulti('css', dir + '/public/css', '*.styl')
       break
     case 'compass':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.scss')
+      copyTemplateMulti('css', dir + '/public/css', '*.scss')
       break
     case 'sass':
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.sass')
+      copyTemplateMulti('css', dir + '/public/css', '*.sass')
       break
     default:
-      copyTemplateMulti('css', dir + '/public/stylesheets', '*.css')
+      copyTemplateMulti('css', dir + '/public/css', '*.css')
       break
   }
 
