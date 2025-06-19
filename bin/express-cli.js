@@ -99,7 +99,7 @@ function createApplication (name, dir, options, done) {
       start: 'node ./bin/www'
     },
     dependencies: {
-      debug: '~2.6.9',
+      debug: '~4.4.1',
       express: '~5.1.0'
     },
     devDependencies: {
