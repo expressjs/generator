@@ -145,7 +145,7 @@ function createApplication (name, dir, options, done) {
   }
 
   mkdir(dir, 'public')
-  mkdir(dir, 'public/javascripts')
+  mkdir(dir, 'public/js')
   mkdir(dir, 'public/images')
   if (options.css) {
     mkdir(dir, 'public/css')
