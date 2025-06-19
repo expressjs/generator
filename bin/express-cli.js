@@ -224,7 +224,7 @@ function createApplication (name, dir, options, done) {
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
       app.locals.uses.push("lessMiddleware(path.join(__dirname, 'public'))")
-      pkg.dependencies['less-middleware'] = '~2.2.1'
+      pkg.dependencies['less-middleware'] = '~3.1.0'
       break
     case 'sass':
       app.locals.modules.sassMiddleware = 'node-sass-middleware'
