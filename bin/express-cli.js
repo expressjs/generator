@@ -134,6 +134,10 @@ function createApplication (name, dir, options, done) {
     app.locals.modules.cookieParser = 'cookie-parser'
     app.locals.uses.push('cookieParser()')
     pkg.dependencies['cookie-parser'] = '~1.4.7'
+  } else {
+    app.locals.modules['{ responseMiddleware }'] = 'express-response-rest'
+    app.locals.uses.push('responseMiddleware')
+    pkg.dependencies['express-response-rest'] = '~1.0.1'
   }
 
   if (dir !== '.') {
