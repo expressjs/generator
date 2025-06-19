@@ -219,7 +219,7 @@ function createApplication (name, dir, options, done) {
     case 'compass':
       app.locals.modules.compass = 'node-compass'
       app.locals.uses.push("compass({ mode: 'expanded' })")
-      pkg.dependencies['node-compass'] = '0.2.3'
+      pkg.dependencies['node-compass'] = '0.2.4'
       break
     case 'less':
       app.locals.modules.lessMiddleware = 'less-middleware'
