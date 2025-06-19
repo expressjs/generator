@@ -278,7 +278,7 @@ function createApplication (name, dir, options, done) {
       break
     case 'twig':
       app.locals.view = { engine: 'twig' }
-      pkg.dependencies.twig = '~0.10.3'
+      pkg.dependencies.twig = '~1.17.1'
       break
     case 'vash':
       app.locals.view = { engine: 'vash' }
