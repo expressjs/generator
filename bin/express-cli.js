@@ -129,10 +129,12 @@ function createApplication (name, dir, options, done) {
   app.locals.uses.push('express.json()')
   app.locals.uses.push('express.urlencoded({ extended: false })')
 
-  // Cookie parser
-  app.locals.modules.cookieParser = 'cookie-parser'
-  app.locals.uses.push('cookieParser()')
-  pkg.dependencies['cookie-parser'] = '~1.4.5'
+  if (options.view !== false) {
+    // Cookie parser
+    app.locals.modules.cookieParser = 'cookie-parser'
+    app.locals.uses.push('cookieParser()')
+    pkg.dependencies['cookie-parser'] = '~1.4.7'
+  }
 
   if (dir !== '.') {
     mkdir(dir, '.')
