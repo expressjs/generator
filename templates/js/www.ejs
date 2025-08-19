@@ -22,12 +22,20 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Listen on provided port, on IPv6 enabled network interfaces. Fallback to IPv4 if IPv6 is not enabled.
+ * Depending on your OS, IPv6 enabled network interfaces may listen on IPv4 network
+ * interfaces as well using a dual-stack listener. Node does not block off IPv4 host range 0.0.0.0 by default when
+ * using IPv6 and leaves that decision to the OS.
+ *
+ * If your OS has IPv6 enabled and you want your app to run on IPv4 only, you will need to specify the host
+ * in the server.listen call.
+ *
+ * Example: server.listen(port, '0.0.0.0');
  */
 
-server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+server.listen(port);
 
 /**
  * Normalize a port into a number, string, or false.
@@ -70,6 +78,10 @@ function onError(error) {
       break;
     case 'EADDRINUSE':
       console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    case 'EAFNOSUPPORT':
+      console.error(bind + ' listening may be disabled. See: https://github.com/nodejs/node/issues/17664');
       process.exit(1);
       break;
     default:
