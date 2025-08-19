@@ -57,6 +57,41 @@ This generator can also be further configured with the following command line fl
     -f, --force          force on non-empty directory
     -h, --help           output usage information
 
+## Using Docker
+
+Download the Dockerfile:
+
+```bash
+mkdir docker
+cd docker
+wget https://github.com/expressjs/generator/raw/master/docker/Dockerfile
+```
+
+Build the Docker images:
+
+```bash
+docker build -t expressjs-generator:latest .
+```
+
+Make a folder where you want to generate the Service:
+
+```bash
+mkdir service
+cd service
+```
+
+Run the generator from image to generate service:
+
+```bash
+docker run -it --rm -v $PWD:/home/expressjs/app expressjs-generator
+```
+
+Run and attach interactive shell to the generator docker container to work from inside the running container:
+
+```bash
+docker run -it --rm -v $PWD:/home/expressjs/app expressjs-generator /bin/bash
+```
+
 ## License
 
 [MIT](LICENSE)
