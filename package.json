@@ -25,7 +25,7 @@
   "repository": "expressjs/generator",
   "license": "MIT",
   "dependencies": {
-    "ejs": "2.6.2",
+    "ejs": "3.1.10",
     "minimatch": "3.0.4",
     "minimist": "1.2.5",
     "mkdirp": "0.5.1",
