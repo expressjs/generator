@@ -417,7 +417,14 @@ function main (options, done) {
   // top-level argument direction
   if (options['!'].length > 0) {
     usage()
-    error('unknown option `' + options['!'][0] + "'")
+
+    var unknownOptions = options['!']
+    .map(function (opt) {
+      return '`' + opt + '`'
+    })
+    .join(', ')
+
+    error('unknown option' + (options['!'].length > 1 ? 's ' : ' ') + unknownOptions)
     done(1)
   } else if (args.help) {
     usage()
