@@ -17,6 +17,7 @@ var BIN_PATH = path.resolve(path.dirname(PKG_PATH), require(PKG_PATH).bin.expres
 var NPM_INSTALL_TIMEOUT = 300000 // 5 minutes
 var STDERR_MAX_BUFFER = 5 * 1024 * 1024 // 5mb
 var TEMP_DIR = utils.tmpDir()
+var MIN_ES6_VERSION = 12
 
 describe('express(1)', function () {
   after(function (done) {
@@ -482,6 +483,142 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/error.ejs'), -1, 'should have views/error.ejs file')
       assert.notStrictEqual(ctx.files.indexOf('views/index.ejs'), -1, 'should have views/index.ejs file')
     })
+  })
+
+  describe('--es6', function () {
+    var ctx = setupTestEnvironment(this.fullTitle())
+
+    if (process.versions.node.split('.')[0] < MIN_ES6_VERSION) {
+      it('should exit with code 1', function (done) {
+        runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
+          if (err) return done(err)
+          assert.strictEqual(code, 1)
+          done()
+        })
+      })
+
+      it('should print usage and error message', function (done) {
+        runRaw(ctx.dir, ['--es6'], function (err, code, stdout, stderr) {
+          if (err) return done(err)
+          assert.ok(/Usage: express /.test(stdout))
+          assert.ok(/--help/.test(stdout))
+          assert.ok(/--version/.test(stdout))
+          var reg = RegExp('error: option `--es6\' requires Node version ' + MIN_ES6_VERSION)
+          assert.ok(reg.test(stderr))
+          done()
+        })
+      })
+    } else {
+      it('should create basic app', function (done) {
+        run(ctx.dir, ['--es6'], function (err, stdout, warnings) {
+          if (err) return done(err)
+          ctx.files = utils.parseCreatedFiles(stdout, ctx.dir)
+          ctx.stdout = stdout
+          ctx.warnings = warnings
+          assert.strictEqual(ctx.files.length, 16)
+          done()
+        })
+      })
+
+      it('should print jade view warning', function () {
+        assert.ok(ctx.warnings.some(function (warn) {
+          return warn === 'the default view engine will not be jade in future releases\nuse `--view=jade\' or `--help\' for additional options'
+        }))
+      })
+
+      it('should provide debug instructions', function () {
+        assert.ok(/DEBUG=express-1---es6:\* (?:& )?npm start/.test(ctx.stdout))
+      })
+
+      it('should have basic files', function () {
+        assert.notStrictEqual(ctx.files.indexOf('bin/www.mjs'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('app.mjs'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('package.json'), -1)
+      })
+
+      it('should have jade templates', function () {
+        assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
+        assert.notStrictEqual(ctx.files.indexOf('views/layout.jade'), -1)
+      })
+
+      it('should have a package.json file with es6 in the name', function () {
+        var file = path.resolve(ctx.dir, 'package.json')
+        var contents = fs.readFileSync(file, 'utf8')
+        assert.strictEqual(contents, '{\n' +
+          '  "name": "express-1---es6",\n' +
+          '  "version": "0.0.0",\n' +
+          '  "private": true,\n' +
+          '  "scripts": {\n' +
+          '    "start": "node ./bin/www.mjs"\n' +
+          '  },\n' +
+          '  "dependencies": {\n' +
+          '    "cookie-parser": "~1.4.5",\n' +
+          '    "debug": "~2.6.9",\n' +
+          '    "express": "~4.17.1",\n' +
+          '    "http-errors": "~1.7.2",\n' +
+          '    "jade": "~1.11.0",\n' +
+          '    "morgan": "~1.10.0"\n' +
+          '  }\n' +
+          '}\n')
+      })
+
+      it('should have installable dependencies', function (done) {
+        this.timeout(NPM_INSTALL_TIMEOUT)
+        npmInstall(ctx.dir, done)
+      })
+
+      it('should export an express app from app.mjs', function (done) {
+        // Use eval since otherwise early Nodes choke on import reserved word
+        // eslint-disable-next-line no-eval
+        eval(
+          'const { pathToFileURL } = require("url");' +
+          'const file = path.resolve(ctx.dir, "app.mjs");' +
+          'import(pathToFileURL(file).href)' +
+          '.then(moduleNamespaceObject => {' +
+            'const app = moduleNamespaceObject.default;' +
+            'assert.strictEqual(typeof app, "function");' +
+            'assert.strictEqual(typeof app.handle, "function");' +
+            'done();' +
+          '})' +
+          '.catch(reason => done(reason))'
+        )
+      })
+
+      describe('npm start', function () {
+        before('start app', function () {
+          this.app = new AppRunner(ctx.dir)
+        })
+
+        after('stop app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.stop(done)
+        })
+
+        it('should start app', function (done) {
+          this.timeout(APP_START_STOP_TIMEOUT)
+          this.app.start(done)
+        })
+
+        it('should respond to HTTP request', function (done) {
+          request(this.app)
+            .get('/')
+            .expect(200, /<title>Express<\/title>/, done)
+        })
+
+        it('should respond to /users HTTP request', function (done) {
+          request(this.app)
+            .get('/users')
+            .expect(200, /respond with a resource/, done)
+        })
+
+        it('should generate a 404', function (done) {
+          request(this.app)
+            .get('/does_not_exist')
+            .expect(404, /<h1>Not Found<\/h1>/, done)
+        })
+      })
+    }
   })
 
   describe('--git', function () {
