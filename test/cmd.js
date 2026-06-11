@@ -93,6 +93,14 @@ describe('express(1)', function () {
       assert.strictEqual(typeof app.handle, 'function')
     })
 
+    it('should delegate errors after headers are sent', function () {
+      var file = path.resolve(ctx.dir, 'app.js')
+      var contents = fs.readFileSync(file, 'utf8')
+
+      assert.ok(contents.indexOf('if (res.headersSent) {') !== -1)
+      assert.ok(contents.indexOf('return next(err);') !== -1)
+    })
+
     describe('npm start', function () {
       before('start app', function () {
         this.app = new AppRunner(ctx.dir)
