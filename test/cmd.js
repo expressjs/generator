@@ -506,6 +506,14 @@ describe('express(1)', function () {
       assert.notStrictEqual(ctx.files.indexOf('.gitignore'), -1, 'should have .gitignore file')
     })
 
+    it('should ignore environment-specific dotenv files (#381)', function () {
+      var file = path.resolve(ctx.dir, '.gitignore')
+      var contents = fs.readFileSync(file, 'utf8')
+      assert.ok(contents.includes('.env'), 'should ignore .env')
+      assert.ok(contents.includes('.env.*'), 'should ignore .env.* variants')
+      assert.ok(contents.includes('!.env.example'), 'should allow committing .env.example')
+    })
+
     it('should have jade templates', function () {
       assert.notStrictEqual(ctx.files.indexOf('views/error.jade'), -1)
       assert.notStrictEqual(ctx.files.indexOf('views/index.jade'), -1)
